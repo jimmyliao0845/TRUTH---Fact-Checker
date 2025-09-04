@@ -1,0 +1,42 @@
+/* Sidebar for analysis pages only */
+.analysis-sidebar {
+  width: 220px;
+  background: #1a1a1a;
+  color: white;
+  height: auto; /* Let the container handle layout */
+  min-height: 100vh; /* Full height but not fixed */
+  position: relative; /* Don't pin it */
+  padding-top: 20px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+}
+
+/* Center the analysis content box */
+.analysis-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Stack items vertically */
+  height: 100vh; /* Full viewport height */
+  width: 100%;
+}
+
+
+/* Sidebar text */
+.analysis-sidebar p {
+  font-size: 14px;
+  color: #aaa;
+  text-align: center;
+}
+
+/* Top links */
+.top-links {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+/* Main content adjustments */
+.analysis-main {
+  flex-grow: 1;
+  padding: 40px;
+}

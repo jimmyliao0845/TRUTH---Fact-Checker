@@ -1,0 +1,46 @@
+    /* Base style for social login boxes */
+    .social-login-btn {
+        font-weight: 500;
+        font-size: 14px;
+        background-color: #ffffff; /* Light mode default */
+        border-radius: 10px;
+        border: 1px solid #ccc; /* Border always visible */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .social-login-btn img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        filter: none; /* Keep original colors in light mode */
+    }
+
+    /* Hover effect in light mode */
+    .social-login-btn:hover {
+        background-color: #f0f0f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Night mode style */
+    body.night-mode .social-login-btn {
+        background-color: #343541 !important;
+        border: 1px solid #565869; /* Border in night mode */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    body.night-mode .social-login-btn img {
+        filter: brightness(0) invert(1); /* White icons */
+    }
+
+    /* Hover effect in night mode */
+    body.night-mode .social-login-btn:hover {
+        background-color: #444654 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    .social-login-btn img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
