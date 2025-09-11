@@ -37,16 +37,6 @@ export default function Navbar() {
       >
         <ul className="navbar-nav">
           <li className="nav-item dropdown">
-            <a
-              className="nav-link dropdown-toggle active"
-              href="#"
-              id="productsDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              Products
-            </a>
             <ul
               className="dropdown-menu shadow-lg"
               style={{
@@ -59,12 +49,6 @@ export default function Navbar() {
               <li><a className="dropdown-item text-white" href="#">Plagiarism Checker</a></li>
               <li><a className="dropdown-item text-white" href="#">Fact Checker</a></li>
             </ul>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Features</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Pricing</a>
           </li>
         </ul>
       </div>
