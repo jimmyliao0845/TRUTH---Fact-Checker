@@ -26,7 +26,7 @@ export default function ForgotPasswordPage() {
             alt="Logo"
             style={{ width: "40px", height: "40px" }}
           />
-          <span className="fw-bold fs-5">DiGiMa</span>
+          <span className="fw-bold fs-5">T.R.U.T.H.</span>
         </div>
         <button
           className="btn btn-sm border"

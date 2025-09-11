@@ -11,21 +11,21 @@ export default function HomePage() {
     <div>
       {/* Main home page content */}
       <div className="main-content">
-        <h1>DiGiMa</h1>
+        <h1>T.R.U.T.H.</h1>
         <div className="subtitle">DeepFake or AI Checker</div>
         <button
           className="try-btn"
           onClick={() => navigate("/analysis")}
         >
-          Try DiGiMa
+          Try T.R.U.T.H.
         </button>
       </div>
 
       {/* About section */}
       <section>
-        <h2>About DiGiMa</h2>
+        <h2>About T.R.U.T.H.</h2>
         <p>
-          Introducing DIGIMA, an AI-powered platform designed to ensure the
+          Introducing T.R.U.T.H., an AI-powered platform designed to ensure the
           integrity and authenticity of digital content.
         </p>
         <div className="features-title">Features:</div>

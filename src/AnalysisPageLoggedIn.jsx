@@ -50,7 +50,7 @@ export default function AnalysisPageLoggedIn() {
       {/* Sidebar */}
       <div className="analysis-sidebar d-flex flex-column align-items-center justify-content-start p-3">
         <div className="mb-4">
-          <a href="/analysis-logged">
+          <a href="/">
             <img src="/assets/digima_logo.svg" width="50" alt="home" />
           </a>
         </div>
@@ -62,7 +62,7 @@ export default function AnalysisPageLoggedIn() {
       {/* Main Content */}
       <div className="analysis-main position-relative flex-grow-1">
         <div className="analysis-container">
-          <h1 className="fw-bold mb-4">Analyze With DiGiMa</h1>
+          <h1 className="fw-bold mb-4">Analyze With T.R.U.T.H.</h1>
 
           <div
             className="bg-light p-4 rounded shadow-sm"
@@ -90,7 +90,7 @@ export default function AnalysisPageLoggedIn() {
                 className="btn btn-dark px-4"
                 onClick={() => fileInputRef.current.click()}
               >
-                Upload File
+                Upload File/s
               </button>
 
               {/* Hidden file input */}

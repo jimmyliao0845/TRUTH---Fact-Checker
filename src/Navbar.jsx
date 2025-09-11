@@ -29,7 +29,7 @@ export default function Navbar() {
   <nav className="navbar navbar-expand-lg navbar-dark bg-custom position-relative">
     <div className="container-fluid">
       {/* Left: Brand */}
-      <Link className="navbar-brand" to="/">DIGIMA</Link>
+      <Link className="navbar-brand" to="/">T.R.U.T.H.</Link>
 
       {/* Center: Nav Links (Absolute Center) */}
       <div

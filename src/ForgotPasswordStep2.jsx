@@ -29,7 +29,7 @@ export default function ForgotPasswordStep2() {
       >
         <div className="logo-container d-flex align-items-center gap-2">
           <img src="/assets/digima_logo.svg" alt="Logo" width="40" height="40" />
-          <span>DiGiMa</span>
+          <span>T.R.U.T.H.</span>
         </div>
         <div>
           <button
