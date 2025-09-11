@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
@@ -7,6 +7,7 @@ import "./analysis.css";
 
 export default function AnalysisPageNotLoggedIn() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -16,6 +17,25 @@ export default function AnalysisPageNotLoggedIn() {
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Handle file selection
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Check file type
+    if (file.type !==
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+      alert("Only DOCX files are allowed!");
+      return;
+    }
+
+    // Here you can process the file (e.g., send to backend or read content)
+    console.log("Selected file:", file);
+
+    // Optional: navigate after upload
+    navigate("/upload");
+  };
 
   return (
     <div className="d-flex">
@@ -48,7 +68,7 @@ export default function AnalysisPageNotLoggedIn() {
       <div className="analysis-main position-relative flex-grow-1">
         <div className="analysis-container">
           <h1 className="fw-bold mb-4">Analyze With DiGiMa</h1>
-      
+
           <div
             className="bg-light p-4 rounded shadow-sm"
             style={{ width: "60%" }}
@@ -61,7 +81,7 @@ export default function AnalysisPageNotLoggedIn() {
               className="form-control mb-3"
               rows="4"
             ></textarea>
-      
+
             <div className="d-flex justify-content-center gap-3">
               <button
                 className="btn btn-dark px-4"
@@ -69,12 +89,23 @@ export default function AnalysisPageNotLoggedIn() {
               >
                 Enter Input
               </button>
+
+              {/* Upload Button */}
               <button
                 className="btn btn-dark px-4"
-                onClick={() => navigate("/upload")}
+                onClick={() => fileInputRef.current.click()}
               >
                 Upload Docs
               </button>
+
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                accept=".docx"
+                onChange={handleFileUpload}
+              />
             </div>
           </div>
         </div>

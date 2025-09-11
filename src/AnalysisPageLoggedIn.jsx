@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
@@ -7,6 +7,7 @@ import "./analysis.css";
 
 export default function AnalysisPageLoggedIn() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     // Redirect if NOT logged in
@@ -18,11 +19,36 @@ export default function AnalysisPageLoggedIn() {
     return () => unsubscribe();
   }, [navigate]);
 
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // docx
+      "image/png",
+      "image/jpeg",
+      "image/jpg",
+      "image/gif",
+      "video/mp4",
+      "video/webm",
+      "video/ogg"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only DOCX, images, and videos are allowed!");
+      return;
+    }
+
+    console.log("Selected file:", file);
+
+    // Navigate after selecting a file (optional)
+    navigate("/upload");
+  };
+
   return (
     <div className="d-flex">
       {/* Sidebar */}
       <div className="analysis-sidebar d-flex flex-column align-items-center justify-content-start p-3">
-        {/* Home Icon */}
         <div className="mb-4">
           <a href="/analysis-logged">
             <img src="/assets/digima_logo.svg" width="50" alt="home" />
@@ -58,24 +84,23 @@ export default function AnalysisPageLoggedIn() {
               >
                 Enter Input
               </button>
+
+              {/* Single Upload Button */}
               <button
                 className="btn btn-dark px-4"
-                onClick={() => navigate("/upload")}
+                onClick={() => fileInputRef.current.click()}
               >
-                Upload Docs
+                Upload File
               </button>
-              <button
-                className="btn btn-dark px-4"
-                onClick={() => navigate("/upload")}
-              >
-                Upload Image
-              </button>
-              <button
-                className="btn btn-dark px-4"
-                onClick={() => navigate("/upload")}
-              >
-                Upload Video
-              </button>
+
+              {/* Hidden file input */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                accept=".docx,image/*,video/*"
+                onChange={handleFileUpload}
+              />
             </div>
           </div>
         </div>
