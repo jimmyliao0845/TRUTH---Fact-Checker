@@ -55,7 +55,6 @@ export default function AnalysisPageLoggedIn() {
           </a>
         </div>
         <div className="white-box p-3 mt-3">
-          <p>Welcome back! You’re logged in.</p>
         </div>
       </div>
 
