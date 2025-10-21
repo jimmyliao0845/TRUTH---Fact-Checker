@@ -9,7 +9,7 @@
 /* Sidebar for analysis pages only */
 .analysis-sidebar {
   width: 220px;
-  background: #1a1a1a;
+  background: #8c8c8c;
   color: white;
   height: auto; /* Let the container handle layout */
   min-height: 100vh; /* Full height but not fixed */
