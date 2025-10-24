@@ -1,8 +1,10 @@
+import { supabase } from "./supabaseClient";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { auth } from "./firebase";
 import {
   createUserWithEmailAndPassword,
+  sendEmailVerification,
   updateProfile,
   GoogleAuthProvider,
   GithubAuthProvider,
@@ -16,6 +18,8 @@ import "./night-mode.css";
 import "./social-login.css";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,34 +28,108 @@ export default function RegisterPage() {
     localStorage.getItem("theme") === "night"
   );
 
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [fadeOut, setFadeOut] = useState(false);
+
   const googleProvider = new GoogleAuthProvider();
   const githubProvider = new GithubAuthProvider();
+  
 
   useEffect(() => {
-    document.body.classList.toggle("night-mode", isNightMode);
-    localStorage.setItem("theme", isNightMode ? "night" : "light");
-  }, [isNightMode]);
+    if (errorMsg || successMsg) {
+      const timer = setTimeout(() => {
+        setErrorMsg("");
+        setSuccessMsg("");
+      }, 5000); // 5 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [errorMsg, successMsg]);
+
+
+
+  useEffect(() => {
+    if (errorMsg || successMsg) {
+      setFadeOut(false); // reset fade
+      const fadeTimer = setTimeout(() => setFadeOut(true), 4000); // start fade at 4s
+      const clearTimer = setTimeout(() => {
+        setErrorMsg("");
+        setSuccessMsg("");
+        setFadeOut(false); // reset
+      }, 4500); // remove message after 4.5s
+      return () => {
+        clearTimeout(fadeTimer);
+        clearTimeout(clearTimer);
+      };
+    }
+  }, [errorMsg, successMsg]);
+
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setErrorMsg("");   // clear previous errors
+    setSuccessMsg(""); // clear previous success
+  
     if (password !== confirm) {
-      alert("Passwords do not match");
+      setErrorMsg("Passwords do not match");
       return;
     }
+  
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCred.user, { displayName: name });
-      alert("Registration successful!");
-      window.location.href = "/";
+  
+      // Send verification email
+      await sendEmailVerification(userCred.user);
+      setSuccessMsg("Registration successful! Please check your email to verify your account.");
+  
+      // Insert into Supabase
+      const { error } = await supabase.from("Users").insert([
+        {
+          auth_id: userCred.user.uid,
+          email: email,
+          role: "user",
+          provider: "email",
+          avatar_url: null,
+          created_at: new Date().toISOString(),
+        },
+      ]);
+  
+      if (error) console.error("Supabase insert error:", error);
+  
+      navigate("/"); 
     } catch (err) {
-      alert(err.message);
+      if (err.code === "auth/email-already-in-use") {
+        setErrorMsg("This email is already registered. Try logging in instead.");
+      } else if (err.code === "auth/invalid-email") {
+        setErrorMsg("Please enter a valid email address.");
+      } else if (err.code === "auth/weak-password") {
+        setErrorMsg("Password should be at least 6 characters.");
+      } else {
+        setErrorMsg(err.message);
+      }
     }
   };
 
   const handleProviderLogin = async (provider) => {
     try {
-      await signInWithPopup(auth, provider);
-      window.location.href = "/";
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // ✅ Upsert provider user to Supabase
+      await supabase.from("users").upsert(
+        {
+          auth_id: user.uid,          // Firebase UID
+          email: user.email,          // User email
+          name: user.displayName,
+          role: "user",               // Default role
+          provider: provider.providerId.includes("google") ? "google" : "github",
+          avatar_url: user.photoURL,  // Profile picture
+        },
+        { onConflict: "auth_id" }     // Prevent duplicate users
+      );
+
+      navigate("/");
     } catch (err) {
       if (
         err.code === "auth/cancelled-popup-request" ||
@@ -82,6 +160,7 @@ export default function RegisterPage() {
                     style={{ width: "120px", height: "auto" }}
                   />
                 </div>
+
                 <div className="card border-0 p-lg-3 shadow-lg rounded-2">
                   <div className="card-body">
                     <div className="register-toggle-wrapper">
@@ -96,8 +175,26 @@ export default function RegisterPage() {
                     </div>
                     <div className="text-center mb-3">
                       <h5 className="mb-2">Sign Up</h5>
+                      {/* Error Message */}
+                        {errorMsg && (
+                          <div
+                            className={`alert alert-danger py-2 text-center fade-alert ${fadeOut ? "hide" : ""}`}
+                            role="alert"
+                          >
+                            {errorMsg}
+                          </div>
+                        )}
+                        
+                        {/* Success Message */}
+                        {successMsg && (
+                          <div
+                            className={`alert alert-success py-2 text-center fade-alert ${fadeOut ? "hide" : ""}`}
+                            role="alert"
+                          >
+                            {successMsg}
+                          </div>
+                        )}
                     </div>
-
                     {/* Full Name */}
                     <div className="mb-3">
                       <label className="form-label">Full Name</label>
@@ -162,11 +259,19 @@ export default function RegisterPage() {
                           I agree to the
                         </label>
                         <div className="d-inline-flex">
-                          <a href="#" className="me-1">
+                          <a
+                            href="/terms"
+                            className="me-1"
+                            onClick={(e) => e.preventDefault()}
+                          >
                             Terms of Service
-                          </a>{" "}
-                          and{" "}
-                          <a href="#" className="ms-1">
+                          </a>
+                          and
+                          <a
+                            href="/privacy"
+                            className="ms-1"
+                            onClick={(e) => e.preventDefault()}
+                          >
                             Privacy Policy
                           </a>
                         </div>

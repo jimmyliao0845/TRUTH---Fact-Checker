@@ -128,3 +128,17 @@ body.night-mode #signup-btn:hover {
   color: #000 !important;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
+
+/* Night mode error alert */
+body.night-mode .alert-danger {
+  background-color: #5a1e1e; /* dark red */
+  color: #f5c2c2;           /* light red text */
+  border: 1px solid #7a2b2b;
+}
+
+/* Night mode success alert */
+body.night-mode .alert-success {
+  background-color: #1e5a2e; /* dark green */
+  color: #c2f5c2;           /* light green text */
+  border: 1px solid #2b7a3b;
+}
