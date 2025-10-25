@@ -101,24 +101,12 @@ export default function AnalysisPageNotLoggedIn() {
     }
   };
 
-    // ✅ Updated: Handle DOCX, image, and video uploads
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const allowedTypes = [
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
-      "image/jpeg",  // JPG
-      "image/png",   // PNG
-      "image/gif",   // GIF
-      "video/mp4",   // MP4
-      "video/quicktime", // MOV
-      "video/x-matroska", // MKV
-      "video/webm"   // WEBM
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      alert("Only DOCX, image, or video files are allowed!");
+    if (file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+      alert("Only DOCX files are allowed!");
       return;
     }
 
