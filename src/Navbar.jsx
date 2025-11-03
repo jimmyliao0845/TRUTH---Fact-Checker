@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,6 +8,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -26,16 +27,15 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-custom position-relative">
-      <div className="container-fluid">
-
+    <nav className="navbar navbar-expand-lg navbar-dark bg-custom position-relative px-3">
+      <div className="container-fluid d-flex align-items-center justify-content-between">
         {/* Left: Brand */}
-        <Link className="navbar-brand" to="/">T.R.U.T.H.</Link>
+        <Link className="navbar-brand fw-bold" to="/">
+          T.R.U.T.H.
+        </Link>
 
-        {/* Center: Nav Links */}
-        <div
-          className="d-none d-lg-flex position-absolute top-50 start-50 translate-middle"
-        >
+        {/* Center: (optional tools dropdown placeholder) */}
+        <div className="d-none d-lg-flex position-absolute top-50 start-50 translate-middle">
           <ul className="navbar-nav">
             <li className="nav-item dropdown">
               <ul
@@ -66,8 +66,30 @@ export default function Navbar() {
           </ul>
         </div>
 
-        {/* Right: Auth Buttons */}
-        <div className="d-flex align-items-center ms-auto">
+        {/* Right Side: Buttons / Profile */}
+        <div className="d-flex align-items-center">
+          {/* 🔁 Dashboard ↔ Analysis Button */}
+          {user && (
+            <>
+              {location.pathname !== "/fact-checker-dashboard" ? (
+                <Link
+                  to="/fact-checker-dashboard"
+                  className="btn btn-outline-light rounded-pill px-3 py-1 me-3"
+                >
+                  <i className="bi bi-speedometer2 me-1"></i> Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/analysis-logged"
+                  className="btn btn-outline-primary rounded-pill px-3 py-1 me-3"
+                >
+                  <i className="bi bi-arrow-left-circle me-1"></i> Back to Analysis
+                </Link>
+              )}
+            </>
+          )}
+
+          {/* Auth Buttons or Profile */}
           {!user ? (
             <>
               <Link
@@ -96,8 +118,6 @@ export default function Navbar() {
                 style={{ cursor: "pointer" }}
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
-                role="button"
-                tabIndex="0"
               />
               <ul
                 className="dropdown-menu dropdown-menu-end p-3 shadow-lg"
@@ -117,7 +137,7 @@ export default function Navbar() {
                     className="btn bg-custom btn-outline-light text-white btn-sm w-100 d-flex align-items-center justify-content-start"
                     onClick={handleSignOut}
                   >
-                    <i className="bi bi-box-arrow-in-right me-2"></i> Sign Out
+                    <i className="bi bi-box-arrow-right me-2"></i> Sign Out
                   </button>
                 </li>
               </ul>

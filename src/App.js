@@ -10,6 +10,7 @@ import AnalysisPageLoggedIn from "./AnalysisPageLoggedIn";
 import AnalysisResultLoggedIn from "./AnalysisResultLoggedIn";
 import AnalysisResultNotloggedIn from "./AnalysisResultNotloggedIn"; // ✅ Fixed import
 import ProtectedRoute from "./ProtectedRoute";
+import FactCheckerDashboard from "./FactCheckerDashboard"; // ✅ NEW IMPORT
 
 function App() {
   return (
@@ -53,6 +54,12 @@ function App() {
         <Route
           path="/upload"
           element={<h1 className="text-center mt-5">Upload Page</h1>}
+        />
+
+        {/* ✅ New Fact-Checker Dashboard Route */}
+        <Route
+          path="/fact-checker-dashboard"
+          element={<FactCheckerDashboard />}
         />
       </Routes>
     </Router>
