@@ -1,0 +1,77 @@
+/* Fix layout so main content expands beside sidebar */
+.admin-content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  width: calc(100% - 240px); /* ensure content fills remaining space */
+}
+
+/* Keep the table wide and readable */
+.table-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+/* Optional: make sure header and dropdown look aligned */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+
+.sort-select {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: 14px;
+}
+
+.table-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px 18px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table th {
+  background: #f0f2f5;
+  font-weight: 600;
+}
+
+.tag {
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.tag-mp {
+  background: #198754; /* green */
+}
+
+.tag-tr {
+  background: #0d6efd; /* blue */
+}
+
+.tag-ru {
+  background: #6f42c1; /* purple */
+}

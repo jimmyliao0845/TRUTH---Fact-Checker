@@ -166,6 +166,7 @@ export default function AnalysisPageLoggedIn() {
   return (
     <div className="d-flex">
       {/* Sidebar */}
+      
       <div className="analysis-sidebar d-flex flex-column align-items-center justify-content-start p-3">
         <div className="mb-4">
           <a href="/">

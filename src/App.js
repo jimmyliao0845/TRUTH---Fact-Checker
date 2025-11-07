@@ -8,9 +8,15 @@ import ForgotPasswordStep2 from "./ForgotPasswordStep2";
 import AnalysisPageNotLoggedIn from "./AnalysisPageNotLoggedIn";
 import AnalysisPageLoggedIn from "./AnalysisPageLoggedIn";
 import AnalysisResultLoggedIn from "./AnalysisResultLoggedIn";
-import AnalysisResultNotloggedIn from "./AnalysisResultNotloggedIn"; // ✅ Fixed import
+import AnalysisResultNotloggedIn from "./AnalysisResultNotloggedIn";
 import ProtectedRoute from "./ProtectedRoute";
-import FactCheckerDashboard from "./FactCheckerDashboard"; // ✅ NEW IMPORT
+import FactCheckerDashboard from "./FactCheckerDashboard";
+
+// ✅ Admin Pages
+import AdminDashboard from "./AdminDashboard";
+import UserManagement from "./UserManagement";
+import AdminTutorialPage from "./AdminTutorialPage";
+import AdminReviewsPage from "./AdminReviewsPage";
 
 function App() {
   return (
@@ -24,10 +30,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route
-          path="/forgot-password-step-2"
-          element={<ForgotPasswordStep2 />}
-        />
+        <Route path="/forgot-password-step-2" element={<ForgotPasswordStep2 />} />
 
         {/* Analysis Pages */}
         <Route path="/analysis" element={<AnalysisPageNotLoggedIn />} />
@@ -43,7 +46,7 @@ function App() {
         {/* Result Pages */}
         <Route
           path="/analysis-result-not-login"
-          element={<AnalysisResultNotloggedIn />} // ✅ Fixed usage
+          element={<AnalysisResultNotloggedIn />}
         />
         <Route
           path="/analysis-result-logged-in"
@@ -56,11 +59,14 @@ function App() {
           element={<h1 className="text-center mt-5">Upload Page</h1>}
         />
 
-        {/* ✅ New Fact-Checker Dashboard Route */}
-        <Route
-          path="/fact-checker-dashboard"
-          element={<FactCheckerDashboard />}
-        />
+        {/* Fact Checker Dashboard */}
+        <Route path="/fact-checker-dashboard" element={<FactCheckerDashboard />} />
+
+        {/* ✅ Admin Pages */}
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/users" element={<UserManagement />} />
+        <Route path="/admin/tutorials" element={<AdminTutorialPage />} />
+        <Route path="/admin/reviews" element={<AdminReviewsPage />} />
       </Routes>
     </Router>
   );
