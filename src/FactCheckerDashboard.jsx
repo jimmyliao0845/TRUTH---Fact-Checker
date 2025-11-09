@@ -3,20 +3,79 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaBars, FaSearch, FaFileAlt, FaCheckCircle, FaBook, FaBrain, FaVideo, FaInfoCircle } from "react-icons/fa";
+import {
+  FaBars,
+  FaTachometerAlt,
+  FaPlusCircle,
+  FaEdit,
+  FaChartBar,
+  FaUsers,
+  FaCommentDots,
+  FaClipboardList,
+  FaUserCog,
+} from "react-icons/fa";
+import { Line, Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import "./FactCheckerDashboard.css";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function FactCheckerDashboard() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
-  // ✅ Auth Check
+  // ✅ Auth check
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) navigate("/login");
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // ✅ Dummy chart data
+  const userGrowthData = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    datasets: [
+      {
+        label: "Users",
+        data: [120, 200, 300, 450, 600, 750],
+        borderColor: "#007bff",
+        backgroundColor: "rgba(0,123,255,0.2)",
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const reviewData = {
+    labels: ["Positive", "Neutral", "Negative"],
+    datasets: [
+      {
+        label: "Reviews",
+        data: [85, 10, 5],
+        backgroundColor: ["#28a745", "#ffc107", "#dc3545"],
+      },
+    ],
+  };
 
   // ✅ Smooth scroll
   const scrollToSection = (id) => {
@@ -25,7 +84,7 @@ export default function FactCheckerDashboard() {
   };
 
   return (
-    <div className="d-flex" style={{ height: "100vh", backgroundColor: "#f8f9fa" }}>
+    <div className="d-flex" style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}>
       {/* Sidebar */}
       <div
         className="d-flex flex-column p-3 border-end"
@@ -33,13 +92,14 @@ export default function FactCheckerDashboard() {
           width: collapsed ? "80px" : "250px",
           backgroundColor: "#d9d9d9",
           transition: "width 0.3s ease",
+          height: "calc(100vh - 56px)",
           position: "fixed",
-          height: "100vh",
+          top: "56px",
+          left: 0,
+          overflowY: "auto",
         }}
       >
-        {/* Sidebar Header */}
         <div className="d-flex align-items-center justify-content-between mb-3">
-          
           <button
             className="btn btn-outline-dark btn-sm"
             onClick={() => setCollapsed(!collapsed)}
@@ -49,15 +109,15 @@ export default function FactCheckerDashboard() {
           </button>
         </div>
 
-        {/* Sidebar Buttons */}
+        {/* ✅ Updated Sidebar Menu */}
         <ul className="nav flex-column">
           <li>
             <button
               className="btn sidebar-btn text-start"
               onClick={() => scrollToSection("search")}
             >
-              <FaSearch className="me-2" />
-              {!collapsed && "Advanced Search & Claim Extraction"}
+              <FaTachometerAlt className="me-2" />
+              {!collapsed && "Dashboard"}
             </button>
           </li>
           <li>
@@ -65,8 +125,8 @@ export default function FactCheckerDashboard() {
               className="btn sidebar-btn text-start"
               onClick={() => scrollToSection("semantic")}
             >
-              <FaCheckCircle className="me-2" />
-              {!collapsed && "Semantic Fact Checking"}
+              <FaPlusCircle className="me-2" />
+              {!collapsed && "Create Tutorial"}
             </button>
           </li>
           <li>
@@ -74,8 +134,8 @@ export default function FactCheckerDashboard() {
               className="btn sidebar-btn text-start"
               onClick={() => scrollToSection("citation")}
             >
-              <FaBook className="me-2" />
-              {!collapsed && "Citation Generator"}
+              <FaEdit className="me-2" />
+              {!collapsed && "Manage Tutorial"}
             </button>
           </li>
           <li>
@@ -83,8 +143,8 @@ export default function FactCheckerDashboard() {
               className="btn sidebar-btn text-start"
               onClick={() => scrollToSection("report")}
             >
-              <FaBrain className="me-2" />
-              {!collapsed && "AI-Assisted Report Builder"}
+              <FaChartBar className="me-2" />
+              {!collapsed && "Organized Reports"}
             </button>
           </li>
           <li>
@@ -92,17 +152,35 @@ export default function FactCheckerDashboard() {
               className="btn sidebar-btn text-start"
               onClick={() => scrollToSection("deepfake")}
             >
-              <FaVideo className="me-2" />
-              {!collapsed && "Deepfake Detection Tools"}
+              <FaUsers className="me-2" />
+              {!collapsed && "Linked Users"}
             </button>
           </li>
           <li>
             <button
               className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("metadata")}
+              onClick={() => scrollToSection("feedback")}
             >
-              <FaInfoCircle className="me-2" />
-              {!collapsed && "Metadata & Provenance Analysis"}
+              <FaCommentDots className="me-2" />
+              {!collapsed && "User Feedback"}
+            </button>
+          </li>
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => scrollToSection("logs")}
+            >
+              <FaClipboardList className="me-2" />
+              {!collapsed && "Verification Data Logs"}
+            </button>
+          </li>
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => scrollToSection("profile")}
+            >
+              <FaUserCog className="me-2" />
+              {!collapsed && "Profile Settings"}
             </button>
           </li>
         </ul>
@@ -114,44 +192,95 @@ export default function FactCheckerDashboard() {
         )}
       </div>
 
-      {/* Main Content */}
+      {/* ✅ Main Content */}
       <div
-        className="flex-grow-1 overflow-auto p-4"
+        className="flex-grow-1"
         style={{
           marginLeft: collapsed ? "80px" : "250px",
           transition: "margin-left 0.3s ease",
-          backgroundColor: "#fff",
+          minHeight: "100vh",
         }}
       >
-        <section id="search" className="mb-5">
-          <h3>🔍 Advanced Search & Claim Extraction</h3>
-          <p>Extract factual statements from uploaded documents and online sources.</p>
-        </section>
+        {/* ✅ Local Navbar (Only Notification Bell) */}
+        <nav
+          className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1000,
+            borderBottom: "1px solid #ddd",
+          }}
+        >
+          {/* Notification Bell */}
+          <div className="dropdown">
+            <i
+              className="bi bi-bell fs-5 text-dark"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style={{ cursor: "pointer" }}
+            ></i>
+            <ul
+              className="dropdown-menu dropdown-menu-end p-2 shadow-lg"
+              style={{
+                backgroundColor: "#fff",
+                borderRadius: "10px",
+                border: "1px solid #ddd",
+                minWidth: "250px",
+              }}
+            >
+              <li className="fw-bold text-dark px-2">Notifications</li>
+              <li><hr className="dropdown-divider" /></li>
+              <li>
+                <span className="dropdown-item text-muted">
+                  No new notifications
+                </span>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-        <section id="semantic" className="mb-5">
-          <h3>✅ Semantic Fact Checking</h3>
-          <p>Cross-verify claims using trusted databases and verified news sources.</p>
-        </section>
+        {/* ✅ Main Dashboard Content */}
+        <div className="container-fluid py-4 px-5" id="search">
+          <h2 className="fw-bold mb-4 text-dark">Dashboard Overview</h2>
 
-        <section id="citation" className="mb-5">
-          <h3>📚 Citation Generator</h3>
-          <p>Automatically generate citations from verified sources for each claim.</p>
-        </section>
+          {/* Stats Summary */}
+          <div className="row mb-4">
+            <div className="col-md-4">
+              <div className="card shadow-sm p-3 border-0 text-center">
+                <h6 className="text-muted">Total Users</h6>
+                <h3 className="fw-bold text-primary">1,200</h3>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="card shadow-sm p-3 border-0 text-center">
+                <h6 className="text-muted">Active Users</h6>
+                <h3 className="fw-bold text-success">870</h3>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="card shadow-sm p-3 border-0 text-center">
+                <h6 className="text-muted">New Users This Month</h6>
+                <h3 className="fw-bold text-info">145</h3>
+              </div>
+            </div>
+          </div>
 
-        <section id="report" className="mb-5">
-          <h3>🧠 AI-Assisted Report Builder</h3>
-          <p>Compile fact-check reports automatically with structured evidence.</p>
-        </section>
-
-        <section id="deepfake" className="mb-5">
-          <h3>🎥 Deepfake Detection Tools</h3>
-          <p>Analyze videos and images to verify authenticity and detect manipulation.</p>
-        </section>
-
-        <section id="metadata" className="mb-5">
-          <h3>🧾 Metadata & Provenance Analysis</h3>
-          <p>Inspect file metadata and digital provenance for reliability assessment.</p>
-        </section>
+          {/* ✅ Graphs stay intact */}
+          <div className="row">
+            <div className="col-md-6 mb-4">
+              <div className="card shadow-sm p-3 border-0">
+                <h6 className="text-muted mb-3 text-center">User Growth</h6>
+                <Line data={userGrowthData} />
+              </div>
+            </div>
+            <div className="col-md-6 mb-4">
+              <div className="card shadow-sm p-3 border-0">
+                <h6 className="text-muted mb-3 text-center">Review Statistics</h6>
+                <Bar data={reviewData} />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Sidebar Button Styles */}
