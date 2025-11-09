@@ -27,7 +27,16 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-custom position-relative px-3">
+    <nav 
+      className="navbar navbar-expand-lg navbar-dark bg-custom px-3"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1050,
+      }}
+    >
       <div className="container-fluid d-flex align-items-center justify-content-between">
         {/* Left: Brand */}
         <Link className="navbar-brand fw-bold" to="/">

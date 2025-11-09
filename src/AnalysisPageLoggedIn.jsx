@@ -164,7 +164,7 @@ export default function AnalysisPageLoggedIn() {
   };
 
   return (
-    <div className="d-flex">
+    <div className="d-flex" style={{ paddingTop: "56px" }}>
       {/* Sidebar */}
       
       <div className="analysis-sidebar d-flex flex-column align-items-center justify-content-start p-3">

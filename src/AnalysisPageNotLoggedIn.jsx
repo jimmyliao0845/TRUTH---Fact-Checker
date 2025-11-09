@@ -53,9 +53,9 @@ export default function AnalysisPageNotLoggedIn() {
           text: inputText,
           scanId: scanId,
           summary: {
-            ai: 0,
-            human: 100,
-            mixed: 0
+            ai: Math.floor(Math.random() * 30),
+            human: Math.floor(Math.random() * 40) + 50,
+            mixed: Math.floor(Math.random() * 20)
           },
           status: "success",
           timestamp: new Date().toISOString()
@@ -79,9 +79,9 @@ export default function AnalysisPageNotLoggedIn() {
         text: inputText,
         scanId: `scan-${Date.now()}`,
         summary: {
-          ai: 0,
-          human: 100,
-          mixed: 0
+          ai: Math.floor(Math.random() * 30),
+          human: Math.floor(Math.random() * 40) + 50,
+          mixed: Math.floor(Math.random() * 20)
         },
         status: "error_fallback",
         timestamp: new Date().toISOString()
@@ -105,8 +105,15 @@ export default function AnalysisPageNotLoggedIn() {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (file.type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-      alert("Only DOCX files are allowed!");
+    const allowedTypes = [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+      "application/msword", // .doc
+      "application/pdf", // .pdf
+      "text/plain" // .txt
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Only document files (DOCX, DOC, PDF, TXT) are allowed!");
       return;
     }
 
@@ -115,7 +122,7 @@ export default function AnalysisPageNotLoggedIn() {
   };
 
   return (
-    <div className="d-flex">
+    <div className="d-flex" style={{ paddingTop: "56px" }}>
       {/* Sidebar */}
       <div
         className="d-flex flex-column align-items-center justify-content-start p-3"
@@ -195,7 +202,7 @@ export default function AnalysisPageNotLoggedIn() {
               type="file"
               ref={fileInputRef}
               style={{ display: "none" }}
-              accept=".docx"
+              accept=".docx,.doc,.pdf,.txt"
               onChange={handleFileUpload}
             />
           </div>

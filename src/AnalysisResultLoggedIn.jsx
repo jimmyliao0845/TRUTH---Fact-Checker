@@ -35,10 +35,34 @@ export default function AnalysisResultLoggedIn() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Auto-analyze on mount if there's input without existing result
+  // Check for valid data on mount and clear if invalid (page refresh scenario)
   useEffect(() => {
-    if (!existingResult && (textInput || fileName)) {
+    // If we have a file preview but it's a blob URL, it will be invalid after refresh
+    if (filePreview && filePreview.startsWith('blob:')) {
+      // Try to check if blob is still valid
+      fetch(filePreview)
+        .then(() => {
+          // Blob is valid, proceed with analysis if needed
+          if (!existingResult && fileName && filePreview) {
+            handleInitialAnalysis();
+          }
+        })
+        .catch(() => {
+          // Blob is invalid (page was refreshed), clear everything
+          console.log("🔄 Page refreshed - clearing stale data");
+          setDisplayText("");
+          setDisplayPreview("");
+          setDisplayFileName("");
+          setDisplayFileType("");
+          setAnalysisResult(null);
+        });
+    } else if (!existingResult && fileName && filePreview) {
+      // Non-blob preview or regular navigation
       handleInitialAnalysis();
+    } else if (!filePreview && !textInput && existingResult) {
+      // Page refresh scenario: result exists but no valid input
+      console.log("🔄 Page refreshed - clearing orphaned results");
+      setAnalysisResult(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -150,12 +174,13 @@ export default function AnalysisResultLoggedIn() {
     // Create preview URL
     const preview = URL.createObjectURL(file);
     
-    // Update display
+    // Update display and RESET analysis result
     setDisplayText("");
     setDisplayPreview(preview);
     setDisplayFileName(file.name);
     setDisplayFileType(file.type);
     setCurrentInput("");
+    setAnalysisResult(null); // Reset the previous analysis
 
     // Analyze based on file type
     if (file.type.startsWith("image/")) {
@@ -264,7 +289,7 @@ export default function AnalysisResultLoggedIn() {
   const percentages = getAnalysisPercentages();
 
   return (
-    <div className="d-flex">
+    <div className="d-flex" style={{ paddingTop: "56px" }}>
       {/* Sidebar */}
       <div className="analysis-sidebar d-flex flex-column align-items-center justify-content-start p-3">
         <div className="mb-4">
