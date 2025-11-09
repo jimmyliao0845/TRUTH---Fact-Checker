@@ -84,7 +84,7 @@ export default function FactCheckerDashboard() {
   };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ backgroundColor: "#f8f9fa" }}>
       {/* Sidebar */}
       <div
         className="d-flex flex-column p-3 border-end"
@@ -92,11 +92,8 @@ export default function FactCheckerDashboard() {
           width: collapsed ? "80px" : "250px",
           backgroundColor: "#d9d9d9",
           transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
+          minHeight: "100vh",
           position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
