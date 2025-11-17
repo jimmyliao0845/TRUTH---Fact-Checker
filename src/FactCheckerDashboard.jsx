@@ -84,7 +84,10 @@ export default function FactCheckerDashboard() {
   };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}>
+    <div
+      className="d-flex"
+      style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}
+    >
       {/* Sidebar */}
       <div
         className="d-flex flex-column p-3 border-end"
@@ -109,7 +112,7 @@ export default function FactCheckerDashboard() {
           </button>
         </div>
 
-        {/* ✅ Updated Sidebar Menu */}
+        {/* ✅ Sidebar Menu */}
         <ul className="nav flex-column">
           <li>
             <button
@@ -121,10 +124,7 @@ export default function FactCheckerDashboard() {
             </button>
           </li>
           <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("semantic")}
-            >
+            <button className="btn sidebar-btn text-start">
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
             </button>
@@ -132,7 +132,7 @@ export default function FactCheckerDashboard() {
           <li>
             <button
               className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("citation")}
+              onClick={() => scrollToSection("semantic")}
             >
               <FaEdit className="me-2" />
               {!collapsed && "Manage Tutorial"}
@@ -201,7 +201,7 @@ export default function FactCheckerDashboard() {
           minHeight: "100vh",
         }}
       >
-        {/* ✅ Local Navbar (Only Notification Bell) */}
+        {/* ✅ Navbar */}
         <nav
           className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
           style={{
@@ -211,7 +211,6 @@ export default function FactCheckerDashboard() {
             borderBottom: "1px solid #ddd",
           }}
         >
-          {/* Notification Bell */}
           <div className="dropdown">
             <i
               className="bi bi-bell fs-5 text-dark"
@@ -229,7 +228,9 @@ export default function FactCheckerDashboard() {
               }}
             >
               <li className="fw-bold text-dark px-2">Notifications</li>
-              <li><hr className="dropdown-divider" /></li>
+              <li>
+                <hr className="dropdown-divider" />
+              </li>
               <li>
                 <span className="dropdown-item text-muted">
                   No new notifications
@@ -239,11 +240,10 @@ export default function FactCheckerDashboard() {
           </div>
         </nav>
 
-        {/* ✅ Main Dashboard Content */}
+        {/* ✅ Dashboard Overview */}
         <div className="container-fluid py-4 px-5" id="search">
           <h2 className="fw-bold mb-4 text-dark">Dashboard Overview</h2>
 
-          {/* Stats Summary */}
           <div className="row mb-4">
             <div className="col-md-4">
               <div className="card shadow-sm p-3 border-0 text-center">
@@ -265,7 +265,6 @@ export default function FactCheckerDashboard() {
             </div>
           </div>
 
-          {/* ✅ Graphs stay intact */}
           <div className="row">
             <div className="col-md-6 mb-4">
               <div className="card shadow-sm p-3 border-0">
@@ -277,6 +276,166 @@ export default function FactCheckerDashboard() {
               <div className="card shadow-sm p-3 border-0">
                 <h6 className="text-muted mb-3 text-center">Review Statistics</h6>
                 <Bar data={reviewData} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ✅ Manage Tutorial Section */}
+        <div
+          id="semantic"
+          className="container-fluid py-5 px-5"
+          style={{ minHeight: "100vh", backgroundColor: "#fff" }}
+        >
+          <h2 className="fw-bold mb-4 text-dark">Manage Tutorial</h2>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h6 className="text-muted">Sort by:</h6>
+            <select className="form-select w-auto">
+              <option>Recent Activity</option>
+              <option>Date Created</option>
+              <option>Most Viewed</option>
+            </select>
+          </div>
+
+          <div
+            className="table-responsive border rounded shadow-sm"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
+            <table className="table table-striped mb-0 text-center align-middle">
+              <thead className="table-dark">
+                <tr>
+                  <th>Tutorial Title</th>
+                  <th>Views</th>
+                  <th>Date Created</th>
+                  <th>Recent Status</th>
+                  <th>Edit or Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sample Title</td>
+                  <td>********</td>
+                  <td>Mon / Dy / Yr</td>
+                  <td>********</td>
+                  <td>
+                    <button
+                      className="btn btn-outline-primary btn-sm me-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editTutorialModal"
+                    >
+                      <i className="bi bi-pencil"></i>
+                    </button>
+                    <button className="btn btn-outline-danger btn-sm">
+                      <i className="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* ✅ Edit Tutorial Modal */}
+        <div
+          className="modal fade"
+          id="editTutorialModal"
+          tabIndex="-1"
+          aria-labelledby="editTutorialModalLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content">
+              <div className="modal-header bg-light">
+                <h5 className="modal-title fw-bold" id="editTutorialModalLabel">
+                  Edit Tutorial
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">
+                    Tutorial Title
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value="Sample Title"
+                    readOnly
+                  />
+                </div>
+
+                <div className="table-responsive">
+                  <table className="table table-bordered align-middle text-center">
+                    <thead className="table-light">
+                      <tr>
+                        <th>Item no.</th>
+                        <th>Image / Video</th>
+                        <th>Image / Video (with pointers)</th>
+                        <th>Remarks</th>
+                        <th>Hints or Tips</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td>
+                          <div className="d-flex justify-content-center align-items-center gap-2">
+                            <button className="btn btn-outline-secondary btn-sm">
+                              <i className="bi bi-pencil"></i>
+                            </button>
+                            <button className="btn btn-outline-danger btn-sm">
+                              <i className="bi bi-trash"></i>
+                            </button>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="border rounded p-2 bg-light small">
+                            Sample image (program logic)
+                          </div>
+                        </td>
+                        <td>
+                          <textarea
+                            className="form-control"
+                            rows="2"
+                            placeholder="Remarks..."
+                          ></textarea>
+                        </td>
+                        <td>
+                          <textarea
+                            className="form-control"
+                            rows="2"
+                            placeholder="Hints or Tips..."
+                          ></textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>2</td>
+                        <td colSpan="4" className="text-center">
+                          <button className="btn btn-outline-primary btn-sm">
+                            <i className="bi bi-plus-lg"></i> Add Item
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
+                <button type="button" className="btn btn-primary">
+                  Save Changes
+                </button>
               </div>
             </div>
           </div>
