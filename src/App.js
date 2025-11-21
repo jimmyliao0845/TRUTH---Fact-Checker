@@ -1,5 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
+import LoadingScreen from "./LoadingScreen";
 import HomePage from "./HomePage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
@@ -18,9 +20,26 @@ import UserManagement from "./UserManagement";
 import AdminTutorialPage from "./AdminTutorialPage";
 import AdminReviewsPage from "./AdminReviewsPage";
 
-function App() {
+// Component to handle loading state on route changes
+function AppContent() {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Show loading screen when route changes
+    setLoading(true);
+
+    // Hide loading screen after a short delay
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 500); // 500ms loading time 
+
+    return () => clearTimeout(timer);
+  }, [location.pathname]); // Triggers when route changes
+
   return (
-    <Router>
+    <>
+      {loading && <LoadingScreen />}
       <Navbar />
       <Routes>
         {/* Home */}
@@ -68,6 +87,14 @@ function App() {
         <Route path="/admin/tutorials" element={<AdminTutorialPage />} />
         <Route path="/admin/reviews" element={<AdminReviewsPage />} />
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

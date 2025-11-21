@@ -10,6 +10,9 @@ export default function AnalysisPageNotLoggedIn() {
   const fileInputRef = useRef(null);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [displayedText, setDisplayedText] = useState("");
+  const [showLogo, setShowLogo] = useState(false);
+  const [showTruth, setShowTruth] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -19,6 +22,28 @@ export default function AnalysisPageNotLoggedIn() {
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Typewriter effect
+  useEffect(() => {
+    const text = "Analyze with ";
+    let currentIndex = 0;
+
+    const typeInterval = setInterval(() => {
+      if (currentIndex <= text.length) {
+        setDisplayedText(text.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(typeInterval);
+        // Show logo and T.R.U.T.H after typing is complete
+        setTimeout(() => {
+          setShowLogo(true);
+          setTimeout(() => setShowTruth(true), 200);
+        }, 300);
+      }
+    }, 80); // Typing speed (80ms per character)
+
+    return () => clearInterval(typeInterval);
+  }, []);
 
   // Handle text submission
   const handleSubmit = async () => {
@@ -159,8 +184,31 @@ export default function AnalysisPageNotLoggedIn() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
-        <h1 className="fw-bold mb-4 text-center">Analyze With T.R.U.T.H.</h1>
+      <div 
+        className="flex-grow-1 d-flex flex-column align-items-center justify-content-center"
+        style={{ minHeight: "calc(100vh - 56px)" }}
+      >
+        <div className="text-center mb-4" style={{ minHeight: "60px" }}>
+          <h1 className="fw-bold d-inline-flex align-items-center justify-content-center gap-2">
+            <span>{displayedText}</span>
+            {showLogo && (
+              <img 
+                src="/assets/digima_logo.svg" 
+                alt="T.R.U.T.H Logo" 
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  animation: "fadeIn 0.5s ease-in"
+                }}
+              />
+            )}
+            {showTruth && (
+              <span style={{ animation: "fadeIn 0.5s ease-in" }}>
+                T.R.U.T.H
+              </span>
+            )}
+          </h1>
+        </div>
 
         <div
           className="bg-light p-4 rounded shadow-sm"
@@ -208,6 +256,22 @@ export default function AnalysisPageNotLoggedIn() {
           </div>
         </div>
       </div>
+
+      {/* CSS for animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(-10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }

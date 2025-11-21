@@ -4,11 +4,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./analysis.css";
+import { FaBars } from "react-icons/fa";
 
 export default function AnalysisResultLoggedIn() {
   const navigate = useNavigate();
   const location = useLocation();
   const fileInputRef = useRef(null);
+  const [collapsed, setCollapsed] = useState(false);
   
   // Get data from location state
   const textInput = location.state?.textInput || "";
@@ -291,16 +293,40 @@ export default function AnalysisResultLoggedIn() {
   return (
     <div className="d-flex" style={{ paddingTop: "56px" }}>
       {/* Sidebar */}
-      <div className="analysis-sidebar d-flex flex-column align-items-center justify-content-start p-3">
-        <div className="mb-4">
-          <a href="/">
-            <img src="/assets/digima_logo.svg" width="50" alt="home" />
-          </a>
+      <div 
+        className="d-flex flex-column p-3 border-end"
+        style={{
+          width: collapsed ? "80px" : "200px",
+          backgroundColor: "#8c8c8c",
+          transition: "width 0.3s ease",
+          height: "calc(100vh - 56px)",
+          position: "fixed",
+          top: "56px",
+          left: 0,
+          overflowY: "auto",
+        }}
+      >
+        <div className="d-flex align-items-center justify-content-between mb-3">
+          <button
+            className="btn btn-outline-light btn-sm"
+            onClick={() => setCollapsed(!collapsed)}
+            style={{ border: "none" }}
+          >
+            <FaBars />
+          </button>
         </div>
-        <div className="white-box p-3 mt-3"></div>
+
+        {/* White Box */}
+        {!collapsed && <div className="white-box p-3 mt-3"></div>}
       </div>
 
-      <div className="main-content flex-grow-1 bg-light text-dark p-4 position-relative">
+      <div 
+        className="main-content flex-grow-1 bg-light text-dark p-4 position-relative"
+        style={{
+          marginLeft: collapsed ? "80px" : "200px",
+          transition: "margin-left 0.3s ease",
+        }}
+      >
         {/* Title */}
         <h4 className="fw-bold text-center mb-4">Talk With T.R.U.T.H</h4>
 

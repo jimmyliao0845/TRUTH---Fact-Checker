@@ -4,12 +4,17 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./analysis.css";
+import { FaBars } from "react-icons/fa";
 
 export default function AnalysisPageLoggedIn() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [displayedText, setDisplayedText] = useState("");
+  const [showLogo, setShowLogo] = useState(false);
+  const [showTruth, setShowTruth] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -19,6 +24,28 @@ export default function AnalysisPageLoggedIn() {
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Typewriter effect
+  useEffect(() => {
+    const text = "Analyze with ";
+    let currentIndex = 0;
+
+    const typeInterval = setInterval(() => {
+      if (currentIndex <= text.length) {
+        setDisplayedText(text.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(typeInterval);
+        // Show logo and T.R.U.T.H after typing is complete
+        setTimeout(() => {
+          setShowLogo(true);
+          setTimeout(() => setShowTruth(true), 200);
+        }, 300);
+      }
+    }, 80); // Typing speed (80ms per character)
+
+    return () => clearInterval(typeInterval);
+  }, []);
 
   // Handle text submission with API
   const handleSubmit = async () => {
@@ -166,20 +193,63 @@ export default function AnalysisPageLoggedIn() {
   return (
     <div className="d-flex" style={{ paddingTop: "56px" }}>
       {/* Sidebar */}
-      
-      <div className="analysis-sidebar d-flex flex-column align-items-center justify-content-start p-3">
-        <div className="mb-4">
-          <a href="/">
-            <img src="/assets/digima_logo.svg" width="50" alt="home" />
-          </a>
+      <div 
+        className="d-flex flex-column p-3 border-end"
+        style={{
+          width: collapsed ? "80px" : "200px",
+          backgroundColor: "#8c8c8c",
+          transition: "width 0.3s ease",
+          height: "calc(100vh - 56px)",
+          position: "fixed",
+          top: "56px",
+          left: 0,
+          overflowY: "auto",
+        }}
+      >
+        <div className="d-flex align-items-center justify-content-between mb-3">
+          <button
+            className="btn btn-outline-light btn-sm"
+            onClick={() => setCollapsed(!collapsed)}
+            style={{ border: "none" }}
+          >
+            <FaBars />
+          </button>
         </div>
-        <div className="white-box p-3 mt-3">
-        </div>
+
+        {/* White Box */}
+        {!collapsed && <div className="white-box p-3 mt-3"></div>}
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
-        <h1 className="fw-bold mb-4 text-center">Analyze With T.R.U.T.H.</h1>
+      <div 
+        className="flex-grow-1 d-flex flex-column align-items-center justify-content-center"
+        style={{
+          marginLeft: collapsed ? "80px" : "200px",
+          transition: "margin-left 0.3s ease",
+          minHeight: "calc(100vh - 56px)",
+        }}
+      >
+        <div className="text-center mb-4" style={{ minHeight: "60px" }}>
+          <h1 className="fw-bold d-inline-flex align-items-center justify-content-center gap-2">
+            <span>{displayedText}</span>
+            {showLogo && (
+              <img 
+                src="/assets/digima_logo.svg" 
+                alt="T.R.U.T.H Logo" 
+                style={{
+                  width: "50px",
+                  height: "50px",
+                  animation: "fadeIn 0.5s ease-in"
+                }}
+              />
+            )}
+            {showTruth && (
+              <span style={{ animation: "fadeIn 0.5s ease-in" }}>
+                T.R.U.T.H
+              </span>
+            )}
+          </h1>
+        </div>
 
         <div
           className="bg-light p-4 rounded shadow-sm"
@@ -228,6 +298,22 @@ export default function AnalysisPageLoggedIn() {
           </div>
         </div>
       </div>
+
+      {/* CSS for animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(-10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 }
