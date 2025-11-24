@@ -21,20 +21,24 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointEleme
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [growthLabels, setGrowthLabels] = useState([]);
+  const [growthValues, setGrowthValues] = useState([]);
+  const [newUsersMonth, setNewUsersMonth] = useState(0);
 
   const userGrowthData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: [
-      {
-        label: "New Users",
-        data: [80, 120, 150, 180, 200, 240],
-        borderColor: "#007bff",
-        backgroundColor: "rgba(0,123,255,0.2)",
-        tension: 0.3,
-        fill: true,
-      },
-    ],
-  };
+  labels: growthLabels,
+  datasets: [
+    {
+      label: "New Users",
+      data: growthValues,
+      borderColor: "#007bff",
+      backgroundColor: "rgba(0,123,255,0.2)",
+      tension: 0.3,
+      fill: true,
+    },
+  ],
+};
+
 
   const reviewData = {
     labels: ["Positive", "Negative", "Neutral"],
@@ -52,16 +56,61 @@ export default function AdminDashboard() {
     try {
       const q = query(collection(db, "users"), orderBy("created_at", "desc"));
       const snapshot = await getDocs(q);
+  
       const userList = [];
-      snapshot.forEach((doc) => {
-        userList.push({ id: doc.id, ...doc.data() });
-      });
+      snapshot.forEach((doc) => userList.push({ id: doc.id, ...doc.data() }));
+  
       setUsers(userList);
       setLoading(false);
+  
+      // ===== ANALYTICS CALCULATION =====
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
+  
+      const growthMap = new Map();
+  
+      // Pre-fill last 6 months
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date();
+        d.setMonth(d.getMonth() - i);
+  
+        const key = d.toLocaleString("default", {
+          month: "short",
+          year: "numeric",
+        });
+  
+        growthMap.set(key, 0);
+      }
+  
+      let newMonthCount = 0;
+  
+      userList.forEach((u) => {
+        const created = new Date(u.created_at);
+  
+        const key = created.toLocaleString("default", {
+          month: "short",
+          year: "numeric",
+        });
+  
+        if (growthMap.has(key)) {
+          growthMap.set(key, growthMap.get(key) + 1);
+        }
+  
+        if (created.getMonth() === month && created.getFullYear() === year) {
+          newMonthCount++;
+        }
+      });
+  
+      setGrowthLabels([...growthMap.keys()]);
+      setGrowthValues([...growthMap.values()]);
+      setNewUsersMonth(newMonthCount);
+  
     } catch (err) {
       console.error("Failed to fetch users:", err);
     }
   };
+
 
   useEffect(() => {
     fetchUsers();
@@ -131,13 +180,13 @@ export default function AdminDashboard() {
           <div className="col-md-4">
             <div className="card shadow-sm p-3 border-0 text-center">
               <h6 className="text-muted">Active Users</h6>
-              <h3 className="fw-bold text-success">{Math.floor(users.length * 0.7)}</h3>
+              <h3 className="fw-bold text-success">{newUsersMonth}</h3>
             </div>
           </div>
           <div className="col-md-4">
             <div className="card shadow-sm p-3 border-0 text-center">
               <h6 className="text-muted">New Users This Month</h6>
-              <h3 className="fw-bold text-info">{Math.floor(users.length * 0.15)}</h3>
+              <h3 className="fw-bold text-info">{newUsersMonth}</h3>
             </div>
           </div>
         </div>
