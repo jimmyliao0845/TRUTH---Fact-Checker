@@ -50,12 +50,15 @@ export default function FactCheckerDashboard() {
 
   const [collapsed, setCollapsed] = useState(false);
 
+<<<<<<< HEAD
   // 🔥 Firestore user metrics
   const [totalUsers, setTotalUsers] = useState(0);
   const [activeUsers, setActiveUsers] = useState(0);
   const [newUsersMonth, setNewUsersMonth] = useState(0);
 
   // ✓ Auth check
+=======
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) navigate("/login");
@@ -63,6 +66,7 @@ export default function FactCheckerDashboard() {
     return () => unsubscribe();
   }, [navigate]);
 
+<<<<<<< HEAD
   // 🔥 Fetch Firestore user analytics
   useEffect(() => {
     const loadUsers = async () => {
@@ -103,6 +107,8 @@ export default function FactCheckerDashboard() {
   }, [db]);
 
   // Dummy charts (unchanged)
+=======
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
   const userGrowthData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
     datasets: [
@@ -138,7 +144,7 @@ export default function FactCheckerDashboard() {
       className="d-flex"
       style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}
     >
-      {/* Sidebar */}
+      {/* SIDEBAR */}
       <div
         className="d-flex flex-column p-3 border-end"
         style={{
@@ -162,7 +168,10 @@ export default function FactCheckerDashboard() {
           </button>
         </div>
 
+<<<<<<< HEAD
         {/* Sidebar Menu */}
+=======
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
         <ul className="nav flex-column">
           <li>
             <button
@@ -201,10 +210,14 @@ export default function FactCheckerDashboard() {
             </button>
           </li>
 
+<<<<<<< HEAD
+=======
+          {/* 🔥 LINKED USERS BUTTON */}
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
           <li>
             <button
               className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("deepfake")}
+              onClick={() => scrollToSection("linked-users")}
             >
               <FaUsers className="me-2" />
               {!collapsed && "Linked Users"}
@@ -227,7 +240,7 @@ export default function FactCheckerDashboard() {
               onClick={() => scrollToSection("logs")}
             >
               <FaClipboardList className="me-2" />
-              {!collapsed && "Verification Data Logs"}
+              {!collapsed && "Verification Logs"}
             </button>
           </li>
 
@@ -249,7 +262,11 @@ export default function FactCheckerDashboard() {
         )}
       </div>
 
+<<<<<<< HEAD
       {/* Main Content */}
+=======
+      {/* MAIN CONTENT */}
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
       <div
         className="flex-grow-1"
         style={{
@@ -258,7 +275,11 @@ export default function FactCheckerDashboard() {
           minHeight: "100vh",
         }}
       >
+<<<<<<< HEAD
         {/* Navbar */}
+=======
+        {/* NAVBAR */}
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
         <nav
           className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
           style={{
@@ -272,18 +293,9 @@ export default function FactCheckerDashboard() {
             <i
               className="bi bi-bell fs-5 text-dark"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
               style={{ cursor: "pointer" }}
             ></i>
-            <ul
-              className="dropdown-menu dropdown-menu-end p-2 shadow-lg"
-              style={{
-                backgroundColor: "#fff",
-                borderRadius: "10px",
-                border: "1px solid #ddd",
-                minWidth: "250px",
-              }}
-            >
+            <ul className="dropdown-menu dropdown-menu-end p-2 shadow-lg">
               <li className="fw-bold text-dark px-2">Notifications</li>
               <li>
                 <hr className="dropdown-divider" />
@@ -297,10 +309,17 @@ export default function FactCheckerDashboard() {
           </div>
         </nav>
 
+<<<<<<< HEAD
         {/* Dashboard Overview */}
+=======
+        {/* ===================== */}
+        {/* DASHBOARD OVERVIEW    */}
+        {/* ===================== */}
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
         <div className="container-fluid py-4 px-5" id="search">
           <h2 className="fw-bold mb-4 text-dark">Dashboard Overview</h2>
 
+          {/* Cards */}
           <div className="row mb-4">
             <div className="col-md-4">
               <div className="card shadow-sm p-3 border-0 text-center">
@@ -327,14 +346,18 @@ export default function FactCheckerDashboard() {
           {/* Charts */}
           <div className="row">
             <div className="col-md-6 mb-4">
-              <div className="card shadow-sm p-3 border-0">
+              <div className="card shadow-sm p-3">
                 <h6 className="text-muted mb-3 text-center">User Growth</h6>
                 <Line data={userGrowthData} />
               </div>
             </div>
 
             <div className="col-md-6 mb-4">
+<<<<<<< HEAD
               <div className="card shadow-sm p-3 border-0">
+=======
+              <div className="card shadow-sm p-3">
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
                 <h6 className="text-muted mb-3 text-center">
                   Review Statistics
                 </h6>
@@ -344,11 +367,132 @@ export default function FactCheckerDashboard() {
           </div>
         </div>
 
+<<<<<<< HEAD
         {/* The rest of your file is unchanged */}
         {/* Manage Tutorial, Modals, Styling */}
+=======
+        {/* ====================== */}
+        {/* MANAGE TUTORIAL        */}
+        {/* ====================== */}
+        <div
+          id="semantic"
+          className="container-fluid py-5 px-5"
+          style={{ minHeight: "100vh", backgroundColor: "#fff" }}
+        >
+          <h2 className="fw-bold mb-4 text-dark">Manage Tutorial</h2>
+
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h6 className="text-muted">Sort by:</h6>
+            <select className="form-select w-auto">
+              <option>Recent Activity</option>
+              <option>Date Created</option>
+              <option>Most Viewed</option>
+            </select>
+          </div>
+
+          <div
+            className="table-responsive border rounded shadow-sm"
+            style={{ maxHeight: "400px", overflowY: "auto" }}
+          >
+            <table className="table table-striped mb-0 text-center align-middle">
+              <thead className="table-dark">
+                <tr>
+                  <th>Tutorial Title</th>
+                  <th>Views</th>
+                  <th>Date Created</th>
+                  <th>Recent Status</th>
+                  <th>Edit or Delete</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>Sample Title</td>
+                  <td>********</td>
+                  <td>Mon / Dy / Yr</td>
+                  <td>********</td>
+                  <td>
+                    <button
+                      className="btn btn-outline-primary btn-sm me-2"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editTutorialModal"
+                    >
+                      <i className="bi bi-pencil"></i>
+                    </button>
+                    <button className="btn btn-outline-danger btn-sm">
+                      <i className="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* ====================== */}
+        {/* 🔥 LINKED USERS SECTION */}
+        {/* ====================== */}
+        <div
+          id="linked-users"
+          className="container-fluid py-5 px-5"
+          style={{ minHeight: "100vh", backgroundColor: "#fff" }}
+        >
+          <h2 className="fw-bold mb-4 text-dark">Manage Linked User</h2>
+
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h6 className="text-muted">Sort by:</h6>
+            <select className="form-select w-auto">
+              <option>Recent Activity</option>
+              <option>Date Created</option>
+              <option>Most Active</option>
+            </select>
+          </div>
+
+          <div
+            className="table-responsive border rounded shadow-sm"
+            style={{ maxHeight: "420px", overflowY: "auto" }}
+          >
+            <table className="table table-striped mb-0 text-center align-middle">
+              <thead className="table-dark">
+                <tr>
+                  <th>User Name</th>
+                  <th>No. of Entries</th>
+                  <th>Date Created</th>
+                  <th>Account Status</th>
+                  <th>Unlink User</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr>
+                  <td>Sample Name</td>
+                  <td>********</td>
+                  <td>Mn / Dy / Yr</td>
+                  <td>********</td>
+                  <td>
+                    <button className="btn btn-outline-danger btn-sm rounded-circle">
+                      <i className="bi bi-x-lg"></i>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td colSpan="5" style={{ height: "60px" }}></td>
+                </tr>
+                <tr>
+                  <td colSpan="5" style={{ height: "60px" }}></td>
+                </tr>
+                <tr>
+                  <td colSpan="5" style={{ height: "60px" }}></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+>>>>>>> a4ab1f2f7a465d7be609638739dec2905e975916
       </div>
 
-      {/* Sidebar Button Styles */}
+      {/* SIDEBAR HOVER CSS */}
       <style>
         {`
           .sidebar-btn {
