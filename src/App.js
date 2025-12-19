@@ -16,7 +16,7 @@ import FactCheckerDashboard from "./FactCheckerDashboard";
 
 // ✅ Admin Pages
 import AdminDashboard from "./AdminDashboard";
-import UserManagement from "./UserManagement";
+import AdminUsers from "./AdminUsers"; // updated import
 import AdminTutorialPage from "./AdminTutorialPage";
 import AdminReviewsPage from "./AdminReviewsPage";
 
@@ -83,7 +83,7 @@ function AppContent() {
 
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/users" element={<UserManagement />} />
+        <Route path="/admin/users" element={<AdminUsers />} /> {/* updated route */}
         <Route path="/admin/tutorials" element={<AdminTutorialPage />} />
         <Route path="/admin/reviews" element={<AdminReviewsPage />} />
       </Routes>

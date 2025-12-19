@@ -28,7 +28,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div style={{ paddingTop: "56px" }}>
+    <div style={{ paddingTop: "56px", backgroundColor: "white" }}>
       {/* Hero Section */}
       <div className="hero-section" style={{
         minHeight: "calc(100vh - 56px)",
@@ -36,54 +36,71 @@ export default function HomePage() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        color: "white",
+        backgroundColor: "white",
+        color: "black",
         textAlign: "center",
-        padding: "2rem"
+        padding: "2rem",
+        position: "relative"
       }}>
-        <h1 className="display-1 fw-bold mb-3" style={{ 
-          minHeight: "120px",
-          display: "flex",
-          alignItems: "center"
-        }}>
-          {displayedText}
-          <span className="typing-cursor" style={{
-            animation: "blink 1s infinite",
-            marginLeft: "5px"
-          }}>|</span>
-        </h1>
-        
-        {showContent && (
-          <>
-            
-            
-            <p className="lead mb-4" style={{ 
-              animation: "fadeInUp 0.8s ease-out",
-              maxWidth: "600px"
-            }}>
-              Detect deepfakes, AI-generated text, and manipulated media with cutting-edge technology
-            </p>
-            
-            <button
-              className="btn btn-light btn-lg px-5 py-3 rounded-pill shadow"
-              onClick={() => navigate("/analysis")}
-              style={{ 
-                animation: "fadeInUp 1s ease-out",
-                fontSize: "1.2rem",
-                fontWeight: "600"
-              }}
-            >
-              Try T.R.U.T.H. Now <i className="bi bi-arrow-right ms-2"></i>
-            </button>
-          </>
-        )}
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <h1 className="display-1 fw-bold mb-3" style={{ 
+            minHeight: "120px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            letterSpacing: "0.1em",
+            color: "black"
+          }}>
+            {displayedText}
+            <span className="typing-cursor" style={{
+              animation: "blink 1s infinite",
+              marginLeft: "5px"
+            }}>|</span>
+          </h1>
+          
+          {showContent && (
+            <>
+              <p className="lead mb-4" style={{ 
+                animation: "fadeInUp 0.8s ease-out",
+                maxWidth: "600px",
+                color: "#333333"
+              }}>
+                Detect deepfakes, AI-generated text, and manipulated media with cutting-edge technology
+              </p>
+              
+              <button
+                className="btn btn-lg px-5 py-3 rounded-pill"
+                onClick={() => navigate("/analysis")}
+                style={{ 
+                  animation: "fadeInUp 1s ease-out",
+                  fontSize: "1.2rem",
+                  fontWeight: "600",
+                  backgroundColor: "black",
+                  color: "white",
+                  border: "2px solid black",
+                  transition: "all 0.3s ease"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.color = "black";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "black";
+                  e.currentTarget.style.color = "white";
+                }}
+              >
+                Try T.R.U.T.H. Now <i className="bi bi-arrow-right ms-2"></i>
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       {/* About Section */}
-      <section className="container py-5">
+      <section className="container py-5" style={{ backgroundColor: "white" }}>
         <div className="text-center mb-5">
-          <h2 className="display-4 fw-bold mb-3">About T.R.U.T.H.</h2>
-          <p className="lead text-muted" style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <h2 className="display-4 fw-bold mb-3" style={{ color: "black" }}>About T.R.U.T.H.</h2>
+          <p className="lead" style={{ maxWidth: "800px", margin: "0 auto", color: "#333333" }}>
             An AI-powered platform designed to ensure the integrity and authenticity of digital content in an era of sophisticated manipulation.
           </p>
         </div>
@@ -92,19 +109,37 @@ export default function HomePage() {
         <div className="row g-4 mt-4">
           {/* Image/Video Checker Card */}
           <div className="col-md-6">
-            <div className="card h-100 border-0 shadow-sm hover-lift" style={{ transition: "transform 0.3s ease" }}>
+            <div className="card h-100 hover-lift" 
+              style={{ 
+                transition: "all 0.3s ease",
+                backgroundColor: "white",
+                border: "2px solid black"
+              }}
+            >
               <div className="card-body p-4">
                 <div className="d-flex align-items-center mb-3">
-                  <div className="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
-                    <i className="bi bi-camera-video-fill text-primary fs-3"></i>
+                  <div className="p-3 rounded-circle me-3" style={{ 
+                    backgroundColor: "black",
+                    width: "60px",
+                    height: "60px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
+                    <i className="bi bi-camera-video-fill fs-3" style={{ color: "white" }}></i>
                   </div>
-                  <h4 className="card-title mb-0 fw-bold">Image & Video Checker</h4>
+                  <h4 className="card-title mb-0 fw-bold" style={{ color: "black" }}>Image & Video Checker</h4>
                 </div>
-                <p className="card-text text-muted">
+                <p className="card-text" style={{ color: "#333333" }}>
                   Advanced deepfake detection using state-of-the-art neural networks to identify manipulated visual content.
                 </p>
                 <div className="mt-3">
-                  <span className="badge bg-warning text-dark">
+                  <span className="badge" style={{ 
+                    backgroundColor: "black", 
+                    color: "white",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.9rem"
+                  }}>
                     <i className="bi bi-lock-fill me-1"></i> Registered Users Only
                   </span>
                 </div>
@@ -114,19 +149,37 @@ export default function HomePage() {
 
           {/* Text Checker Card */}
           <div className="col-md-6">
-            <div className="card h-100 border-0 shadow-sm hover-lift" style={{ transition: "transform 0.3s ease" }}>
+            <div className="card h-100 hover-lift" 
+              style={{ 
+                transition: "all 0.3s ease",
+                backgroundColor: "white",
+                border: "2px solid black"
+              }}
+            >
               <div className="card-body p-4">
                 <div className="d-flex align-items-center mb-3">
-                  <div className="bg-success bg-opacity-10 p-3 rounded-circle me-3">
-                    <i className="bi bi-file-text-fill text-success fs-3"></i>
+                  <div className="p-3 rounded-circle me-3" style={{ 
+                    backgroundColor: "black",
+                    width: "60px",
+                    height: "60px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}>
+                    <i className="bi bi-file-text-fill fs-3" style={{ color: "white" }}></i>
                   </div>
-                  <h4 className="card-title mb-0 fw-bold">Text Checker</h4>
+                  <h4 className="card-title mb-0 fw-bold" style={{ color: "black" }}>Text Checker</h4>
                 </div>
-                <p className="card-text text-muted">
+                <p className="card-text" style={{ color: "#333333" }}>
                   Detect AI-generated text and distinguish between human-written and machine-generated content with high accuracy.
                 </p>
                 <div className="mt-3">
-                  <span className="badge bg-success">
+                  <span className="badge" style={{ 
+                    backgroundColor: "black", 
+                    color: "white",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.9rem"
+                  }}>
                     <i className="bi bi-check-circle-fill me-1"></i> Free for All
                   </span>
                 </div>
@@ -134,24 +187,56 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
       </section>
 
       {/* CTA Section */}
-      <section className="py-5 bg-dark text-white text-center">
+      <section className="py-5 text-center" style={{ 
+        backgroundColor: "black",
+        color: "white"
+      }}>
         <div className="container">
           <h2 className="display-5 fw-bold mb-3">Ready to Verify Your Content?</h2>
-          <p className="lead mb-4"></p>
+          <p className="lead mb-4">Join thousands of users protecting digital authenticity</p>
           <div className="d-flex gap-3 justify-content-center flex-wrap">
             <button
-              className="btn btn-primary btn-lg px-5"
+              className="btn btn-lg px-5 py-3 rounded-pill"
               onClick={() => navigate("/register")}
+              style={{
+                backgroundColor: "white",
+                color: "black",
+                border: "2px solid white",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "black";
+                e.currentTarget.style.color = "white";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "white";
+                e.currentTarget.style.color = "black";
+              }}
             >
               Get Started Free
             </button>
             <button
-              className="btn btn-outline-light btn-lg px-5"
+              className="btn btn-lg px-5 py-3 rounded-pill"
               onClick={() => navigate("/analysis")}
+              style={{
+                backgroundColor: "transparent",
+                color: "white",
+                border: "2px solid white",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "white";
+                e.currentTarget.style.color = "black";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "white";
+              }}
             >
               Try Now
             </button>
@@ -180,6 +265,7 @@ export default function HomePage() {
 
           .hover-lift:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
           }
 
           .typing-cursor {
