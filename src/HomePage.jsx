@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
@@ -8,9 +10,31 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [displayedText, setDisplayedText] = useState("");
   const [showContent, setShowContent] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Check authentication and email verification
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await user.reload();
+        if (!user.emailVerified) {
+          // Redirect unverified users back to register
+          navigate("/register", { replace: true });
+        } else {
+          setLoading(false);
+        }
+      } else {
+        // Not logged in, redirect to login
+        navigate("/login", { replace: true });
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
 
   // Typewriter effect for main title
   useEffect(() => {
+    if (loading) return;
+    
     const text = "T.R.U.T.H.";
     let currentIndex = 0;
 
@@ -25,7 +49,18 @@ export default function HomePage() {
     }, 150);
 
     return () => clearInterval(typeInterval);
-  }, []);
+  }, [loading]);
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ paddingTop: "56px" }}>
@@ -55,8 +90,6 @@ export default function HomePage() {
         
         {showContent && (
           <>
-            
-            
             <p className="lead mb-4" style={{ 
               animation: "fadeInUp 0.8s ease-out",
               maxWidth: "600px"
