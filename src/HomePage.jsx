@@ -10,31 +10,23 @@ export default function HomePage() {
   const navigate = useNavigate();
   const [displayedText, setDisplayedText] = useState("");
   const [showContent, setShowContent] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Check authentication and email verification
+  // Check authentication status (but don't redirect)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         await user.reload();
-        if (!user.emailVerified) {
-          // Redirect unverified users back to register
-          navigate("/register", { replace: true });
-        } else {
-          setLoading(false);
-        }
+        setIsLoggedIn(user.emailVerified);
       } else {
-        // Not logged in, redirect to login
-        navigate("/login", { replace: true });
+        setIsLoggedIn(false);
       }
     });
     return () => unsubscribe();
-  }, [navigate]);
+  }, []);
 
   // Typewriter effect for main title
   useEffect(() => {
-    if (loading) return;
-    
     const text = "T.R.U.T.H.";
     let currentIndex = 0;
 
@@ -49,18 +41,7 @@ export default function HomePage() {
     }, 150);
 
     return () => clearInterval(typeInterval);
-  }, [loading]);
-
-  // Show loading while checking auth
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div style={{ paddingTop: "56px", backgroundColor: "white" }}>
@@ -100,7 +81,7 @@ export default function HomePage() {
             
             <button
               className="btn btn-light btn-lg px-5 py-3 rounded-pill shadow"
-              onClick={() => navigate("/analysis")}
+              onClick={() => navigate(isLoggedIn ? "/analysis-logged" : "/analysis")}
               style={{ 
                 animation: "fadeInUp 1s ease-out",
                 fontSize: "1.2rem",
@@ -238,7 +219,7 @@ export default function HomePage() {
             </button>
             <button
               className="btn btn-lg px-5 py-3 rounded-pill"
-              onClick={() => navigate("/analysis")}
+              onClick={() => navigate(isLoggedIn ? "/analysis-logged" : "/analysis")}
               style={{
                 backgroundColor: "transparent",
                 color: "white",
