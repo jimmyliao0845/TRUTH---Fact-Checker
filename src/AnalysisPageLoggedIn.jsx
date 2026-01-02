@@ -4,7 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./analysis.css";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaKeyboard, FaCloudUploadAlt,FaGamepad, FaCommentAlt } from "react-icons/fa";
 
 export default function AnalysisPageLoggedIn() {
   const navigate = useNavigate();
@@ -36,13 +36,12 @@ export default function AnalysisPageLoggedIn() {
         currentIndex++;
       } else {
         clearInterval(typeInterval);
-        // Show logo and T.R.U.T.H after typing is complete
         setTimeout(() => {
           setShowLogo(true);
           setTimeout(() => setShowTruth(true), 200);
         }, 300);
       }
-    }, 80); // Typing speed (80ms per character)
+    }, 80);
 
     return () => clearInterval(typeInterval);
   }, []);
@@ -57,7 +56,6 @@ export default function AnalysisPageLoggedIn() {
     setIsLoading(true);
 
     try {
-      // Generate a unique scan ID
       const scanId = `scan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
       const response = await fetch(
@@ -66,15 +64,12 @@ export default function AnalysisPageLoggedIn() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // Add your API key here when you have it
-            // "Authorization": "Bearer YOUR_API_KEY",
           },
           body: JSON.stringify({ text: inputText }),
         }
       );
 
       if (!response.ok) {
-        // If API call fails, create mock data and proceed anyway
         console.warn("API call failed, using mock data");
         const mockData = {
           text: inputText,
@@ -103,7 +98,6 @@ export default function AnalysisPageLoggedIn() {
       const data = await response.json();
       console.log("API Response:", data);
       
-      // Navigate with both result and original text
       navigate("/analysis-result-logged-in", { 
         state: { 
           result: data, 
@@ -117,7 +111,6 @@ export default function AnalysisPageLoggedIn() {
     } catch (error) {
       console.error("Error calling API:", error);
       
-      // Instead of showing error, proceed with mock data
       const mockData = {
         text: inputText,
         scanId: `scan-${Date.now()}`,
@@ -158,7 +151,7 @@ export default function AnalysisPageLoggedIn() {
     if (!file) return;
 
     const allowedTypes = [
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       "image/jpeg",
       "image/png",
       "image/gif",
@@ -175,51 +168,68 @@ export default function AnalysisPageLoggedIn() {
 
     console.log("Selected file:", file);
 
-    // Create preview URL for images/videos
     const filePreview = URL.createObjectURL(file);
 
-    // Navigate to result page with file data
     navigate("/analysis-result-logged-in", {
       state: {
         textInput: "",
         fileName: file.name,
         filePreview: filePreview,
         fileType: file.type,
-        result: null // No pre-existing result, will analyze on result page
+        result: null
       }
     });
   };
 
   return (
-    <div className="d-flex" style={{ paddingTop: "56px" }}>
+    <div className="d-flex" style={{ paddingTop: "56px", backgroundColor: "white", minHeight: "100vh" }}>
       {/* Sidebar */}
       <div 
-        className="d-flex flex-column p-3 border-end"
-        style={{
-          width: collapsed ? "80px" : "200px",
-          backgroundColor: "#8c8c8c",
-          transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
-          position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
-        }}
-      >
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <button
-            className="btn btn-outline-light btn-sm"
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ border: "none" }}
-          >
-            <FaBars />
-          </button>
-        </div>
-
-        {/* White Box */}
-        {!collapsed && <div className="white-box p-3 mt-3"></div>}
-      </div>
-
+              className="d-flex flex-column p-3 border-end"
+              style={{
+                width: collapsed ? "80px" : "200px",
+                backgroundColor: "#808080",
+                transition: "width 0.3s ease",
+                height: "calc(100vh - 56px)",
+                position: "fixed",
+                top: "56px",
+                left: 0,
+                overflowY: "auto",
+                boxShadow: "2px 0 10px rgba(0,0,0,0.1)"
+              }}
+            >
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <button
+                  className="btn btn-outline-light btn-sm"
+                  onClick={() => setCollapsed(!collapsed)}
+                  style={{ border: "none" }}
+                >
+                  <FaBars />
+                </button>
+              </div>
+      
+              {!collapsed && <div className="white-box p-3 mt-3"></div>}
+              
+              {/* Action Buttons Integration */}
+              <div className="d-flex flex-column gap-3 mt-2">
+                <button 
+                  className="btn btn-link text-white text-decoration-none d-flex align-items-center p-2"
+                  onClick={() => navigate("/game")}
+                  style={{ transition: "0.2s" }}
+                >
+                  <FaGamepad size={20} />
+                  {!collapsed && <span className="ms-3">Find and Play Game</span>}
+                </button>
+      
+                <button 
+                  className="btn btn-link text-white text-decoration-none d-flex align-items-center p-2"
+                  onClick={() => navigate("/feedback")}
+                >
+                  <FaCommentAlt size={18} />
+                  {!collapsed && <span className="ms-3">User Feedback</span>}
+                </button>
+              </div>
+            </div>
       {/* Main Content */}
       <div 
         className="flex-grow-1 d-flex flex-column align-items-center justify-content-center"
@@ -227,67 +237,145 @@ export default function AnalysisPageLoggedIn() {
           marginLeft: collapsed ? "80px" : "200px",
           transition: "margin-left 0.3s ease",
           minHeight: "calc(100vh - 56px)",
+          padding: "2rem",
+          backgroundColor: "white"
         }}
       >
-        <div className="text-center mb-4" style={{ minHeight: "60px" }}>
-          <h1 className="fw-bold d-inline-flex align-items-center justify-content-center gap-2">
+        {/* Header with Typewriter Effect */}
+        <div className="text-center mb-5" style={{ minHeight: "100px", animation: "fadeIn 0.6s ease-in" }}>
+          <h1 className="fw-bold d-inline-flex align-items-center justify-content-center gap-2" style={{ fontSize: "2.5rem", color: "black" }}>
             <span>{displayedText}</span>
             {showLogo && (
               <img 
                 src="/assets/digima_logo.svg" 
                 alt="T.R.U.T.H Logo" 
                 style={{
-                  width: "50px",
-                  height: "50px",
+                  width: "60px",
+                  height: "60px",
                   animation: "fadeIn 0.5s ease-in"
                 }}
               />
             )}
             {showTruth && (
-              <span style={{ animation: "fadeIn 0.5s ease-in" }}>
+              <span style={{ animation: "fadeIn 0.5s ease-in" }}>     
                 T.R.U.T.H
               </span>
             )}
           </h1>
+          <p className="text-muted mt-2">Trusted Recognition Using Trained Heuristics</p>
         </div>
 
+        {/* Input Card */}
         <div
-          className="bg-light p-4 rounded shadow-sm"
-          style={{ width: "60%", textAlign: "center" }}
+          className="rounded-4 p-5 shadow-lg"
+          style={{ 
+            width: "70%", 
+            maxWidth: "900px",
+            backgroundColor: "white",
+            animation: "fadeInUp 0.6s ease-out",
+            border: "2px solid black"
+          }}
         >
-          <label htmlFor="text-input" className="form-label">
-            Enter your Text
-          </label>
+          <div className="text-center mb-4">
+            <h4 className="fw-bold" style={{ color: "black" }}>
+              🔍 Start Your Analysis
+            </h4>
+            <p style={{ color: "#666666" }}>Enter text or upload a file to detect AI-generated content</p>
+          </div>
 
-          <textarea
-            id="text-input"
-            className="form-control mb-3"
-            rows="4"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Type or paste your text here..."
-            disabled={isLoading}
-          ></textarea>
-
-          <div className="d-flex justify-content-center gap-3">
-            <button 
-              className="btn btn-dark px-4" 
-              onClick={handleSubmit}
+          {/* Text Input */}
+          <div className="mb-4">
+            <label htmlFor="text-input" className="form-label fw-semibold" style={{ color: "black" }}>
+              <FaKeyboard className="me-2" />
+              Enter Your Text
+            </label>
+            <textarea
+              id="text-input"
+              className="form-control"
+              rows="6"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Type or paste your text here for analysis..."
               disabled={isLoading}
+              style={{
+                fontSize: "1rem",
+                borderRadius: "12px",
+                backgroundColor: "white",
+                border: "2px solid #e0e0e0",
+                resize: "none"
+              }}
+            ></textarea>
+            <div className="text-end mt-2">
+              <small style={{ color: "#666666" }}>{inputText.length} characters</small>
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="d-flex justify-content-center gap-3 flex-wrap">
+            <button 
+              className="btn btn-lg px-5 py-3 d-flex align-items-center gap-2"
+              onClick={handleSubmit}
+              disabled={isLoading || !inputText.trim()}
+              style={{
+                backgroundColor: "black",
+                border: "2px solid black",
+                borderRadius: "50px",
+                color: "white",
+                fontWeight: "600",
+                transition: "all 0.3s ease",
+                minWidth: "200px"
+              }}
+              onMouseOver={(e) => {
+                if (!isLoading && inputText.trim()) {
+                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.color = "black";
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "black";
+                e.currentTarget.style.color = "white";
+              }}
             >
-              {isLoading ? "Analyzing..." : "Enter Input"}
+              {isLoading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <FaKeyboard /> Analyze Text
+                </>
+              )}
             </button>
 
             <button
-              className="btn btn-dark px-4"
+              className="btn btn-lg px-5 py-3 d-flex align-items-center gap-2"
               onClick={() => fileInputRef.current.click()}
               disabled={isLoading}
+              style={{
+                backgroundColor: "black",
+                border: "2px solid black",
+                borderRadius: "50px",
+                color: "white",
+                fontWeight: "600",
+                transition: "all 0.3s ease",
+                minWidth: "200px"
+              }}
+              onMouseOver={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.color = "black";
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "black";
+                e.currentTarget.style.color = "white";
+              }}
             >
-              Upload Files
+              <FaCloudUploadAlt /> Upload File
             </button>
 
-            {/* Accept images, videos, and DOCX */}
             <input
               type="file"
               ref={fileInputRef}
@@ -296,7 +384,14 @@ export default function AnalysisPageLoggedIn() {
               onChange={handleFileUpload}
             />
           </div>
-        </div>
+
+          {/* Supported Files Info */}
+          <div className="text-center mt-4">
+            <small style={{ color: "#666666" }}>
+              📄 Supported: Text, DOCX, Images (JPG, PNG, GIF), Videos (MP4, MOV, MKV, WEBM)
+            </small>
+          </div>
+        </div>   
       </div>
 
       {/* CSS for animations */}
@@ -305,12 +400,26 @@ export default function AnalysisPageLoggedIn() {
           @keyframes fadeIn {
             from {
               opacity: 0;
-              transform: translateY(-10px);
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
             }
             to {
               opacity: 1;
               transform: translateY(0);
             }
+          }
+
+          .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
           }
         `}
       </style>
