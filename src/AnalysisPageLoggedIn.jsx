@@ -4,7 +4,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./analysis.css";
-import { FaBars, FaKeyboard, FaCloudUploadAlt,FaGamepad, FaCommentAlt } from "react-icons/fa";
+// Added FaBriefcase to imports
+import { FaBars, FaKeyboard, FaCloudUploadAlt, FaGamepad, FaCommentAlt, FaBriefcase } from "react-icons/fa";
 
 export default function AnalysisPageLoggedIn() {
   const navigate = useNavigate();
@@ -188,7 +189,7 @@ export default function AnalysisPageLoggedIn() {
               className="d-flex flex-column p-3 border-end"
               style={{
                 width: collapsed ? "80px" : "200px",
-                backgroundColor: "#808080",
+                backgroundColor: "#d9d9d9",
                 transition: "width 0.3s ease",
                 height: "calc(100vh - 56px)",
                 position: "fixed",
@@ -200,7 +201,7 @@ export default function AnalysisPageLoggedIn() {
             >
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <button
-                  className="btn btn-outline-light btn-sm"
+                  className="btn btn-outline-dark btn-sm"
                   onClick={() => setCollapsed(!collapsed)}
                   style={{ border: "none" }}
                 >
@@ -213,7 +214,7 @@ export default function AnalysisPageLoggedIn() {
               {/* Action Buttons Integration */}
               <div className="d-flex flex-column gap-3 mt-2">
                 <button 
-                  className="btn btn-link text-white text-decoration-none d-flex align-items-center p-2"
+                  className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
                   onClick={() => navigate("/game")}
                   style={{ transition: "0.2s" }}
                 >
@@ -222,11 +223,20 @@ export default function AnalysisPageLoggedIn() {
                 </button>
       
                 <button 
-                  className="btn btn-link text-white text-decoration-none d-flex align-items-center p-2"
+                  className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
                   onClick={() => navigate("/feedback")}
                 >
                   <FaCommentAlt size={18} />
                   {!collapsed && <span className="ms-3">User Feedback</span>}
+                </button>
+
+                {/* UPDATED BUTTON ROUTE */}
+                <button 
+                  className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
+                  onClick={() => navigate("/factcheckerdashboard")}
+                >
+                  <FaBriefcase size={18} />
+                  {!collapsed && <span className="ms-3">Go to Professional Dashboard</span>}
                 </button>
               </div>
             </div>

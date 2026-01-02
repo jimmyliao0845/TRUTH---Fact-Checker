@@ -290,7 +290,7 @@ export default function AnalysisPageNotLoggedIn() {
         style={{
           width: "200px",
           minHeight: "100vh",
-          backgroundColor: "#808080",
+          backgroundColor: "#d9d9d9",
           textAlign: "center",
           boxShadow: "2px 0 10px rgba(0,0,0,0.1)"
         }}
@@ -311,7 +311,7 @@ export default function AnalysisPageNotLoggedIn() {
           </a>
         </div>
 
-        <p className="small fw-semibold mt-2 text-white" style={{ lineHeight: "1.6" }}>
+        <p className="small fw-semibold mt-2 text-black" style={{ lineHeight: "1.6" }}>
           Register and Login
           <br />
           Your Account

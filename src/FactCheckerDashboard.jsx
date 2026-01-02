@@ -15,7 +15,8 @@ import {
   FaUserCog,
   FaPen,
   FaFileAlt,
-  FaTimesCircle // Added for the Unlink button
+  FaTimesCircle,
+  FaArrowLeft // Imported this icon
 } from "react-icons/fa";
 import { Line, Bar } from "react-chartjs-2";
 import {
@@ -323,6 +324,17 @@ export default function FactCheckerDashboard() {
               {!collapsed && "Profile Settings"}
             </button>
           </li>
+
+          {/* 🚀 NEW BUTTON: Go Back to Analysis Page (Updated: Removed text-danger) */}
+          <li className="mt-4 border-top pt-2">
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Go Back to Analysis Page"}
+            </button>
+          </li>
         </ul>
 
         {!collapsed && (
@@ -536,9 +548,9 @@ export default function FactCheckerDashboard() {
                     <td className="fw-bold">{user.status}</td>
                     <td>
                       {user.name && (
-                         <button className="btn p-0 border-0">
-                           <FaTimesCircle size={28} />
-                         </button>
+                          <button className="btn p-0 border-0">
+                            <FaTimesCircle size={28} />
+                          </button>
                       )}
                     </td>
                   </tr>
