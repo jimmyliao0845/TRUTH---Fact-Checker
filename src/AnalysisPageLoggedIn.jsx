@@ -48,60 +48,48 @@ export default function AnalysisPageLoggedIn() {
   }, []);
 
   // Handle text submission with API
-  const handleSubmit = async () => {
+    const handleSubmit = async () => {
     if (!inputText.trim()) {
       alert("Please enter some text first!");
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
-      const scanId = `scan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-      const response = await fetch(
-        `https://api.copyleaks.com/v2/writer-detector/${scanId}/check`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: inputText }),
-        }
-      );
-
-      if (!response.ok) {
-        console.warn("API call failed, using mock data");
-        const mockData = {
-          text: inputText,
-          scanId: scanId,
-          summary: {
-            ai: Math.floor(Math.random() * 30),
-            human: Math.floor(Math.random() * 40) + 50,
-            mixed: Math.floor(Math.random() * 20)
-          },
-          status: "success",
-          timestamp: new Date().toISOString()
-        };
-        
-        navigate("/analysis-result-logged-in", { 
-          state: { 
-            result: mockData, 
-            textInput: inputText,
-            fileName: "",
-            filePreview: "",
-            fileType: ""
-          } 
-        });
-        return;
-      }
-
+      // Call YOUR backend, not Copyleaks directly
+      const response = await fetch("http://localhost:5000/api/detect/text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: inputText }),
+      });
+  
       const data = await response.json();
-      console.log("API Response:", data);
+  
+      if (!response.ok) {
+        throw new Error(data.message || data.error || "Analysis failed");
+      }
+  
+      console.log("✅ Backend response:", data);
+      
+      // Transform backend response to match expected format
+      const resultData = {
+        text: inputText,
+        scanId: data.scanId,
+        summary: {
+          ai: data.ai_probability || 0,
+          human: data.human_probability || 0,
+          mixed: data.mixed_probability || 0
+        },
+        status: "Success",
+        timestamp: data.timestamp || new Date().toISOString()
+      };
       
       navigate("/analysis-result-logged-in", { 
         state: { 
-          result: data, 
+          result: resultData, 
           textInput: inputText,
           fileName: "",
           filePreview: "",
@@ -110,29 +98,8 @@ export default function AnalysisPageLoggedIn() {
       });
       
     } catch (error) {
-      console.error("Error calling API:", error);
-      
-      const mockData = {
-        text: inputText,
-        scanId: `scan-${Date.now()}`,
-        summary: {
-          ai: Math.floor(Math.random() * 30),
-          human: Math.floor(Math.random() * 40) + 50,
-          mixed: Math.floor(Math.random() * 20)
-        },
-        status: "error_fallback",
-        timestamp: new Date().toISOString()
-      };
-      
-      navigate("/analysis-result-logged-in", { 
-        state: { 
-          result: mockData, 
-          textInput: inputText,
-          fileName: "",
-          filePreview: "",
-          fileType: ""
-        } 
-      });
+      console.error("❌ Error calling backend:", error);
+      alert(`Analysis failed: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -147,12 +114,15 @@ export default function AnalysisPageLoggedIn() {
   };
 
   // Handle file upload (images, videos, DOCX)
-  const handleFileUpload = (event) => {
+  // Handle file upload (images, videos, DOCX, PDF, TXT)
+const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
+  
     const allowedTypes = [
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+      "application/pdf",                                                         // PDF
+      "text/plain",                                                              // TXT
       "image/jpeg",
       "image/png",
       "image/gif",
@@ -161,16 +131,16 @@ export default function AnalysisPageLoggedIn() {
       "video/x-matroska",
       "video/webm"
     ];
-
+  
     if (!allowedTypes.includes(file.type)) {
-      alert("Only DOCX, images (JPG, PNG, GIF), and videos (MP4, MOV, MKV, WEBM) are allowed!");
+      alert("Only DOCX, PDF, TXT, images (JPG, PNG, GIF), and videos (MP4, MOV, MKV, WEBM) are allowed!");
       return;
     }
-
+  
     console.log("Selected file:", file);
-
+  
     const filePreview = URL.createObjectURL(file);
-
+  
     navigate("/analysis-result-logged-in", {
       state: {
         textInput: "",
@@ -390,7 +360,7 @@ export default function AnalysisPageLoggedIn() {
               type="file"
               ref={fileInputRef}
               style={{ display: "none" }}
-              accept=".docx,image/*,video/*"
+              accept=".docx,.pdf,.txt,image/*,video/*,application/pdf"
               onChange={handleFileUpload}
             />
           </div>

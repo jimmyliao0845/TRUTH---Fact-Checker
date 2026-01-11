@@ -75,22 +75,63 @@ export default function AnalysisResultLoggedIn() {
 
   // Initial analysis for data passed from previous page
   const handleInitialAnalysis = async () => {
-    if (fileType.startsWith("image/")) {
-      await detectImage(filePreview, fileName);
-    } else if (fileType.startsWith("video/")) {
-      setIsLoading(true);
-      setTimeout(() => {
-        const mockData = {
-          summary: {
-            ai: Math.floor(Math.random() * 20),
-            human: Math.floor(Math.random() * 50) + 40,
-            mixed: Math.floor(Math.random() * 30)
-          },
-          status: "Complete"
-        };
-        setAnalysisResult(mockData);
-        setIsLoading(false);
-      }, 1500);
+    // Handle text input (typed text)
+    if (textInput && !fileName) {
+      console.log("📝 Analyzing text input...");
+      await detectText(textInput);
+      return;
+    }
+  
+    // Handle file uploads
+    if (fileName && filePreview) {
+      // Images
+      if (fileType.startsWith("image/")) {
+        console.log("🖼️ Analyzing image...");
+        await detectImage(filePreview, fileName);
+      } 
+      // Videos (mock data for now)
+      else if (fileType.startsWith("video/")) {
+        console.log("🎥 Analyzing video (mock data)...");
+        setIsLoading(true);
+        setTimeout(() => {
+          const mockData = {
+            summary: {
+              ai: Math.floor(Math.random() * 20),
+              human: Math.floor(Math.random() * 50) + 40,
+              mixed: Math.floor(Math.random() * 30)
+            },
+            status: "Complete (Mock Data - Video detection not yet supported)"
+          };
+          setAnalysisResult(mockData);
+          setIsLoading(false);
+        }, 1500);
+      }
+      // Documents (DOCX, PDF, TXT, etc.)
+      else if (
+        fileType.includes("document") || 
+        fileType.includes("word") || 
+        fileType.includes("pdf") ||
+        fileType.includes("text") ||
+        fileName.endsWith(".docx") ||
+        fileName.endsWith(".pdf") ||
+        fileName.endsWith(".txt")
+      ) {
+        console.log("📄 Analyzing document...");
+        // Convert blob URL to actual blob
+        const response = await fetch(filePreview);
+        const blob = await response.blob();
+        await detectDocument(blob, fileName);
+      }
+      // Unknown file type
+      else {
+        console.log("⚠️ Unknown file type:", fileType);
+        showNotification("⚠️ Unsupported file type");
+        setAnalysisResult({
+          summary: { ai: 0, human: 0, mixed: 0 },
+          status: `Unsupported file type: ${fileType}`,
+          error: true
+        });
+      }
     }
   };
 
@@ -98,50 +139,175 @@ export default function AnalysisResultLoggedIn() {
   const detectImage = async (preview, name) => {
     try {
       setIsLoading(true);
-      console.log("🔍 Starting image detection...");
-
+      console.log("🔍 Starting Copyleaks image detection...");
+  
       const response = await fetch(preview);
       const blob = await response.blob();
-
+  
       const formData = new FormData();
       formData.append("file", blob, name);
-
+  
       const res = await fetch("http://localhost:5000/api/detect/image", {
         method: "POST",
         body: formData,
       });
-
+  
       if (!res.ok) {
-        throw new Error(`API Error: ${res.status}`);
+        const errorData = await res.json();
+        throw new Error(errorData.message || `API Error: ${res.status}`);
       }
-
+  
       const data = await res.json();
-      console.log("✅ Detection complete:", data);
-
-      const mockData = {
+      console.log("✅ Copyleaks detection complete:", data);
+  
+      // Parse the response from backend
+      const aiPercent = data.ai_probability || 0;
+      const humanPercent = data.human_probability || 0;
+      const mixedPercent = Math.max(0, 100 - aiPercent - humanPercent);
+  
+      const resultData = {
         summary: {
-          ai: Math.round(data.ai_probability),
-          human: Math.round(data.human_probability),
-          mixed: 0
+          ai: aiPercent,
+          human: humanPercent,
+          mixed: mixedPercent
         },
         status: "Complete",
-        model: data.model,
-        scanId: data.scanId
+        model: data.model || "ai-image-1-ultra",
+        scanId: data.scanId,
+        timestamp: data.timestamp || new Date().toISOString(),
+        imageInfo: data.imageInfo
       };
       
-      setAnalysisResult(mockData);
+      setAnalysisResult(resultData);
       setIsLoading(false);
+      showNotification("✅ Analysis complete!");
+      
     } catch (err) {
-      console.error("❌ Detection error:", err);
-      const mockData = {
+      console.error("❌ Copyleaks detection error:", err);
+      showNotification(`❌ Analysis failed: ${err.message}`);
+      
+      // Show error state instead of mock data in production
+      const errorData = {
         summary: {
-          ai: Math.floor(Math.random() * 40),
-          human: Math.floor(Math.random() * 50) + 30,
-          mixed: Math.floor(Math.random() * 20)
+          ai: 0,
+          human: 0,
+          mixed: 0
         },
-        status: "Error - Using Mock Data"
+        status: `Error: ${err.message}`,
+        error: true
       };
-      setAnalysisResult(mockData);
+      setAnalysisResult(errorData);
+      setIsLoading(false);
+    }
+  };
+  
+  const detectText = async (text) => {
+    try {
+      setIsLoading(true);
+      console.log("🔍 Starting Copyleaks text detection...");
+  
+      const res = await fetch("http://localhost:5000/api/detect/text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text }),
+      });
+  
+      const data = await res.json();
+      console.log("Backend response:", data);
+  
+      if (!res.ok) {
+        throw new Error(data.message || data.error || `API Error: ${res.status}`);
+      }
+  
+      console.log("✅ Copyleaks text detection complete:", data);
+  
+      const aiPercent = data.ai_probability || 0;
+      const humanPercent = data.human_probability || 0;
+      const mixedPercent = data.mixed_probability || Math.max(0, 100 - aiPercent - humanPercent);
+  
+      const resultData = {
+        summary: {
+          ai: aiPercent,
+          human: humanPercent,
+          mixed: mixedPercent
+        },
+        status: "Complete",
+        scanId: data.scanId,
+        timestamp: data.timestamp || new Date().toISOString()
+      };
+      
+      setAnalysisResult(resultData);
+      setIsLoading(false);
+      showNotification("✅ Text analysis complete!");
+      
+    } catch (err) {
+      console.error("❌ Text detection error:", err);
+      showNotification(`❌ Analysis failed: ${err.message}`);
+      
+      const errorData = {
+        summary: { ai: 0, human: 0, mixed: 0 },
+        status: `Error: ${err.message}`,
+        error: true
+      };
+      setAnalysisResult(errorData);
+      setIsLoading(false);
+    }
+  };
+
+  const detectDocument = async (fileBlob, fileName) => {
+    try {
+      setIsLoading(true);
+      console.log("🔍 Starting document detection for:", fileName);
+  
+      const formData = new FormData();
+      formData.append("file", fileBlob, fileName);
+  
+      const res = await fetch("http://localhost:5000/api/detect/document", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await res.json();
+      console.log("Backend response:", data);
+  
+      if (!res.ok) {
+        throw new Error(data.message || data.error || `API Error: ${res.status}`);
+      }
+  
+      console.log("✅ Document detection complete:", data);
+  
+      const aiPercent = data.ai_probability || 0;
+      const humanPercent = data.human_probability || 0;
+      const mixedPercent = data.mixed_probability || Math.max(0, 100 - aiPercent - humanPercent);
+  
+      const resultData = {
+        summary: {
+          ai: aiPercent,
+          human: humanPercent,
+          mixed: mixedPercent
+        },
+        status: "Complete",
+        scanId: data.scanId,
+        timestamp: data.timestamp || new Date().toISOString(),
+        documentInfo: data.documentInfo
+      };
+      
+      setAnalysisResult(resultData);
+      setIsLoading(false);
+      showNotification("✅ Document analysis complete!");
+      
+    } catch (err) {
+      console.error("❌ Document detection error:", err);
+      showNotification(`❌ Analysis failed: ${err.message}`);
+      
+      const errorData = {
+        summary: { ai: 0, human: 0, mixed: 0 },
+        status: `Error: ${err.message}`,
+        error: true
+      };
+      setAnalysisResult(errorData);
       setIsLoading(false);
     }
   };
