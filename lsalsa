@@ -1,0 +1,168 @@
+[33mcommit a28b69442f31b522ddeaf9b6b981fc6517118ce0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Mon Nov 24 21:23:02 2025 +0800
+
+    Dashboard for fact checker and admin now partially shows data
+
+[33mcommit b85ca2b1fff8b44b2a5a28b1079c4ea16eebe1db[m
+Merge: 3fcb3e0 a4ab1f2
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Mon Nov 24 21:05:05 2025 +0800
+
+    Added Admin Privilege
+
+[33mcommit 3fcb3e06f56c298aa3150f9a94a3998b56509ca2[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Mon Nov 24 21:03:46 2025 +0800
+
+    added Admin privileges to add roles in a user
+
+[33mcommit a4ab1f2f7a465d7be609638739dec2905e975916[m
+Merge: 20b8415 2a0e49e
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Fri Nov 21 20:39:40 2025 +0800
+
+    Merge branch 'main' of https://github.com/TsumakiFutaba/TRUTH
+
+[33mcommit 20b84150ea95664b0bd1d04b2f4be0d677857040[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Fri Nov 21 20:39:30 2025 +0800
+
+    overall progress including mine (changes in landing page and a little improvement in general user pages)
+
+[33mcommit 2a0e49efba334277ce747f16453d63ba51906f3d[m
+Author: Rinoksu <gauranalouiejohnandrie@gmail.com>
+Date:   Fri Nov 21 18:15:39 2025 +0800
+
+    updated link users content
+
+[33mcommit 8c6392feb7b8587ec58cfc3060f3b1b429e61c6f[m
+Author: Rinoksu <gauranalouiejohnandrie@gmail.com>
+Date:   Mon Nov 17 16:28:09 2025 +0800
+
+    manage tuorial updated
+
+[33mcommit 79b41560657ad9421650cbf7f20a0c687e8333ae[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Sun Nov 9 19:54:09 2025 +0800
+
+    Fixed the Navbar and Sidebar to make it aligned while at the same time fixing the gap issue when scrolling.
+
+[33mcommit 5923eae23071e682cf63898e1979972460fa507e[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Sun Nov 9 15:30:48 2025 +0800
+
+    FactCheckerDashboard (fixed local navbar for that page)
+
+[33mcommit dbf637d292452d38de21d65eb8cd2644a5713379[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Sun Nov 9 15:14:25 2025 +0800
+
+    Admin sidebar
+
+[33mcommit 3b4bf6435dd776d31c0d3e2e221cd832a24cd580[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Sun Nov 9 15:11:45 2025 +0800
+
+    Changed side bar buttons in and added the notification bell in FactCheckerDashboard.jsx
+
+[33mcommit 1836e6e94a83cb186880f1271c2cc970934f22e8[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Fri Nov 7 14:57:01 2025 +0800
+
+    Added admin stuff (hopefully it uploaded)
+
+[33mcommit f593964c67c14e2b23da7699a26395ea56cfee80[m
+Author: Rinoksu <gauranalouiejohnandrie@gmail.com>
+Date:   Mon Nov 3 17:45:04 2025 +0800
+
+    created professional dashboard
+    
+    created a dshboard button that goes to dashboard page and back to analysis page looged in, will fix it if I gain strength
+
+[33mcommit e507412ec631feeefff439aab64b045408a12ced[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Sat Oct 25 14:59:34 2025 +0800
+
+    added server folder and server.js for calling the API for CopyLeaks.
+
+[33mcommit 91b4b9bc7ef7828b881be50631e7c93e02f34e8c[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Sat Oct 25 10:30:43 2025 +0800
+
+    Fixed the Page Not Logged In, back to only docx
+
+[33mcommit 3f88233c4bc15e4214f8bb9b239794741bb59d37[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Sat Oct 25 10:16:58 2025 +0800
+
+    Added the image part
+
+[33mcommit 7402c066958129628e1f326f9fafa5acec3bbded[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Fri Oct 24 17:57:43 2025 +0800
+
+    added Supabase database.
+
+[33mcommit 5b77dc398ee3a5043e6bc0226e2524df0d018305[m
+Author: Rinoksu <gauranalouiejohnandrie@gmail.com>
+Date:   Tue Oct 21 23:25:55 2025 +0800
+
+    API is working -Not Login
+    
+    api is working for text only, not for docsuments, ginagawa na yung for docs (testing phase)
+
+[33mcommit ce9648c947d9c40b444bd534ea3b75849589eb5d[m
+Author: SanaeKochiyaprpr <kochiyasanae531@gmail.com>
+Date:   Fri Sep 12 10:53:10 2025 +0800
+
+    added analysis result pages
+
+[33mcommit 06c8266579cbf77555b2f4fb4d1a9f3b27bfbe52[m
+Author: Rinoksu <gauranalouiejohnandrie@gmail.com>
+Date:   Thu Sep 11 22:33:40 2025 +0800
+
+    updated digima into truth
+
+[33mcommit 7b89e2db2bbf0a4c4f3c02f14e53505bd5c48fe1[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Thu Sep 11 18:11:41 2025 +0800
+
+    added upload options
+
+[33mcommit bba091d1100556e2645194ea9e5b05628c715985[m
+Merge: f3e1c93 27dbcce
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Thu Sep 11 18:09:50 2025 +0800
+
+    Merge branch 'main' of https://github.com/TsumakiFutaba/TRUTH
+
+[33mcommit f3e1c9366db067f43907ff6a7c0b23a2b7e11aae[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Thu Sep 11 18:06:54 2025 +0800
+
+    added upload options
+
+[33mcommit 27dbcceeb79021056348da0d8fefb2ba6db5c159[m
+Author: TsumakiFutaba <119467886+TsumakiFutaba@users.noreply.github.com>
+Date:   Fri Sep 5 00:50:10 2025 +0800
+
+    Update README.md
+
+[33mcommit 15417fac056d4ae4555d9ba969f7d89092463e4b[m
+Author: TsumakiFutaba <119467886+TsumakiFutaba@users.noreply.github.com>
+Date:   Fri Sep 5 00:49:37 2025 +0800
+
+    Update README.md
+
+[33mcommit e6910d74b46f2b6efb51f880ce4232de50269faf[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Fri Sep 5 00:39:46 2025 +0800
+
+    Converted everything into React.
+
+[33mcommit 013cc37748ebd228e718f434d493003ae30bdfcb[m
+Author: Tsumaki <matsu.yukii22@gmail.com>
+Date:   Thu Sep 4 14:48:36 2025 +0800
+
+    Initialize project using Create React App

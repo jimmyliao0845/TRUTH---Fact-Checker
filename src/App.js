@@ -13,12 +13,18 @@ import AnalysisResultLoggedIn from "./AnalysisResultLoggedIn";
 import AnalysisResultNotloggedIn from "./AnalysisResultNotloggedIn";
 import ProtectedRoute from "./ProtectedRoute";
 import FactCheckerDashboard from "./FactCheckerDashboard";
+import CreateTutorial from "./CreateTutorial";
+import ManageTutorial from "./ManageTutorial";
 
 // ✅ Admin Pages
 import AdminDashboard from "./AdminDashboard";
 import AdminUsers from "./AdminUsers"; // updated import
 import AdminTutorialPage from "./AdminTutorialPage";
 import AdminReviewsPage from "./AdminReviewsPage";
+import VerificationLogsPage from "./VerificationLogsPage";
+import UserFeedbackPage from "./UserFeedbackpage(Professional)";
+import ProfessionalReportsPage from "./ProfessionalReportsPage";
+import ProfessionalProfile from "./ProfessionalProfile";
 
 // Component to handle loading state on route changes
 function AppContent() {
@@ -80,7 +86,12 @@ function AppContent() {
 
         {/* Fact Checker Dashboard */}
         <Route path="/fact-checker-dashboard" element={<FactCheckerDashboard />} />
-
+        <Route path="/create-tutorial" element={<CreateTutorial />} />
+        <Route path="/manage-tutorial" element={<ManageTutorial />} />
+        <Route path="/user-feedback" element={<UserFeedbackPage />} />
+        <Route path="/verification-log" element={<VerificationLogsPage />} />
+        <Route path="/professional-report" element={<ProfessionalReportsPage />} />
+        <Route path="/professional-profile" element={<ProfessionalProfile />} />
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminUsers />} /> {/* updated route */}
