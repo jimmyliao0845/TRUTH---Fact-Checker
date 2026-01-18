@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/bootstrap.css";
 import { useNavigate, Link } from "react-router-dom";
 import { auth, db } from "./firebase";
 import {
@@ -21,16 +23,21 @@ import "./social-login.css";
 export default function RegisterPage() {
   const navigate = useNavigate();
 
+  // Form states
+  const [phone, setPhone] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [role, setRole] = useState("user"); // added role state
+  const [role, setRole] = useState("user");
   const [isNightMode, setIsNightMode] = useState(
     localStorage.getItem("theme") === "night"
   );
-  const [currentUserRole, setCurrentUserRole] = useState("user"); // fetch current user role
+  const [currentUserRole, setCurrentUserRole] = useState("user");
+  const [awaitingVerification, setAwaitingVerification] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
+  // Notifications
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [fadeOut, setFadeOut] = useState(false);
@@ -38,10 +45,47 @@ export default function RegisterPage() {
   const googleProvider = new GoogleAuthProvider();
   const githubProvider = new GithubAuthProvider();
 
-  // Fetch current user role from Firestore
+  // Check if user came back unverified
+  useEffect(() => {
+    const checkUser = async () => {
+      const user = auth.currentUser;
+      if (user && !user.emailVerified) {
+        await user.reload();
+        if (!user.emailVerified) {
+          setAwaitingVerification(true);
+          setUserEmail(user.email || "");
+        }
+      }
+    };
+    checkUser();
+  }, []);
+
+  useEffect(() => {
+    if (isNightMode) {
+      document.body.classList.add("night-mode");
+    } else {
+      document.body.classList.remove("night-mode");
+    }
+  }, [isNightMode]);
+
+  // Fetch current user role and check email verification
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        // Check if email is verified
+        await user.reload(); // Refresh user data
+        
+        // If user is not verified and on awaiting verification screen, keep them there
+        if (!user.emailVerified && awaitingVerification) {
+          // Don't allow navigation away
+          return;
+        }
+        
+        if (user.emailVerified && awaitingVerification) {
+          // Email verified! Redirect to home
+          navigate("/", { replace: true });
+        }
+        
         try {
           const docSnap = await getDoc(doc(db, "users", user.uid));
           if (docSnap.exists()) {
@@ -52,20 +96,26 @@ export default function RegisterPage() {
         }
       }
     });
-
     return () => unsubscribe();
-  }, []);
+  }, [awaitingVerification, navigate]);
 
+  // Prevent navigation away from verification screen
   useEffect(() => {
-    if (errorMsg || successMsg) {
-      const timer = setTimeout(() => {
-        setErrorMsg("");
-        setSuccessMsg("");
-      }, 5000);
-      return () => clearTimeout(timer);
+    if (awaitingVerification && auth.currentUser && !auth.currentUser.emailVerified) {
+      const handleBeforeUnload = (e) => {
+        e.preventDefault();
+        e.returnValue = '';
+      };
+      
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
     }
-  }, [errorMsg, successMsg]);
+  }, [awaitingVerification]);
 
+  // Auto fade alerts
   useEffect(() => {
     if (errorMsg || successMsg) {
       setFadeOut(false);
@@ -82,29 +132,32 @@ export default function RegisterPage() {
     }
   }, [errorMsg, successMsg]);
 
+  // Firestore save
   const saveUserToFirestore = async (user, provider) => {
     if (!user || !user.uid) return;
 
     const userRef = doc(db, "users", user.uid);
 
     try {
-      const docSnap = await getDoc(userRef);
-
-      if (!docSnap.exists()) {
-        await setDoc(userRef, {
+      await setDoc(
+        userRef,
+        {
           name: user.displayName || name || "",
           email: user.email || email || "",
-          role: role, // use selected role
+          phone: phone || user.phoneNumber || "",
+          role: role,
           provider: provider || "email",
           avatar_url: user.photoURL || null,
-          created_at: new Date().toISOString(),
-        });
-      }
+          updated_at: new Date().toISOString(),
+        },
+        { merge: true }
+      );
     } catch (err) {
       console.error("Firestore error:", err);
     }
   };
 
+  // Email/password register with email verification
   const handleRegister = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -118,12 +171,16 @@ export default function RegisterPage() {
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCred.user, { displayName: name });
+      
+      // Send email verification
       await sendEmailVerification(userCred.user);
 
       setSuccessMsg("Registration successful! Please check your email to verify your account.");
+      setUserEmail(email);
+      setAwaitingVerification(true);
 
+      // Save to Firestore with phone number
       await saveUserToFirestore(userCred.user, "email");
-      navigate("/");
     } catch (err) {
       if (err.code === "auth/email-already-in-use") {
         setErrorMsg("This email is already registered. Try logging in instead.");
@@ -137,24 +194,69 @@ export default function RegisterPage() {
     }
   };
 
+  // Resend verification email
+  const handleResendVerification = async () => {
+    try {
+      if (auth.currentUser) {
+        await sendEmailVerification(auth.currentUser);
+        setSuccessMsg("Verification email resent! Please check your inbox.");
+      }
+    } catch (err) {
+      setErrorMsg("Failed to resend email. Please try again.");
+    }
+  };
+
+  // Check verification status manually
+  const handleCheckVerification = async () => {
+    try {
+      if (auth.currentUser) {
+        await auth.currentUser.reload();
+        if (auth.currentUser.emailVerified) {
+          setSuccessMsg("Email verified! Redirecting...");
+          setTimeout(() => navigate("/"), 1500);
+        } else {
+          setErrorMsg("Email not verified yet. Please check your inbox and click the verification link.");
+        }
+      }
+    } catch (err) {
+      setErrorMsg("Error checking verification status.");
+    }
+  };
+
+  // Social login
   const handleProviderLogin = async (provider) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
       const providerName = provider.providerId.includes("google") ? "google" : "github";
-      await saveUserToFirestore(user, providerName);
+
+      const userRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userRef);
+
+      const avatarURL = user.photoURL || "/assets/default-avatar.png";
+
+      if (!docSnap.exists()) {
+        await setDoc(userRef, {
+          name: user.displayName || "",
+          email: user.email || "",
+          phone: user.phoneNumber || "",
+          role: "user",
+          provider: providerName,
+          avatar_url: avatarURL,
+          created_at: new Date().toISOString(),
+        });
+      } else {
+        await setDoc(userRef, { avatar_url: avatarURL }, { merge: true });
+      }
 
       navigate("/");
     } catch (err) {
-      if (
-        err.code === "auth/cancelled-popup-request" ||
-        err.code === "auth/popup-closed-by-user"
-      ) {
+      if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
         console.log("Popup closed by user");
         return;
       }
-      alert(err.message);
+      setErrorMsg(err.message);
     }
   };
 
@@ -170,7 +272,7 @@ export default function RegisterPage() {
               className="d-flex justify-content-center align-items-center"
             >
               <div className="d-flex flex-column justify-content-lg-center p-4 p-lg-0 pb-0 flex-fill">
-                <div className="mx-auto mb-5 text-center">
+                <div className="mx-auto mb-5 text-center mt-5">
                   <img
                     src="/assets/digima_logo.svg"
                     alt="Logo"
@@ -192,135 +294,228 @@ export default function RegisterPage() {
                       </div>
                     </div>
 
-                    <div className="text-center mb-3">
-                      <h5 className="mb-2">Sign Up</h5>
-                      {errorMsg && (
-                        <div
-                          className={`alert alert-danger py-2 text-center fade-alert ${fadeOut ? "hide" : ""}`}
-                          role="alert"
-                        >
-                          {errorMsg}
+                    {!awaitingVerification ? (
+                      <>
+                        <div className="text-center mb-3">
+                          <h5 className="mb-2">Sign Up</h5>
+                          {errorMsg && (
+                            <div
+                              className={`alert alert-danger py-2 text-center fade-alert ${
+                                fadeOut ? "hide" : ""
+                              }`}
+                              role="alert"
+                            >
+                              {errorMsg}
+                            </div>
+                          )}
+                          {successMsg && (
+                            <div
+                              className={`alert alert-success py-2 text-center fade-alert ${
+                                fadeOut ? "hide" : ""
+                              }`}
+                              role="alert"
+                            >
+                              {successMsg}
+                            </div>
+                          )}
                         </div>
-                      )}
-                      {successMsg && (
-                        <div
-                          className={`alert alert-success py-2 text-center fade-alert ${fadeOut ? "hide" : ""}`}
-                          role="alert"
-                        >
-                          {successMsg}
+
+                        <div className="mb-3">
+                          <label className="form-label">Full Name</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                          />
                         </div>
-                      )}
-                    </div>
 
-                    <div className="mb-3">
-                      <label className="form-label">Full Name</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                      />
-                    </div>
+                        <div className="mb-3">
+                          <label className="form-label">Email Address</label>
+                          <input
+                            type="email"
+                            className="form-control"
+                            placeholder="Enter Email Address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                          />
+                        </div>
 
-                    <div className="mb-3">
-                      <label className="form-label">Email Address</label>
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="Enter Email Address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                      />
-                    </div>
+                        <div className="mb-3">
+                          <label className="form-label">Password</label>
+                          <input
+                            type="password"
+                            className="form-control"
+                            placeholder="**************"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                          />
+                        </div>
 
-                    <div className="mb-3">
-                      <label className="form-label">Password</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="**************"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
+                        <div className="mb-3">
+                          <label className="form-label">Confirm Password</label>
+                          <input
+                            type="password"
+                            className="form-control"
+                            placeholder="**************"
+                            value={confirm}
+                            onChange={(e) => setConfirm(e.target.value)}
+                            required
+                          />
+                        </div>
 
-                    <div className="mb-3">
-                      <label className="form-label">Confirm Password</label>
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="**************"
-                        value={confirm}
-                        onChange={(e) => setConfirm(e.target.value)}
-                        required
-                      />
-                    </div>
+                        {/* PHONE INPUT - Optional profile info only */}
+                        <div className="mb-3">
+                          <label className="form-label">Phone Number (Optional)</label>
+                          <PhoneInput
+                            country={"ph"}
+                            value={phone}
+                            onChange={(phone) => setPhone(phone)}
+                            countryCodeEditable={false}
+                            inputStyle={{ width: "100%" }}
+                            masks={{ ph: '... ... ....' }}
+                            enableSearch={true}
+                          />
+                        </div>
 
-                    {/* Only admins can assign role */}
-                    {isAdmin && (
-                      <div className="mb-3">
-                        <label className="form-label">Role</label>
-                        <select
-                          className="form-select"
-                          value={role}
-                          onChange={(e) => setRole(e.target.value)}
+                        {/* Only admins can assign role */}
+                        {isAdmin && (
+                          <div className="mb-3">
+                            <label className="form-label">Role</label>
+                            <select
+                              className="form-select"
+                              value={role}
+                              onChange={(e) => setRole(e.target.value)}
+                            >
+                              <option value="user">User</option>
+                              <option value="admin">Admin</option>
+                            </select>
+                          </div>
+                        )}
+
+                        <div className="mb-1">
+                          <button type="submit" className="btn btn-signup w-100">
+                            Sign Up
+                          </button>
+                        </div>
+
+                        <div className="login-or">
+                          <span className="span-or">Or:</span>
+                        </div>
+
+                        <div className="d-flex align-items-center justify-content-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleProviderLogin(githubProvider)}
+                            className="register-social-btn w-100 d-flex align-items-center justify-content-center"
+                          >
+                            <img
+                              className="img-fluid m-1"
+                              src="/assets/github.svg"
+                              alt="GitHub"
+                              style={{ width: "24px", height: "24px" }}
+                            />
+                            <span className="ms-2">GitHub</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleProviderLogin(googleProvider)}
+                            className="register-social-btn w-100 d-flex align-items-center justify-content-center"
+                          >
+                            <img
+                              className="img-fluid m-1"
+                              src="/assets/google.svg"
+                              alt="Google"
+                              style={{ width: "24px", height: "24px" }}
+                            />
+                            <span className="ms-2">Google</span>
+                          </button>
+                        </div>
+
+                        <div className="text-center pt-3">
+                          <h6 className="fw-normal fs-14 mb-0">
+                            Already have an account?
+                            <Link to="/login" className="hover-a">
+                              {" "}
+                              Sign In
+                            </Link>
+                          </h6>
+                        </div>
+                      </>
+                    ) : (
+                      /* VERIFICATION WAITING SCREEN */
+                      <div className="text-center py-4">
+                        <div className="mb-4">
+                          <i className="bi bi-envelope-check" style={{ fontSize: "4rem", color: "#4CAF50" }}></i>
+                        </div>
+                        <h5 className="mb-3">Verify Your Email</h5>
+                        <p className="mb-3">
+                          We've sent a verification link to:<br />
+                          <strong>{userEmail}</strong>
+                        </p>
+                        <p className="text-muted mb-4">
+                          Please check your inbox and click the verification link to continue.
+                        </p>
+
+                        {errorMsg && (
+                          <div
+                            className={`alert alert-danger py-2 text-center fade-alert ${
+                              fadeOut ? "hide" : ""
+                            }`}
+                            role="alert"
+                          >
+                            {errorMsg}
+                          </div>
+                        )}
+                        {successMsg && (
+                          <div
+                            className={`alert alert-success py-2 text-center fade-alert ${
+                              fadeOut ? "hide" : ""
+                            }`}
+                            role="alert"
+                          >
+                            {successMsg}
+                          </div>
+                        )}
+
+                        <button
+                          type="button"
+                          className="btn btn-primary w-100 mb-2"
+                          onClick={handleCheckVerification}
                         >
-                          <option value="user">User</option>
-                          <option value="admin">Admin</option>
-                        </select>
+                          I've Verified My Email
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary w-100"
+                          onClick={handleResendVerification}
+                        >
+                          Resend Verification Email
+                        </button>
+
+                        <div className="text-center pt-3">
+                          <h6 className="fw-normal fs-14 mb-0">
+                            Wrong email?
+                            <button
+                              className="btn btn-link p-0 ms-1 hover-a"
+                              style={{ textDecoration: "none" }}
+                              onClick={() => {
+                                setAwaitingVerification(false);
+                                auth.signOut();
+                              }}
+                            >
+                              Sign up again
+                            </button>
+                          </h6>
+                        </div>
                       </div>
                     )}
-
-                    <div className="mb-1">
-                      <button type="submit" className="btn btn-signup w-100">
-                        Sign Up
-                      </button>
-                    </div>
-
-                    <div className="login-or">
-                      <span className="span-or">Or:</span>
-                    </div>
-
-                    <div className="d-flex align-items-center justify-content-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => handleProviderLogin(githubProvider)}
-                        className="register-social-btn w-100 d-flex align-items-center justify-content-center"
-                      >
-                        <img
-                          className="img-fluid m-1"
-                          src="/assets/github.svg"
-                          alt="GitHub"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                        <span className="ms-2">GitHub</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleProviderLogin(googleProvider)}
-                        className="register-social-btn w-100 d-flex align-items-center justify-content-center"
-                      >
-                        <img
-                          className="img-fluid m-1"
-                          src="/assets/google.svg"
-                          alt="Google"
-                          style={{ width: "24px", height: "24px" }}
-                        />
-                        <span className="ms-2">Google</span>
-                      </button>
-                    </div>
-
-                    <div className="text-center pt-3">
-                      <h6 className="fw-normal fs-14 mb-0">
-                        Already have an account?
-                        <Link to="/login" className="hover-a"> Sign In</Link>
-                      </h6>
-                    </div>
                   </div>
                 </div>
               </div>

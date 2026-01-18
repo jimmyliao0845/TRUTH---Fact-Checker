@@ -4,7 +4,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./analysis.css";
-import { FaBars } from "react-icons/fa";
+// Added FaBriefcase to the imports
+import { FaBars, FaDownload, FaShare, FaRedo, FaGamepad, FaCommentAlt, FaBriefcase } from "react-icons/fa";
 
 export default function AnalysisResultLoggedIn() {
   const navigate = useNavigate();
@@ -19,13 +20,15 @@ export default function AnalysisResultLoggedIn() {
   const fileType = location.state?.fileType || "";
   const existingResult = location.state?.result || null;
   
-  const [currentInput, setCurrentInput] = useState("");
   const [displayText, setDisplayText] = useState(textInput);
   const [displayPreview, setDisplayPreview] = useState(filePreview);
   const [displayFileName, setDisplayFileName] = useState(fileName);
   const [displayFileType, setDisplayFileType] = useState(fileType);
   const [analysisResult, setAnalysisResult] = useState(existingResult);
   const [isLoading, setIsLoading] = useState(false);
+  const [remarks, setRemarks] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   // Auth check
   useEffect(() => {
@@ -39,18 +42,14 @@ export default function AnalysisResultLoggedIn() {
 
   // Check for valid data on mount and clear if invalid (page refresh scenario)
   useEffect(() => {
-    // If we have a file preview but it's a blob URL, it will be invalid after refresh
     if (filePreview && filePreview.startsWith('blob:')) {
-      // Try to check if blob is still valid
       fetch(filePreview)
         .then(() => {
-          // Blob is valid, proceed with analysis if needed
           if (!existingResult && fileName && filePreview) {
             handleInitialAnalysis();
           }
         })
         .catch(() => {
-          // Blob is invalid (page was refreshed), clear everything
           console.log("🔄 Page refreshed - clearing stale data");
           setDisplayText("");
           setDisplayPreview("");
@@ -59,220 +58,257 @@ export default function AnalysisResultLoggedIn() {
           setAnalysisResult(null);
         });
     } else if (!existingResult && fileName && filePreview) {
-      // Non-blob preview or regular navigation
       handleInitialAnalysis();
     } else if (!filePreview && !textInput && existingResult) {
-      // Page refresh scenario: result exists but no valid input
       console.log("🔄 Page refreshed - clearing orphaned results");
       setAnalysisResult(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Toast notification
+  const showNotification = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   // Initial analysis for data passed from previous page
   const handleInitialAnalysis = async () => {
-    if (fileType.startsWith("image/")) {
-      // Image detection via backend
-      await detectImage(filePreview, fileName);
-    } else if (fileType.startsWith("video/")) {
-      // Video analysis placeholder
-      setIsLoading(true);
-      setTimeout(() => {
-        const mockData = {
-          summary: {
-            ai: Math.floor(Math.random() * 20),
-            human: Math.floor(Math.random() * 50) + 40,
-            mixed: Math.floor(Math.random() * 30)
-          },
-          status: "Complete"
-        };
-        setAnalysisResult(mockData);
-        setIsLoading(false);
-      }, 1500);
+    // Handle text input (typed text)
+    if (textInput && !fileName) {
+      console.log("📝 Analyzing text input...");
+      await detectText(textInput);
+      return;
     }
-    // Text analysis already has result from previous page
+  
+    // Handle file uploads
+    if (fileName && filePreview) {
+      // Images
+      if (fileType.startsWith("image/")) {
+        console.log("🖼️ Analyzing image...");
+        await detectImage(filePreview, fileName);
+      } 
+      // Videos (mock data for now)
+      else if (fileType.startsWith("video/")) {
+        console.log("🎥 Analyzing video (mock data)...");
+        setIsLoading(true);
+        setTimeout(() => {
+          const mockData = {
+            summary: {
+              ai: Math.floor(Math.random() * 20),
+              human: Math.floor(Math.random() * 50) + 40,
+              mixed: Math.floor(Math.random() * 30)
+            },
+            status: "Complete (Mock Data - Video detection not yet supported)"
+          };
+          setAnalysisResult(mockData);
+          setIsLoading(false);
+        }, 1500);
+      }
+      // Documents (DOCX, PDF, TXT, etc.)
+      else if (
+        fileType.includes("document") || 
+        fileType.includes("word") || 
+        fileType.includes("pdf") ||
+        fileType.includes("text") ||
+        fileName.endsWith(".docx") ||
+        fileName.endsWith(".pdf") ||
+        fileName.endsWith(".txt")
+      ) {
+        console.log("📄 Analyzing document...");
+        // Convert blob URL to actual blob
+        const response = await fetch(filePreview);
+        const blob = await response.blob();
+        await detectDocument(blob, fileName);
+      }
+      // Unknown file type
+      else {
+        console.log("⚠️ Unknown file type:", fileType);
+        showNotification("⚠️ Unsupported file type");
+        setAnalysisResult({
+          summary: { ai: 0, human: 0, mixed: 0 },
+          status: `Unsupported file type: ${fileType}`,
+          error: true
+        });
+      }
+    }
   };
 
   // Image detection function
   const detectImage = async (preview, name) => {
     try {
       setIsLoading(true);
-      console.log("🔍 Starting image detection...");
-
-      // Convert file preview to blob
+      console.log("🔍 Starting Copyleaks image detection...");
+  
       const response = await fetch(preview);
       const blob = await response.blob();
-
-      // Create FormData
+  
       const formData = new FormData();
       formData.append("file", blob, name);
-
-      // Call backend API
+  
       const res = await fetch("http://localhost:5000/api/detect/image", {
         method: "POST",
         body: formData,
       });
-
+  
       if (!res.ok) {
-        throw new Error(`API Error: ${res.status}`);
+        const errorData = await res.json();
+        throw new Error(errorData.message || `API Error: ${res.status}`);
       }
-
+  
       const data = await res.json();
-      console.log("✅ Detection complete:", data);
-
-      // Convert to percentage format
-      const mockData = {
+      console.log("✅ Copyleaks detection complete:", data);
+  
+      // Parse the response from backend
+      const aiPercent = data.ai_probability || 0;
+      const humanPercent = data.human_probability || 0;
+      const mixedPercent = Math.max(0, 100 - aiPercent - humanPercent);
+  
+      const resultData = {
         summary: {
-          ai: Math.round(data.ai_probability),
-          human: Math.round(data.human_probability),
-          mixed: 0
+          ai: aiPercent,
+          human: humanPercent,
+          mixed: mixedPercent
         },
         status: "Complete",
-        model: data.model,
-        scanId: data.scanId
+        model: data.model || "ai-image-1-ultra",
+        scanId: data.scanId,
+        timestamp: data.timestamp || new Date().toISOString(),
+        imageInfo: data.imageInfo
       };
       
-      setAnalysisResult(mockData);
+      setAnalysisResult(resultData);
       setIsLoading(false);
+      showNotification("✅ Analysis complete!");
+      
     } catch (err) {
-      console.error("❌ Detection error:", err);
-      // Use mock data on error
-      const mockData = {
+      console.error("❌ Copyleaks detection error:", err);
+      showNotification(`❌ Analysis failed: ${err.message}`);
+      
+      // Show error state instead of mock data in production
+      const errorData = {
         summary: {
-          ai: Math.floor(Math.random() * 40),
-          human: Math.floor(Math.random() * 50) + 30,
-          mixed: Math.floor(Math.random() * 20)
+          ai: 0,
+          human: 0,
+          mixed: 0
         },
-        status: "Error - Using Mock Data"
+        status: `Error: ${err.message}`,
+        error: true
       };
-      setAnalysisResult(mockData);
+      setAnalysisResult(errorData);
       setIsLoading(false);
     }
   };
-
-  // Handle file upload from this page
-  const handleFileUpload = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const allowedTypes = [
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "video/mp4",
-      "video/quicktime",
-      "video/x-matroska",
-      "video/webm"
-    ];
-
-    if (!allowedTypes.includes(file.type)) {
-      alert("Only DOCX, image, or video files are allowed!");
-      return;
-    }
-
-    console.log("Selected file:", file);
-
-    // Create preview URL
-    const preview = URL.createObjectURL(file);
-    
-    // Update display and RESET analysis result
-    setDisplayText("");
-    setDisplayPreview(preview);
-    setDisplayFileName(file.name);
-    setDisplayFileType(file.type);
-    setCurrentInput("");
-    setAnalysisResult(null); // Reset the previous analysis
-
-    // Analyze based on file type
-    if (file.type.startsWith("image/")) {
-      await detectImage(preview, file.name);
-    } else if (file.type.startsWith("video/")) {
-      setIsLoading(true);
-      setTimeout(() => {
-        const mockData = {
-          summary: {
-            ai: Math.floor(Math.random() * 20),
-            human: Math.floor(Math.random() * 50) + 40,
-            mixed: Math.floor(Math.random() * 30)
-          },
-          status: "Complete"
-        };
-        setAnalysisResult(mockData);
-        setIsLoading(false);
-      }, 1500);
-    }
-  };
-
-  // Handle text analysis with API (same as AnalysisPageLoggedIn)
-  const handleNewAnalysis = async () => {
-    if (!currentInput.trim()) {
-      alert("Please enter some text first!");
-      return;
-    }
-
-    setIsLoading(true);
-    setDisplayText(currentInput);
-    setDisplayPreview("");
-    setDisplayFileName("");
-    setDisplayFileType("");
-
+  
+  const detectText = async (text) => {
     try {
-      const scanId = `scan-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-      const response = await fetch(
-        `https://api.copyleaks.com/v2/writer-detector/${scanId}/check`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: currentInput }),
-        }
-      );
-
-      if (!response.ok) {
-        console.warn("API call failed, using mock data");
-        const mockData = {
-          summary: {
-            ai: Math.floor(Math.random() * 30),
-            human: Math.floor(Math.random() * 40) + 50,
-            mixed: Math.floor(Math.random() * 20)
-          },
-          status: "Complete"
-        };
-        setAnalysisResult(mockData);
-        setCurrentInput("");
-        setIsLoading(false);
-        return;
-      }
-
-      const data = await response.json();
-      console.log("API Response:", data);
-      setAnalysisResult(data);
-      setCurrentInput("");
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error calling API:", error);
-      const mockData = {
-        summary: {
-          ai: Math.floor(Math.random() * 30),
-          human: Math.floor(Math.random() * 40) + 50,
-          mixed: Math.floor(Math.random() * 20)
+      setIsLoading(true);
+      console.log("🔍 Starting Copyleaks text detection...");
+  
+      const res = await fetch("http://localhost:5000/api/detect/text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-        status: "Complete"
+        body: JSON.stringify({ text }),
+      });
+  
+      const data = await res.json();
+      console.log("Backend response:", data);
+  
+      if (!res.ok) {
+        throw new Error(data.message || data.error || `API Error: ${res.status}`);
+      }
+  
+      console.log("✅ Copyleaks text detection complete:", data);
+  
+      const aiPercent = data.ai_probability || 0;
+      const humanPercent = data.human_probability || 0;
+      const mixedPercent = data.mixed_probability || Math.max(0, 100 - aiPercent - humanPercent);
+  
+      const resultData = {
+        summary: {
+          ai: aiPercent,
+          human: humanPercent,
+          mixed: mixedPercent
+        },
+        status: "Complete",
+        scanId: data.scanId,
+        timestamp: data.timestamp || new Date().toISOString()
       };
-      setAnalysisResult(mockData);
-      setCurrentInput("");
+      
+      setAnalysisResult(resultData);
+      setIsLoading(false);
+      showNotification("✅ Text analysis complete!");
+      
+    } catch (err) {
+      console.error("❌ Text detection error:", err);
+      showNotification(`❌ Analysis failed: ${err.message}`);
+      
+      const errorData = {
+        summary: { ai: 0, human: 0, mixed: 0 },
+        status: `Error: ${err.message}`,
+        error: true
+      };
+      setAnalysisResult(errorData);
       setIsLoading(false);
     }
   };
 
-  // Handle Enter key
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      handleNewAnalysis();
+  const detectDocument = async (fileBlob, fileName) => {
+    try {
+      setIsLoading(true);
+      console.log("🔍 Starting document detection for:", fileName);
+  
+      const formData = new FormData();
+      formData.append("file", fileBlob, fileName);
+  
+      const res = await fetch("http://localhost:5000/api/detect/document", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await res.json();
+      console.log("Backend response:", data);
+  
+      if (!res.ok) {
+        throw new Error(data.message || data.error || `API Error: ${res.status}`);
+      }
+  
+      console.log("✅ Document detection complete:", data);
+  
+      const aiPercent = data.ai_probability || 0;
+      const humanPercent = data.human_probability || 0;
+      const mixedPercent = data.mixed_probability || Math.max(0, 100 - aiPercent - humanPercent);
+  
+      const resultData = {
+        summary: {
+          ai: aiPercent,
+          human: humanPercent,
+          mixed: mixedPercent
+        },
+        status: "Complete",
+        scanId: data.scanId,
+        timestamp: data.timestamp || new Date().toISOString(),
+        documentInfo: data.documentInfo
+      };
+      
+      setAnalysisResult(resultData);
+      setIsLoading(false);
+      showNotification("✅ Document analysis complete!");
+      
+    } catch (err) {
+      console.error("❌ Document detection error:", err);
+      showNotification(`❌ Analysis failed: ${err.message}`);
+      
+      const errorData = {
+        summary: { ai: 0, human: 0, mixed: 0 },
+        status: `Error: ${err.message}`,
+        error: true
+      };
+      setAnalysisResult(errorData);
+      setIsLoading(false);
     }
   };
 
@@ -290,204 +326,550 @@ export default function AnalysisResultLoggedIn() {
 
   const percentages = getAnalysisPercentages();
 
+  // Determine overall verdict
+  const getVerdict = () => {
+    if (percentages.human > percentages.ai && percentages.human > percentages.mixed) {
+      return { text: "Likely Human-Written", color: "#28a745", icon: "✓" };
+    } else if (percentages.ai > percentages.human && percentages.ai > percentages.mixed) {
+      return { text: "Likely AI-Generated", color: "#dc3545", icon: "⚠" };
+    } else {
+      return { text: "Mixed Content", color: "#ffc107", icon: "◐" };
+    }
+  };
+
+  const verdict = getVerdict();
+
+  // Download result as text file
+  const handleDownloadResult = () => {
+    if (!analysisResult) {
+      showNotification("No result to download!");
+      return;
+    }
+
+    const resultText = `
+T.R.U.T.H Analysis Report
+========================
+Generated: ${new Date().toLocaleString()}
+
+INPUT CONTENT:
+${displayText || displayFileName || "File uploaded"}
+
+ANALYSIS RESULTS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- AI-Generated:    ${percentages.ai}%
+- Human-Written:   ${percentages.human}%
+- Mixed Content:   ${percentages.mixed}%
+
+VERDICT: ${verdict.text}
+Status: ${analysisResult.status || "Complete"}
+
+REMARKS:
+${remarks || "No remarks provided"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Report generated by T.R.U.T.H Detection System
+    `.trim();
+
+    const blob = new Blob([resultText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `TRUTH-Report-${Date.now()}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+    showNotification("Report downloaded successfully!");
+  };
+
+  // Share result (copy to clipboard)
+  const handleShareResult = () => {
+    if (!analysisResult) {
+      showNotification("No result to share!");
+      return;
+    }
+
+    const shareText = `T.R.U.T.H Analysis Results:\n━━━━━━━━━━━━━━━━━━━━━━\n🤖 AI: ${percentages.ai}% | 👤 Human: ${percentages.human}% | ◐ Mixed: ${percentages.mixed}%\n\nVerdict: ${verdict.text}`;
+    navigator.clipboard.writeText(shareText).then(() => {
+      showNotification("Results copied to clipboard!");
+    }).catch(() => {
+      showNotification("Failed to copy results");
+    });
+  };
+
+  // Another entry - navigate back to analysis page
+  const handleAnotherEntry = () => {
+    navigate("/analysis-logged");
+  };
+
   return (
-    <div className="d-flex" style={{ paddingTop: "56px" }}>
-      {/* Sidebar */}
-      <div 
-        className="d-flex flex-column p-3 border-end"
-        style={{
-          width: collapsed ? "80px" : "200px",
-          backgroundColor: "#8c8c8c",
-          transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
-          position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
-        }}
-      >
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <button
-            className="btn btn-outline-light btn-sm"
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ border: "none" }}
-          >
-            <FaBars />
-          </button>
+    <div className="d-flex" style={{ paddingTop: "56px", background: "white", minHeight: "100vh" }}>
+      {/* Toast Notification */}
+      {showToast && (
+        <div 
+          style={{
+            position: "fixed",
+            top: "80px",
+            right: "20px",
+            zIndex: 9999,
+            backgroundColor: "#28a745",
+            color: "white",
+            padding: "15px 25px",
+            borderRadius: "10px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            animation: "slideIn 0.3s ease-out"
+          }}
+        >
+          {toastMessage}
         </div>
+      )}
 
-        {/* White Box */}
-        {!collapsed && <div className="white-box p-3 mt-3"></div>}
-      </div>
+      {/* Sidebar */}
+            <div 
+                    className="d-flex flex-column p-3 border-end"
+                    style={{
+                      width: collapsed ? "80px" : "200px",
+                      backgroundColor: "#d9d9d9",
+                      transition: "width 0.3s ease",
+                      height: "calc(100vh - 56px)",
+                      position: "fixed",
+                      top: "56px",
+                      left: 0,
+                      overflowY: "auto",
+                      boxShadow: "2px 0 10px rgba(0,0,0,0.1)"
+                    }}
+                  >
+                    <div className="d-flex align-items-center justify-content-between mb-3">
+                      <button
+                        className="btn btn-outline-dark btn-sm"
+                        onClick={() => setCollapsed(!collapsed)}
+                        style={{ border: "none" }}
+                      >
+                        <FaBars />
+                      </button>
+                    </div>
+            
+                    {!collapsed && <div className="white-box p-3 mt-3"></div>}
+                    
+                    {/* Action Buttons Integration */}
+                    <div className="d-flex flex-column gap-3 mt-2">
+                      <button 
+                        className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
+                        onClick={() => navigate("/game")}
+                        style={{ transition: "0.2s" }}
+                      >
+                        <FaGamepad size={20} />
+                        {!collapsed && <span className="ms-3">Find and Play Game</span>}
+                      </button>
+            
+                      <button 
+                        className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
+                        onClick={() => navigate("/feedback")}
+                      >
+                        <FaCommentAlt size={18} />
+                        {!collapsed && <span className="ms-3">User Feedback</span>}
+                      </button>
 
+                      {/* NEW BUTTON INSERTED HERE */}
+                      <button 
+                        className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
+                        onClick={() => navigate("/factcheckerdashboard")}
+                      >
+                        <FaBriefcase size={18} />
+                        {!collapsed && <span className="ms-3">Go to Professional Dashboard</span>}
+                      </button>
+
+                    </div>
+                  </div>
+
+      {/* Main Content */}
       <div 
-        className="main-content flex-grow-1 bg-light text-dark p-4 position-relative"
+        className="flex-grow-1 d-flex flex-column align-items-center justify-content-center"
         style={{
           marginLeft: collapsed ? "80px" : "200px",
           transition: "margin-left 0.3s ease",
+          minHeight: "calc(100vh - 56px)",
+          padding: "2rem"
         }}
       >
-        {/* Title */}
-        <h4 className="fw-bold text-center mb-4">Talk With T.R.U.T.H</h4>
-
-        {/* Two Columns (Input Display + Analysis Result) */}
-        <div className="d-flex justify-content-center align-items-start mb-4 gap-4">
-          {/* Left Box - Input Display */}
-          <div
-            className="bg-white rounded shadow-sm p-3 text-center overflow-auto"
-            style={{ width: "400px", height: "200px", display: "flex", justifyContent: "center", alignItems: "center" }}
-          >
-            {displayPreview ? (
-              displayFileType.startsWith("image/") ? (
-                <img
-                  src={displayPreview}
-                  alt="Preview"
-                  className="img-fluid rounded"
-                  style={{ maxHeight: "180px" }}
-                />
-              ) : displayFileType.startsWith("video/") ? (
-                <video
-                  controls
-                  src={displayPreview}
-                  className="rounded"
-                  style={{ maxHeight: "180px", maxWidth: "100%" }}
-                />
-              ) : (
-                <div>
-                  <h6 className="fw-bold">File:</h6>
-                  <p>{displayFileName}</p>
-                </div>
-              )
-            ) : (
-              <div className="p-3">
-                <h6 className="fw-bold mb-2">Your Input:</h6>
-                <p style={{ fontSize: "0.9rem", lineHeight: "1.4" }}>
-                  {displayText || "Your input will appear here..."}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Right Box - Analysis Result */}
-          <div
-            className="border rounded shadow-sm p-3 bg-white overflow-auto"
-            style={{ width: "250px", height: "200px" }}
-          >
-            <h6 className="fw-bold mb-3 text-center">Analysis Report</h6>
-            {isLoading ? (
-              <div className="text-center">
-                <div className="spinner-border spinner-border-sm text-primary mb-2" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <p className="text-muted small">Analyzing...</p>
-              </div>
-            ) : analysisResult ? (
-              <div>
-                <div className="mb-2">
-                  <div className="d-flex justify-content-between align-items-center mb-1">
-                    <span className="small fw-semibold">AI-Generated:</span>
-                    <span className="small fw-bold text-danger">{percentages.ai}%</span>
-                  </div>
-                  <div className="progress" style={{ height: "8px" }}>
-                    <div
-                      className="progress-bar bg-danger"
-                      role="progressbar"
-                      style={{ width: `${percentages.ai}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div className="mb-2">
-                  <div className="d-flex justify-content-between align-items-center mb-1">
-                    <span className="small fw-semibold">Human-Written:</span>
-                    <span className="small fw-bold text-success">{percentages.human}%</span>
-                  </div>
-                  <div className="progress" style={{ height: "8px" }}>
-                    <div
-                      className="progress-bar bg-success"
-                      role="progressbar"
-                      style={{ width: `${percentages.human}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div className="mb-2">
-                  <div className="d-flex justify-content-between align-items-center mb-1">
-                    <span className="small fw-semibold">Mixed:</span>
-                    <span className="small fw-bold text-warning">{percentages.mixed}%</span>
-                  </div>
-                  <div className="progress" style={{ height: "8px" }}>
-                    <div
-                      className="progress-bar bg-warning"
-                      role="progressbar"
-                      style={{ width: `${percentages.mixed}%` }}
-                    ></div>
-                  </div>
-                </div>
-
-                <div className="mt-3 text-center">
-                  <p className="small text-muted mb-0">
-                    Status: <span className="fw-bold">{analysisResult.status || "Complete"}</span>
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <p className="text-center text-muted small">
-                Result will appear here
-              </p>
-            )}
-          </div>
+        {/* Header */}
+        <div className="text-center mb-4" style={{ animation: "fadeIn 0.6s ease-in" }}>
+          <h2 className="fw-bold d-inline-flex align-items-center gap-2" style={{ color: "#000000ff" }}>
+            <span>Analyze with</span>
+            <img 
+              src="/assets/digima_logo.svg" 
+              alt="T.R.U.T.H Logo" 
+              style={{ width: "45px", height: "45px" }}
+            />
+            <span style={{ 
+              background: "black",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent"
+            }}>T.R.U.T.H</span>
+          </h2>
         </div>
 
-        {/* Text Input Section */}
-        <div
-          className="bg-white p-4 rounded shadow-sm mx-auto"
-          style={{ width: "80%" }}
+        {/* Main Content Box */}
+        <div 
+          className="rounded-4 p-4"
+          style={{ 
+            width: "95%", 
+            maxWidth: "1300px",
+            backgroundColor: "white",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+            animation: "fadeInUp 0.6s ease-out"
+          }}
         >
-          <label htmlFor="text-input" className="form-label">
-            Enter your Text
-          </label>
-          <textarea
-            id="text-input"
-            className="form-control mb-3"
-            rows="3"
-            placeholder="Type or paste your text here..."
-            value={currentInput}
-            onChange={(e) => setCurrentInput(e.target.value)}
-            onKeyDown={handleKeyPress}
-            disabled={isLoading}
-          ></textarea>
+          {/* Verdict Badge */}
+          {analysisResult && (
+            <div className="text-center mb-4">
+              <div 
+                className="d-inline-block px-4 py-2 rounded-pill"
+                style={{
+                  backgroundColor: `${verdict.color}15`,
+                  border: `2px solid ${verdict.color}`,
+                  color: verdict.color,
+                  fontWeight: "600",
+                  fontSize: "1.1rem"
+                }}
+              >
+                {verdict.icon} {verdict.text}
+              </div>
+            </div>
+          )}
 
-          {/* Buttons */}
-          <div className="d-flex justify-content-center gap-3 flex-wrap">
-            <button
-              className="btn btn-dark px-4"
-              onClick={handleNewAnalysis}
-              disabled={isLoading}
+          {/* Grid Layout - 3 Boxes */}
+          <div className="row g-4 mb-4">
+            {/* Your Input - Left Box */}
+            <div className="col-lg-6">
+              <div 
+                className="rounded-3 p-4 h-100"
+                style={{ 
+                  minHeight: "350px",
+                  background: "white",
+                  border: "2px solid #e9ecef"
+                }}
+              >
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <h5 className="fw-bold mb-0" style={{ color: "#000000ff" }}>
+                    📄 Your Input
+                  </h5>
+                  {displayFileName && (
+                    <span className="badge bg-secondary">{displayFileType.split('/')[0]}</span>
+                  )}
+                </div>
+                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "280px" }}>
+                  {displayPreview ? (
+                    displayFileType.startsWith("image/") ? (
+                      <img
+                        src={displayPreview}
+                        alt="Preview"
+                        className="img-fluid rounded-3"
+                        style={{ 
+                          maxHeight: "280px", 
+                          maxWidth: "100%",
+                          boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
+                        }}
+                      />
+                    ) : displayFileType.startsWith("video/") ? (
+                      <video
+                        controls
+                        src={displayPreview}
+                        className="rounded-3"
+                        style={{ 
+                          maxHeight: "280px", 
+                          maxWidth: "100%",
+                          boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
+                        }}
+                      />
+                    ) : (
+                      <div className="text-center p-3">
+                        <div className="mb-3" style={{ fontSize: "3rem" }}>📎</div>
+                        <h6 className="fw-bold">File Uploaded</h6>
+                        <p className="text-muted small">{displayFileName}</p>
+                      </div>
+                    )
+                  ) : (
+                    <div className="text-center p-4" style={{ maxHeight: "280px", overflowY: "auto", width: "100%" }}>
+                      <p style={{ 
+                        fontSize: "0.95rem", 
+                        lineHeight: "1.8",
+                        color: "#495057",
+                        textAlign: "left",
+                        whiteSpace: "pre-wrap"
+                      }}>
+                        {displayText || "Your input content will appear here..."}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Input Analysis and Remarks */}
+            <div className="col-lg-6">
+              <div className="d-flex flex-column gap-4 h-100">
+                {/* Input Analysis - Top Right Box */}
+                <div 
+                  className="rounded-3 p-4"
+                  style={{ 
+                    flex: 1,
+                    background: "white",
+                    border: "2px solid #e9ecef"
+                  }}
+                >
+                  <h5 className="fw-bold mb-3" style={{ color: "#000000ff" }}>
+                    📊 Analysis Results
+                  </h5>
+                  {isLoading ? (
+                    <div className="text-center py-5">
+                      <div className="spinner-border text-primary mb-3" style={{ width: "3rem", height: "3rem" }} role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                      <p className="text-muted fw-semibold">Analyzing your content...</p>
+                      <p className="text-muted small">This may take a few moments</p>
+                    </div>
+                  ) : analysisResult ? (
+                    <div>
+                      {/* AI-Generated */}
+                      <div className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <span className="fw-semibold" style={{ color: "#000000ff" }}>
+                            🤖 AI-Generated
+                          </span>
+                          <span className="fw-bold fs-5" style={{ color: "#000000ff" }}>
+                            {percentages.ai}%
+                          </span>
+                        </div>
+                        <div className="progress" style={{ height: "14px", borderRadius: "10px", backgroundColor: "#f8d7da" }}>
+                          <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ 
+                              width: `${percentages.ai}%`,
+                              background: "linear-gradient(90deg, #dc3545 0%, #c82333 100%)",
+                              transition: "width 1s ease-in-out"
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Human-Written */}
+                      <div className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <span className="fw-semibold" style={{ color: "#000000ff" }}>
+                            👤 Human-Written
+                          </span>
+                          <span className="fw-bold fs-5" style={{ color: "#000000ff" }}>
+                            {percentages.human}%
+                          </span>
+                        </div>
+                        <div className="progress" style={{ height: "14px", borderRadius: "10px", backgroundColor: "#d4edda" }}>
+                          <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ 
+                              width: `${percentages.human}%`,
+                              background: "linear-gradient(90deg, #28a745 0%, #218838 100%)",
+                              transition: "width 1s ease-in-out"
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      {/* Mixed */}
+                      <div className="mb-4">
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <span className="fw-semibold" style={{ color: "#000000ff" }}>
+                            ◐ Mixed Content
+                          </span>
+                          <span className="fw-bold fs-5" style={{ color: "#000000ff" }}>
+                            {percentages.mixed}%
+                          </span>
+                        </div>
+                        <div className="progress" style={{ height: "14px", borderRadius: "10px", backgroundColor: "#fff3cd" }}>
+                          <div
+                            className="progress-bar"
+                            role="progressbar"
+                            style={{ 
+                              width: `${percentages.mixed}%`,
+                              background: "linear-gradient(90deg, #ffc107 0%, #e0a800 100%)",
+                              transition: "width 1s ease-in-out"
+                            }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      <div className="text-center mt-4 p-3" style={{ backgroundColor: "#f8f9fa", borderRadius: "10px" }}>
+                        <p className="text-muted mb-1 small">Analysis Status</p>
+                        <p className="fw-bold mb-0" style={{ color: "#28a745" }}>
+                          ✓ {analysisResult.status || "Complete"}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-5">
+                      <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📈</div>
+                      <p className="text-muted">
+                        Analysis results will appear here
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Remarks - Bottom Right Box */}
+                <div 
+                  className="rounded-3 p-4"
+                  style={{ 
+                    flex: 1,
+                    background: "white",
+                    border: "2px solid #e9ecef"
+                  }}
+                >
+                  <h5 className="fw-bold mb-3" style={{ color: "#000000ff" }}>
+                    📝 Analysis Summary
+                  </h5>
+                  <div
+                    className="border-0 shadow-sm p-3"
+                    style={{ 
+                      height: "calc(100% - 50px)",
+                      fontSize: "0.95rem",
+                      backgroundColor: "#f8f9fa",
+                      borderRadius: "10px",
+                      overflowY: "auto",
+                      color: "#495057"
+                    }}
+                  >
+                    <p className="mb-2"><strong>Status:</strong> {analysisResult?.status || "Complete"}</p>
+                    <p className="mb-2"><strong>Scan ID:</strong> {analysisResult?.scanId || "N/A"}</p>
+                    <p className="mb-2"><strong>Timestamp:</strong> {analysisResult?.timestamp ? new Date(analysisResult.timestamp).toLocaleString() : "N/A"}</p>
+                    <hr className="my-3" />
+                    <p className="mb-1"><strong>Result:</strong> {verdict.text}</p>
+                    <p className="mb-0 small text-muted">Based on the analysis, this content shows {percentages.human}% human characteristics and {percentages.ai}% AI-generated patterns.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+            <button 
+              className="btn btn-lg px-5 py-3 d-flex align-items-center gap-2"
+              onClick={handleDownloadResult}
+              disabled={!analysisResult}
+              style={{
+                background: "black",
+                border: "none",
+                borderRadius: "15px",
+                color: "white",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+              onMouseOver={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.color = "black";
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "black";
+                e.currentTarget.style.color = "white";
+              }}
             >
-              {isLoading ? "Analyzing..." : "Enter Input"}
+              <FaDownload /> Download Report
             </button>
-
-            {/* Upload Button */}
-            <button
-              className="btn btn-dark px-4"
-              onClick={() => fileInputRef.current.click()}
-              disabled={isLoading}
+            <button 
+              className="btn btn-lg px-5 py-3 d-flex align-items-center gap-2"
+              onClick={handleShareResult}
+              disabled={!analysisResult}
+              style={{
+                background: "black",
+                border: "none",
+                borderRadius: "15px",
+                color: "white",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+              onMouseOver={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.color = "black";
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "black";
+                e.currentTarget.style.color = "white";
+              }}
             >
-              Upload File/s
+              <FaShare /> Share Results
             </button>
-
-            {/* Hidden file input - accepts images, videos, DOCX */}
-            <input
-              type="file"
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              accept=".docx,image/*,video/*"
-              onChange={handleFileUpload}
-            />
+            <button 
+              className="btn btn-lg px-5 py-3 d-flex align-items-center gap-2"
+              onClick={handleAnotherEntry}
+              style={{
+                background: "black",
+                border: "none",
+                borderRadius: "15px",
+                color: "white",
+                fontWeight: "600",
+                transition: "all 0.3s ease"
+              }}
+              onMouseOver={(e) => {
+                if (!isLoading) {
+                  e.currentTarget.style.backgroundColor = "white";
+                  e.currentTarget.style.color = "black";
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "black";
+                e.currentTarget.style.color = "white";
+              }}
+            >
+              <FaRedo /> New Analysis
+            </button>
           </div>
         </div>
       </div>
+
+      {/* CSS Animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+          
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes slideIn {
+            from {
+              transform: translateX(100%);
+              opacity: 0;
+            }
+            to {
+              transform: translateX(0);
+              opacity: 1;
+            }
+          }
+          
+          .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+        `}
+      </style>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,12 +8,19 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
-  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (currentUser) {
+        setUser({
+          ...currentUser,
+          avatar: currentUser.photoURL || "/assets/default-avatar.png",
+        });
+      } else {
+        setUser(null);
+      }
     });
+  
     return () => unsubscribe();
   }, []);
 
@@ -43,61 +50,8 @@ export default function Navbar() {
           T.R.U.T.H.
         </Link>
 
-        {/* Center: (optional tools dropdown placeholder) */}
-        <div className="d-none d-lg-flex position-absolute top-50 start-50 translate-middle">
-          <ul className="navbar-nav">
-            <li className="nav-item dropdown">
-              <ul
-                className="dropdown-menu shadow-lg"
-                style={{
-                  backgroundColor: "#09090d",
-                  borderRadius: "10px",
-                  border: "2px solid #3a305033",
-                }}
-              >
-                <li>
-                  <Link className="dropdown-item text-white" to="/deepfake">
-                    DeepFake Checker
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item text-white" to="/plagiarism">
-                    Plagiarism Checker
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item text-white" to="/fact-checker">
-                    Fact Checker
-                  </Link>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-
         {/* Right Side: Buttons / Profile */}
         <div className="d-flex align-items-center">
-          {/* 🔁 Dashboard ↔ Analysis Button */}
-          {user && (
-            <>
-              {location.pathname !== "/fact-checker-dashboard" ? (
-                <Link
-                  to="/fact-checker-dashboard"
-                  className="btn btn-outline-light rounded-pill px-3 py-1 me-3"
-                >
-                  <i className="bi bi-speedometer2 me-1"></i> Dashboard
-                </Link>
-              ) : (
-                <Link
-                  to="/analysis-logged"
-                  className="btn btn-outline-primary rounded-pill px-3 py-1 me-3"
-                >
-                  <i className="bi bi-arrow-left-circle me-1"></i> Back to Analysis
-                </Link>
-              )}
-            </>
-          )}
-
           {/* Auth Buttons or Profile */}
           {!user ? (
             <>
@@ -119,14 +73,21 @@ export default function Navbar() {
           ) : (
             <div className="dropdown">
               <img
-                src={user.photoURL || "/assets/default-avatar.png"}
+                src={user?.avatar || "/assets/default-avatar.png"}
                 alt="Profile"
                 className="rounded-circle"
-                width="40"
-                height="40"
-                style={{ cursor: "pointer" }}
+                width="42"
+                height="42"
+                style={{
+                  cursor: "pointer",
+                  objectFit: "cover",
+                  border: "2px solid rgba(255,255,255,0.2)",
+                }}
                 data-bs-toggle="dropdown"
-                aria-expanded="false"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/assets/default-avatar.png";
+                }}
               />
               <ul
                 className="dropdown-menu dropdown-menu-end p-3 shadow-lg"

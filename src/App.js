@@ -18,7 +18,7 @@ import ManageTutorial from "./ManageTutorial";
 
 // ✅ Admin Pages
 import AdminDashboard from "./AdminDashboard";
-import AdminUsers from "./AdminUsers"; // updated import
+import AdminUsers from "./AdminUsers"; 
 import AdminTutorialPage from "./AdminTutorialPage";
 import AdminReviewsPage from "./AdminReviewsPage";
 import VerificationLogsPage from "./VerificationLogsPage";
@@ -84,17 +84,12 @@ function AppContent() {
           element={<h1 className="text-center mt-5">Upload Page</h1>}
         />
 
-        {/* Fact Checker Dashboard */}
-        <Route path="/fact-checker-dashboard" element={<FactCheckerDashboard />} />
-        <Route path="/create-tutorial" element={<CreateTutorial />} />
-        <Route path="/manage-tutorial" element={<ManageTutorial />} />
-        <Route path="/user-feedback" element={<UserFeedbackPage />} />
-        <Route path="/verification-log" element={<VerificationLogsPage />} />
-        <Route path="/professional-report" element={<ProfessionalReportsPage />} />
-        <Route path="/professional-profile" element={<ProfessionalProfile />} />
+        {/* ✅ Fact Checker Dashboard - FIXED ROUTE TO MATCH BUTTON */}
+        <Route path="/factcheckerdashboard" element={<FactCheckerDashboard />} />
+
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/users" element={<AdminUsers />} /> {/* updated route */}
+        <Route path="/admin/users" element={<AdminUsers />} /> 
         <Route path="/admin/tutorials" element={<AdminTutorialPage />} />
         <Route path="/admin/reviews" element={<AdminReviewsPage />} />
       </Routes>
