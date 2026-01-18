@@ -85,7 +85,13 @@ function AppContent() {
         />
 
         {/* ✅ Fact Checker Dashboard - FIXED ROUTE TO MATCH BUTTON */}
-        <Route path="/factcheckerdashboard" element={<FactCheckerDashboard />} />
+        <Route path="/factcheckerdashboard" element={<FactCheckerDashboard />} />     
+        <Route path="/create-tutorial" element={<CreateTutorial />} />
+        <Route path="/manage-tutorial" element={<ManageTutorial />} />
+        <Route path="/verification-logs" element={<VerificationLogsPage />} />
+        <Route path="/user-feedback" element={<UserFeedbackPage />} />
+        <Route path="/professional-reports" element={<ProfessionalReportsPage />} />
+        <Route path="/professional-profile" element={<ProfessionalProfile />} />  
 
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
