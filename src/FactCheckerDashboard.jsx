@@ -259,7 +259,10 @@ export default function FactCheckerDashboard() {
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start">
+            <button 
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/create-tutorial")}
+            >
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
             </button>
@@ -278,7 +281,7 @@ export default function FactCheckerDashboard() {
           <li>
             <button
               className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("report")}
+              onClick={() => navigate("/professional/reports")}
             >
               <FaChartBar className="me-2" />
               {!collapsed && "Organized Reports"}
@@ -298,7 +301,7 @@ export default function FactCheckerDashboard() {
           <li>
             <button
               className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("feedback")}
+              onClick={() => navigate("/professional/user-feedback")}
             >
               <FaCommentDots className="me-2" />
               {!collapsed && "User Feedback"}
@@ -308,7 +311,7 @@ export default function FactCheckerDashboard() {
           <li>
             <button
               className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("logs")}
+              onClick={() => navigate("/professional/verification-logs")}
             >
               <FaClipboardList className="me-2" />
               {!collapsed && "Verification Logs"}
@@ -318,10 +321,10 @@ export default function FactCheckerDashboard() {
           <li>
             <button
               className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("profile")}
+              onClick={() => navigate("/professional/profile")}
             >
               <FaUserCog className="me-2" />
-              {!collapsed && "Profile Settings"}
+              {!collapsed && "Profile"}
             </button>
           </li>
 
