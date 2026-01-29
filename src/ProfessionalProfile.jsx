@@ -211,20 +211,25 @@ export default function ProfessionalProfile() {
       <div
         className="d-flex flex-column p-3 border-end"
         style={{
-          width: collapsed ? 80 : 250,
+          width: collapsed ? "80px" : "250px",
           backgroundColor: "#d9d9d9",
+          transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
-          transition: "width 0.3s ease",
+          top: "56px",
+          left: 0,
+          overflowY: "auto",
+          zIndex: 900
         }}
       >
-        <button className="btn btn-outline-dark btn-sm mb-3" onClick={() => setCollapsed(!collapsed)}>
+        <button className="btn btn-outline-dark btn-sm mb-3" 
+        onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
           <FaBars />
         </button>
 
-        <ul className="nav flex-column gap-1">
+        <ul className="nav flex-column">
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/dashboard")}>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}>
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
             </button>

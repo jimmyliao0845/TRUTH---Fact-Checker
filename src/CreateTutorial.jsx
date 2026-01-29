@@ -203,6 +203,7 @@ export default function CreateTutorialFull() {
           top: "56px",
           left: 0,
           overflowY: "auto",
+          zIndex: 900
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
