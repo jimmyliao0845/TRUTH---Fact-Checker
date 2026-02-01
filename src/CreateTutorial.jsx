@@ -213,6 +213,7 @@ export default function CreateTutorialFull() {
           </button>
         </div>
 
+        {/* Sidebar Menu */}
         <ul className="nav flex-column">
                   <li>
                     <button
@@ -226,8 +227,9 @@ export default function CreateTutorialFull() {
         
                   <li>
                     <button 
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/create-tutorial")}
+                      className={`btn sidebar-btn text-start ${location.pathname === "/professional/create-tutorial" ? "active" : ""}`}
+                      onClick={() => location.pathname !== "/professional/create-tutorial" && navigate("/professional/create-tutorial")}
+                      disabled={location.pathname === "/professional/create-tutorial"}
                     >
                       <FaPlusCircle className="me-2" />
                       {!collapsed && "Create Tutorial"}
@@ -257,7 +259,7 @@ export default function CreateTutorialFull() {
                   <li>
                     <button
                       className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/factcheckerdashboard/linked-users")}
+                      onClick={() => navigate("/professional/linked-users")}
                     >
                       <FaUsers className="me-2" />
                       {!collapsed && "Linked Users"}
@@ -294,7 +296,7 @@ export default function CreateTutorialFull() {
                     </button>
                   </li>
         
-                  {/* 🚀 NEW BUTTON: Go Back to Analysis Page (Updated: Removed text-danger) */}
+                  {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
                   <li className="mt-4 border-top pt-2">
                     <button
                       className="btn sidebar-btn text-start"

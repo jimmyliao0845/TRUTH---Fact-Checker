@@ -254,45 +254,78 @@ export default function VerificationLogsPage() {
           </button>
         </div>
 
+        {/* Sidebar Menu */}
         <ul className="nav flex-column">
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/factcheckerdashboard")}
+            >
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
             </button>
           </li>
+
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/create-tutorial")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/create-tutorial")}
+            >
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
             </button>
           </li>
+
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/manage-tutorial")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/manage-tutorial")}
+            >
               <FaEdit className="me-2" />
               {!collapsed && "Manage Tutorial"}
             </button>
           </li>
+
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/reports")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/reports")}
+            >
               <FaChartBar className="me-2" />
               {!collapsed && "Organized Reports"}
             </button>
           </li>
+
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/linked-users")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/linked-users")}
+            >
               <FaUsers className="me-2" />
               {!collapsed && "Linked Users"}
             </button>
           </li>
+
           <li>
+<<<<<<< HEAD
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
+=======
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/user-feedback")}
+            >
+>>>>>>> main
               <FaCommentDots className="me-2" />
               {!collapsed && "User Feedback"}
             </button>
           </li>
+
           <li>
+<<<<<<< HEAD
             <button 
+=======
+            <button
+>>>>>>> main
               className={`btn sidebar-btn text-start ${location.pathname === "/professional/verification-logs" ? "active" : ""}`}
               onClick={() => location.pathname !== "/professional/verification-logs" && navigate("/professional/verification-logs")}
               disabled={location.pathname === "/professional/verification-logs"}
@@ -301,14 +334,22 @@ export default function VerificationLogsPage() {
               {!collapsed && "Verification Logs"}
             </button>
           </li>
+
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/profile")}
+            >
               <FaUserCog className="me-2" />
               {!collapsed && "Profile"}
             </button>
           </li>
 
+<<<<<<< HEAD
           {/* Go Back to Analysis Page */}
+=======
+          {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
+>>>>>>> main
           <li className="mt-4 border-top pt-2">
             <button
               className="btn sidebar-btn text-start"
@@ -320,7 +361,11 @@ export default function VerificationLogsPage() {
           </li>
         </ul>
 
-        {!collapsed && <div className="mt-auto small text-muted">Verified professionals workspace</div>}
+        {!collapsed && (
+          <div className="mt-auto small text-muted">
+            Verified professionals workspace
+          </div>
+        )}
       </div>
 
       {/* Main content */}

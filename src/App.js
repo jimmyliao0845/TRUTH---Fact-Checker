@@ -15,6 +15,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import FactCheckerDashboard from "./FactCheckerDashboard";
 import CreateTutorial from "./CreateTutorial";
 import ManageTutorial from "./ManageTutorial";
+import LinkedUser from "./LinkedUser";
 
 // ✅ Admin Pages
 import AdminDashboard from "./AdminDashboard";
