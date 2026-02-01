@@ -1,6 +1,6 @@
 // ProfessionalProfile.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth"; // placeholder only
 import { auth } from "./firebase"; // placeholder only
 
@@ -10,20 +10,24 @@ import {
   FaTachometerAlt,
   FaPlusCircle,
   FaEdit,
+  FaChartBar,
   FaUsers,
   FaCommentDots,
+  FaClipboardList,
   FaUserCog,
   FaSearch,
   FaRegBookmark,
   FaBookmark,
   FaThumbsUp,
   FaShare,
+  FaArrowLeft,
 } from "react-icons/fa";
 
 import "./FactCheckerDashboard.css";
 
 export default function ProfessionalProfile() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   // ---------------- AUTH GUARD ----------------
@@ -218,6 +222,7 @@ export default function ProfessionalProfile() {
           transition: "width 0.3s ease",
         }}
       >
+<<<<<<< Updated upstream
         <button className="btn btn-outline-dark btn-sm mb-3" onClick={() => setCollapsed(!collapsed)}>
           <FaBars />
         </button>
@@ -225,6 +230,22 @@ export default function ProfessionalProfile() {
         <ul className="nav flex-column gap-1">
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/dashboard")}>
+=======
+        <div className="d-flex align-items-center justify-content-between mb-3">
+                  <button 
+                      className="btn btn-outline-dark btn-sm" 
+                      onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
+                    <FaBars />
+                  </button>
+                </div>
+        <ul className="nav flex-column">
+          <li>
+            <button 
+              className={`btn sidebar-btn text-start ${location.pathname === "/professional/profile" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/professional/profile" && navigate("/professional/profile")}
+              disabled={location.pathname === "/professional/profile"}
+            >
+>>>>>>> Stashed changes
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
             </button>
@@ -246,8 +267,8 @@ export default function ProfessionalProfile() {
 
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/reports")}>
-              <FaUserCog className="me-2" />
-              {!collapsed && "Organized Report"}
+              <FaChartBar className="me-2" />
+              {!collapsed && "Organized Reports"}
             </button>
           </li>
 
@@ -259,9 +280,38 @@ export default function ProfessionalProfile() {
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
+              <FaCommentDots className="me-2" />
+              {!collapsed && "User Feedback"}
+            </button>
+          </li>
+
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/verification-logs")}>
+              <FaClipboardList className="me-2" />
+              {!collapsed && "Verification Logs"}
+            </button>
+          </li>
+
+          <li>
+            <button 
+              className={`btn sidebar-btn text-start ${location.pathname === "/professional/profile" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/professional/profile" && navigate("/professional/profile")}
+              disabled={location.pathname === "/professional/profile"}
+            >
               <FaUserCog className="me-2" />
               {!collapsed && "Profile"}
+            </button>
+          </li>
+
+          {/* Go Back to Analysis Page */}
+          <li className="mt-4 border-top pt-2">
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Go Back to Analysis Page"}
             </button>
           </li>
         </ul>

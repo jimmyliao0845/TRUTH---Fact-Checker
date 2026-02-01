@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,6 +18,7 @@ import {
   FaFileCsv,
   FaEye,
   FaPlus,
+  FaArrowLeft,
 } from "react-icons/fa";
 import "./FactCheckerDashboard.css";
 
@@ -47,6 +48,7 @@ import "./FactCheckerDashboard.css";
 
 export default function VerificationLogsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   // Auth guard
@@ -243,6 +245,7 @@ export default function VerificationLogsPage() {
           top: "56px",
           left: 0,
           overflowY: "auto",
+          zIndex: 900
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
@@ -283,21 +286,36 @@ export default function VerificationLogsPage() {
             </button>
           </li>
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/feedback")}>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
               <FaCommentDots className="me-2" />
               {!collapsed && "User Feedback"}
             </button>
           </li>
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/logs")}>
+            <button 
+              className={`btn sidebar-btn text-start ${location.pathname === "/professional/verification-logs" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/professional/verification-logs" && navigate("/professional/verification-logs")}
+              disabled={location.pathname === "/professional/verification-logs"}
+            >
               <FaClipboardList className="me-2" />
-              {!collapsed && "Verification Data Logs"}
+              {!collapsed && "Verification Logs"}
             </button>
           </li>
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}>
               <FaUserCog className="me-2" />
-              {!collapsed && "Profile Settings"}
+              {!collapsed && "Profile"}
+            </button>
+          </li>
+
+          {/* Go Back to Analysis Page */}
+          <li className="mt-4 border-top pt-2">
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Go Back to Analysis Page"}
             </button>
           </li>
         </ul>

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
@@ -17,12 +17,14 @@ import {
   FaUserCog,
   FaSearch,
   FaDownload,
+  FaArrowLeft,
 } from "react-icons/fa";
 
 import "./FactCheckerDashboard.css";
 
 export default function ProfessionalReportsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   // --- AUTH GUARD ---
@@ -222,6 +224,7 @@ export default function ProfessionalReportsPage() {
           </button>
         </div>
         <ul className="nav flex-column">
+<<<<<<< Updated upstream
           {[
             { icon: <FaTachometerAlt />, label: "Dashboard", path: "/professional/dashboard" },
             { icon: <FaPlusCircle />, label: "Create Tutorial", path: "/professional/create-tutorial" },
@@ -236,6 +239,78 @@ export default function ProfessionalReportsPage() {
               </button>
             </li>
           ))}
+=======
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}>
+              <FaTachometerAlt className="me-2" />
+              {!collapsed && "Dashboard"}
+            </button>
+          </li>
+
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/create-tutorial")}>
+              <FaPlusCircle className="me-2" />
+              {!collapsed && "Create Tutorial"}
+            </button>
+          </li>
+
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/manage-tutorial")}>
+              <FaEdit className="me-2" />
+              {!collapsed && "Manage Tutorial"}
+            </button>
+          </li>
+
+          <li>
+            <button 
+              className={`btn sidebar-btn text-start ${location.pathname === "/professional/reports" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/professional/reports" && navigate("/professional/reports")}
+              disabled={location.pathname === "/professional/reports"}
+            >
+              <FaChartBar className="me-2" />
+              {!collapsed && "Organized Reports"}
+            </button>
+          </li>
+
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/linked-users")}>
+              <FaUsers className="me-2" />
+              {!collapsed && "Linked Users"}
+            </button>
+          </li>
+
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
+              <FaCommentDots className="me-2" />
+              {!collapsed && "User Feedback"}
+            </button>
+          </li>
+
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/verification-logs")}>
+              <FaClipboardList className="me-2" />
+              {!collapsed && "Verification Logs"}
+            </button>
+          </li>
+
+          <li>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}>
+              <FaUserCog className="me-2" />
+              {!collapsed && "Profile"}
+            </button>
+          </li>
+
+          {/* Go Back to Analysis Page */}
+          <li className="mt-4 border-top pt-2">
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Go Back to Analysis Page"}
+            </button>
+          </li>
+>>>>>>> Stashed changes
         </ul>
         {!collapsed && <div className="mt-auto small text-muted">Verified professionals workspace</div>}
       </div>

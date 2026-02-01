@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -13,11 +13,13 @@ import {
   FaCommentDots,
   FaClipboardList,
   FaUserCog,
+  FaArrowLeft,
 } from "react-icons/fa";
 import "./FactCheckerDashboard.css";
 
 export default function ManageTutorial() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   // ✅ Auth check
@@ -79,6 +81,7 @@ export default function ManageTutorial() {
           top: "56px",
           left: 0,
           overflowY: "auto",
+          zIndex: 900
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
@@ -93,14 +96,25 @@ export default function ManageTutorial() {
 
         {/* Sidebar Menu */}
         <ul className="nav flex-column">
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("dashboard")}><FaTachometerAlt className="me-2" />{!collapsed && "Dashboard"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("create-tutorial")}><FaPlusCircle className="me-2" />{!collapsed && "Create Tutorial"}</button></li>
-          <li><button className="btn sidebar-btn text-start active"><FaEdit className="me-2" />{!collapsed && "Manage Tutorial"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("reports")}><FaChartBar className="me-2" />{!collapsed && "Organized Reports"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("linked-users")}><FaUsers className="me-2" />{!collapsed && "Linked Users"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("feedback")}><FaCommentDots className="me-2" />{!collapsed && "User Feedback"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("logs")}><FaClipboardList className="me-2" />{!collapsed && "Verification Data Logs"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("profile")}><FaUserCog className="me-2" />{!collapsed && "Profile Settings"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}><FaTachometerAlt className="me-2" />{!collapsed && "Dashboard"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/create-tutorial")}><FaPlusCircle className="me-2" />{!collapsed && "Create Tutorial"}</button></li>
+          <li><button className={`btn sidebar-btn text-start ${location.pathname === "/professional/manage-tutorial" ? "active" : ""}`} onClick={() => location.pathname !== "/professional/manage-tutorial" && navigate("/professional/manage-tutorial")} disabled={location.pathname === "/professional/manage-tutorial"}><FaEdit className="me-2" />{!collapsed && "Manage Tutorial"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/reports")}><FaChartBar className="me-2" />{!collapsed && "Organized Reports"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/linked-users")}><FaUsers className="me-2" />{!collapsed && "Linked Users"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}><FaCommentDots className="me-2" />{!collapsed && "User Feedback"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/verification-logs")}><FaClipboardList className="me-2" />{!collapsed && "Verification Logs"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}><FaUserCog className="me-2" />{!collapsed && "Profile"}</button></li>
+
+          {/* Go Back to Analysis Page */}
+          <li className="mt-4 border-top pt-2">
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Go Back to Analysis Page"}
+            </button>
+          </li>
         </ul>
 
         {!collapsed && (

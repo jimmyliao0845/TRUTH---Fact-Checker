@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -38,6 +38,7 @@ import "./FactCheckerDashboard.css";
 
 export default function CreateTutorialFull() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   // Auth guard
@@ -212,41 +213,95 @@ export default function CreateTutorialFull() {
 
         <ul className="nav flex-column">
           <li>
+<<<<<<< Updated upstream
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth" })}>
+=======
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/factcheckerdashboard")}
+            >
+>>>>>>> Stashed changes
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
             </button>
           </li>
+<<<<<<< Updated upstream
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("create-tutorial")?.scrollIntoView({ behavior: "smooth" })}>
+=======
+
+          <li>
+            <button 
+              className={`btn sidebar-btn text-start ${location.pathname === "/professional/create-tutorial" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/professional/create-tutorial" && navigate("/professional/create-tutorial")}
+              disabled={location.pathname === "/professional/create-tutorial"}
+            >
+>>>>>>> Stashed changes
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
             </button>
           </li>
+<<<<<<< Updated upstream
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("manage-tutorial")?.scrollIntoView({ behavior: "smooth" })}>
+=======
+
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/manage-tutorial")}
+            >
+>>>>>>> Stashed changes
               <FaEdit className="me-2" />
               {!collapsed && "Manage Tutorial"}
             </button>
           </li>
+<<<<<<< Updated upstream
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("reports")?.scrollIntoView({ behavior: "smooth" })}>
+=======
+
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/reports")}
+            >
+>>>>>>> Stashed changes
               <FaChartBar className="me-2" />
               {!collapsed && "Organized Reports"}
             </button>
           </li>
+<<<<<<< Updated upstream
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("linked-users")?.scrollIntoView({ behavior: "smooth" })}>
+=======
+
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/linked-users")}
+            >
+>>>>>>> Stashed changes
               <FaUsers className="me-2" />
               {!collapsed && "Linked Users"}
             </button>
           </li>
+<<<<<<< Updated upstream
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("feedback")?.scrollIntoView({ behavior: "smooth" })}>
+=======
+
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/user-feedback")}
+            >
+>>>>>>> Stashed changes
               <FaCommentDots className="me-2" />
               {!collapsed && "User Feedback"}
             </button>
           </li>
+<<<<<<< Updated upstream
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("logs")?.scrollIntoView({ behavior: "smooth" })}>
               <FaClipboardList className="me-2" />
@@ -257,6 +312,37 @@ export default function CreateTutorialFull() {
             <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("profile")?.scrollIntoView({ behavior: "smooth" })}>
               <FaUserCog className="me-2" />
               {!collapsed && "Profile Settings"}
+=======
+
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/verification-logs")}
+            >
+              <FaClipboardList className="me-2" />
+              {!collapsed && "Verification Logs"}
+            </button>
+          </li>
+
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/profile")}
+            >
+              <FaUserCog className="me-2" />
+              {!collapsed && "Profile"}
+            </button>
+          </li>
+
+          {/* 🚀 NEW BUTTON: Go Back to Analysis Page (Updated: Removed text-danger) */}
+          <li className="mt-4 border-top pt-2">
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Go Back to Analysis Page"}
+>>>>>>> Stashed changes
             </button>
           </li>
         </ul>
