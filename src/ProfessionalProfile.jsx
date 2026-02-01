@@ -1,6 +1,6 @@
 // ProfessionalProfile.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth"; // placeholder only
 import { auth } from "./firebase"; // placeholder only
 
@@ -10,20 +10,24 @@ import {
   FaTachometerAlt,
   FaPlusCircle,
   FaEdit,
+  FaChartBar,
   FaUsers,
   FaCommentDots,
+  FaClipboardList,
   FaUserCog,
   FaSearch,
   FaRegBookmark,
   FaBookmark,
   FaThumbsUp,
   FaShare,
+  FaArrowLeft,
 } from "react-icons/fa";
 
 import "./FactCheckerDashboard.css";
 
 export default function ProfessionalProfile() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
   // ---------------- AUTH GUARD ----------------
@@ -222,56 +226,118 @@ export default function ProfessionalProfile() {
           zIndex: 900
         }}
       >
-        <button className="btn btn-outline-dark btn-sm mb-3" 
-        onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
-          <FaBars />
-        </button>
+        <div className="d-flex align-items-center justify-content-between mb-3">
+                  <button
+                    className="btn btn-outline-dark btn-sm"
+                    onClick={() => setCollapsed(!collapsed)}
+                    style={{ border: "none" }}
+                  >
+                    <FaBars />
+                  </button>
+                </div>
+        
 
+        {/* Sidebar Menu */}
         <ul className="nav flex-column">
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}>
+            <button
+              className={`btn sidebar-btn text-start ${location.pathname === "/factcheckerdashboard" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/factcheckerdashboard" && navigate("/factcheckerdashboard")}
+              disabled={location.pathname === "/factcheckerdashboard"}
+            >
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
             </button>
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/create-tutorial")}>
+            <button 
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/create-tutorial")}
+            >
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
             </button>
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/manage-tutorial")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/manage-tutorial")}
+            >
               <FaEdit className="me-2" />
               {!collapsed && "Manage Tutorial"}
             </button>
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/reports")}>
-              <FaUserCog className="me-2" />
-              {!collapsed && "Organized Report"}
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/reports")}
+            >
+              <FaChartBar className="me-2" />
+              {!collapsed && "Organized Reports"}
             </button>
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/linked-users")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/linked-users")}
+            >
               <FaUsers className="me-2" />
               {!collapsed && "Linked Users"}
             </button>
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/user-feedback")}
+            >
+              <FaCommentDots className="me-2" />
+              {!collapsed && "User Feedback"}
+            </button>
+          </li>
+
+          <li>
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/verification-logs")}
+            >
+              <FaClipboardList className="me-2" />
+              {!collapsed && "Verification Logs"}
+            </button>
+          </li>
+
+          <li>
+            <button
+              className={`btn sidebar-btn text-start ${location.pathname === "/professional/profile" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/professional/profile" && navigate("/professional/profile")}
+              disabled={location.pathname === "/professional/profile"}
+            >
               <FaUserCog className="me-2" />
               {!collapsed && "Profile"}
             </button>
           </li>
+
+          {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
+          <li className="mt-4 border-top pt-2">
+            <button
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Go Back to Analysis Page"}
+            </button>
+          </li>
         </ul>
 
-        {!collapsed && <div className="mt-auto small text-muted">Verified professionals workspace</div>}
+        {!collapsed && (
+          <div className="mt-auto small text-muted">
+            Verified professionals workspace
+          </div>
+        )}
       </div>
 
       {/* MAIN */}
