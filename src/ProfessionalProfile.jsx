@@ -222,7 +222,6 @@ export default function ProfessionalProfile() {
           transition: "width 0.3s ease",
         }}
       >
-<<<<<<< Updated upstream
         <button className="btn btn-outline-dark btn-sm mb-3" onClick={() => setCollapsed(!collapsed)}>
           <FaBars />
         </button>
@@ -230,22 +229,6 @@ export default function ProfessionalProfile() {
         <ul className="nav flex-column gap-1">
           <li>
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/dashboard")}>
-=======
-        <div className="d-flex align-items-center justify-content-between mb-3">
-                  <button 
-                      className="btn btn-outline-dark btn-sm" 
-                      onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
-                    <FaBars />
-                  </button>
-                </div>
-        <ul className="nav flex-column">
-          <li>
-            <button 
-              className={`btn sidebar-btn text-start ${location.pathname === "/professional/profile" ? "active" : ""}`}
-              onClick={() => location.pathname !== "/professional/profile" && navigate("/professional/profile")}
-              disabled={location.pathname === "/professional/profile"}
-            >
->>>>>>> Stashed changes
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
             </button>
