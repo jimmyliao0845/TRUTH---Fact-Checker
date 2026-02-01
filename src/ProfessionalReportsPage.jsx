@@ -216,36 +216,70 @@ export default function ProfessionalReportsPage() {
           top: "56px",
           left: 0,
           overflowY: "auto",
+          zIndex: 900
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <button className="btn btn-outline-dark btn-sm" onClick={() => setCollapsed(!collapsed)}>
+          <button 
+             className="btn btn-outline-dark btn-sm" 
+             onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
             <FaBars />
           </button>
         </div>
         <ul className="nav flex-column">
-          {[
-            { icon: <FaTachometerAlt />, label: "Dashboard", path: "/professional/dashboard" },
-            { icon: <FaPlusCircle />, label: "Create Tutorial", path: "/professional/create-tutorial" },
-            { icon: <FaEdit />, label: "Manage Tutorial", path: "/professional/manage-tutorial" },
-            { icon: <FaChartBar />, label: "Organized Reports", path: "/professional/reports" },
-            { icon: <FaUsers />, label: "Linked Users", path: "/professional/linked-users" },
-            { icon: <FaUserCog />, label: "Profile Settings", path: "/professional/profile" },
-          ].map((item, idx) => (
-            <li key={idx}>
-              <button className="btn sidebar-btn text-start" onClick={() => navigate(item.path)}>
-                {item.icon} {!collapsed && <span className="ms-2">{item.label}</span>}
-              </button>
-            </li>
-          ))}
-        </ul>
+                  <li>
+                    <button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}>
+                      <FaTachometerAlt className="me-2" />
+                      {!collapsed && "Dashboard"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/create-tutorial")}>
+                      <FaPlusCircle className="me-2" />
+                      {!collapsed && "Create Tutorial"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/manage-tutorial")}>
+                      <FaEdit className="me-2" />
+                      {!collapsed && "Manage Tutorial"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/reports")}>
+                      <FaUserCog className="me-2" />
+                      {!collapsed && "Organized Report"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/linked-users")}>
+                      <FaUsers className="me-2" />
+                      {!collapsed && "Linked Users"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}>
+                      <FaUserCog className="me-2" />
+                      {!collapsed && "Profile"}
+                    </button>
+                  </li>
+                </ul>
         {!collapsed && <div className="mt-auto small text-muted">Verified professionals workspace</div>}
       </div>
 
       {/* MAIN CONTENT */}
       <div
         className="flex-grow-1"
-        style={{ marginLeft: collapsed ? "80px" : "250px", transition: "margin-left 0.3s ease" }}
+        style={{
+          marginLeft: collapsed ? "80px" : "250px",
+          transition: "margin-left 0.3s ease",
+          minHeight: "100vh",
+        }}
       >
         {/* NAVBAR */}
         <nav

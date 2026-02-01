@@ -230,7 +230,7 @@ export default function UserFeedbackPage() {
 
         <ul className="nav flex-column">
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/dashboard")}>
+            <button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}>
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
             </button>

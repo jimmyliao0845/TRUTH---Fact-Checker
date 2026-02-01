@@ -194,7 +194,7 @@ const handleFileUpload = (event) => {
       
                 <button 
                   className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
-                  onClick={() => navigate("/feedback")}
+                  onClick={() => navigate("/professional/user-feedback")}
                 >
                   <FaCommentAlt size={18} />
                   {!collapsed && <span className="ms-3">User Feedback</span>}

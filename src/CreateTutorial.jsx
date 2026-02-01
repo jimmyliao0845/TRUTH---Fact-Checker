@@ -16,6 +16,7 @@ import {
   FaSave,
   FaUpload,
   FaCloudUploadAlt,
+  FaArrowLeft,
 } from "react-icons/fa";
 import "./FactCheckerDashboard.css";
 
@@ -203,6 +204,7 @@ export default function CreateTutorialFull() {
           top: "56px",
           left: 0,
           overflowY: "auto",
+          zIndex: 900
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
@@ -212,55 +214,97 @@ export default function CreateTutorialFull() {
         </div>
 
         <ul className="nav flex-column">
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("dashboard")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaTachometerAlt className="me-2" />
-              {!collapsed && "Dashboard"}
-            </button>
-          </li>
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("create-tutorial")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaPlusCircle className="me-2" />
-              {!collapsed && "Create Tutorial"}
-            </button>
-          </li>
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("manage-tutorial")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaEdit className="me-2" />
-              {!collapsed && "Manage Tutorial"}
-            </button>
-          </li>
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("reports")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaChartBar className="me-2" />
-              {!collapsed && "Organized Reports"}
-            </button>
-          </li>
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("linked-users")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaUsers className="me-2" />
-              {!collapsed && "Linked Users"}
-            </button>
-          </li>
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("feedback")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaCommentDots className="me-2" />
-              {!collapsed && "User Feedback"}
-            </button>
-          </li>
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("logs")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaClipboardList className="me-2" />
-              {!collapsed && "Verification Data Logs"}
-            </button>
-          </li>
-          <li>
-            <button className="btn sidebar-btn text-start" onClick={() => document.getElementById("profile")?.scrollIntoView({ behavior: "smooth" })}>
-              <FaUserCog className="me-2" />
-              {!collapsed && "Profile Settings"}
-            </button>
-          </li>
-        </ul>
+                  <li>
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/factcheckerdashboard")}
+                    >
+                      <FaTachometerAlt className="me-2" />
+                      {!collapsed && "Dashboard"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button 
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/professional/create-tutorial")}
+                    >
+                      <FaPlusCircle className="me-2" />
+                      {!collapsed && "Create Tutorial"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/professional/manage-tutorial")}
+                    >
+                      <FaEdit className="me-2" />
+                      {!collapsed && "Manage Tutorial"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/professional/reports")}
+                    >
+                      <FaChartBar className="me-2" />
+                      {!collapsed && "Organized Reports"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/factcheckerdashboard/linked-users")}
+                    >
+                      <FaUsers className="me-2" />
+                      {!collapsed && "Linked Users"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/professional/user-feedback")}
+                    >
+                      <FaCommentDots className="me-2" />
+                      {!collapsed && "User Feedback"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/professional/verification-logs")}
+                    >
+                      <FaClipboardList className="me-2" />
+                      {!collapsed && "Verification Logs"}
+                    </button>
+                  </li>
+        
+                  <li>
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/professional/profile")}
+                    >
+                      <FaUserCog className="me-2" />
+                      {!collapsed && "Profile"}
+                    </button>
+                  </li>
+        
+                  {/* 🚀 NEW BUTTON: Go Back to Analysis Page (Updated: Removed text-danger) */}
+                  <li className="mt-4 border-top pt-2">
+                    <button
+                      className="btn sidebar-btn text-start"
+                      onClick={() => navigate("/analysis")}
+                    >
+                      <FaArrowLeft className="me-2" />
+                      {!collapsed && "Go Back to Analysis Page"}
+                    </button>
+                  </li>
+                </ul>
 
         {!collapsed && <div className="mt-auto small text-muted">Verified professionals workspace</div>}
       </div>
