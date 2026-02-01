@@ -25,6 +25,12 @@ import VerificationLogsPage from "./VerificationLogsPage";
 import UserFeedbackPage from "./UserFeedbackpage(Professional)";
 import ProfessionalReportsPage from "./ProfessionalReportsPage";
 import ProfessionalProfile from "./ProfessionalProfile";
+import LinkedUser from "./LinkedUser";
+
+// ✅ General User Pages
+import GeneralUserProfile from "./GeneralUserProfile";
+import GamePage from "./GamePage";
+import FeedbackPage from "./FeedbackPage";
 
 // Component to handle loading state on route changes
 function AppContent() {
@@ -91,13 +97,19 @@ function AppContent() {
         <Route path="/professional/verification-logs" element={<VerificationLogsPage />} />
         <Route path="/professional/user-feedback" element={<UserFeedbackPage />} />
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
-        <Route path="/professional/profile" element={<ProfessionalProfile />} />  
+        <Route path="/professional/profile" element={<ProfessionalProfile />} />
+        <Route path="/professional/linked-users" element={<LinkedUser />} />  
 
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<AdminUsers />} /> 
         <Route path="/admin/tutorials" element={<AdminTutorialPage />} />
         <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+
+        {/* ✅ General User Pages */}
+        <Route path="/general-user-profile" element={<GeneralUserProfile />} />
+        <Route path="/game-page" element={<GamePage />} />
+        <Route path="/feedback-page" element={<FeedbackPage />} />
       </Routes>
     </>
   );
