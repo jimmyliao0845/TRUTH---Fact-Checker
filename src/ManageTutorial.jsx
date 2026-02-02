@@ -96,7 +96,6 @@ export default function ManageTutorial() {
 
         {/* Sidebar Menu */}
         <ul className="nav flex-column">
-<<<<<<< HEAD
           <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}><FaTachometerAlt className="me-2" />{!collapsed && "Dashboard"}</button></li>
           <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/create-tutorial")}><FaPlusCircle className="me-2" />{!collapsed && "Create Tutorial"}</button></li>
           <li><button className={`btn sidebar-btn text-start ${location.pathname === "/professional/manage-tutorial" ? "active" : ""}`} onClick={() => location.pathname !== "/professional/manage-tutorial" && navigate("/professional/manage-tutorial")} disabled={location.pathname === "/professional/manage-tutorial"}><FaEdit className="me-2" />{!collapsed && "Manage Tutorial"}</button></li>
@@ -107,90 +106,6 @@ export default function ManageTutorial() {
           <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/profile")}><FaUserCog className="me-2" />{!collapsed && "Profile"}</button></li>
 
           {/* Go Back to Analysis Page */}
-=======
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/factcheckerdashboard")}
-            >
-              <FaTachometerAlt className="me-2" />
-              {!collapsed && "Dashboard"}
-            </button>
-          </li>
-
-          <li>
-            <button 
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/create-tutorial")}
-            >
-              <FaPlusCircle className="me-2" />
-              {!collapsed && "Create Tutorial"}
-            </button>
-          </li>
-
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${location.pathname === "/professional/manage-tutorial" ? "active" : ""}`}
-              onClick={() => location.pathname !== "/professional/manage-tutorial" && navigate("/professional/manage-tutorial")}
-              disabled={location.pathname === "/professional/manage-tutorial"}
-            >
-              <FaEdit className="me-2" />
-              {!collapsed && "Manage Tutorial"}
-            </button>
-          </li>
-
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/reports")}
-            >
-              <FaChartBar className="me-2" />
-              {!collapsed && "Organized Reports"}
-            </button>
-          </li>
-
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/linked-users")}
-            >
-              <FaUsers className="me-2" />
-              {!collapsed && "Linked Users"}
-            </button>
-          </li>
-
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/user-feedback")}
-            >
-              <FaCommentDots className="me-2" />
-              {!collapsed && "User Feedback"}
-            </button>
-          </li>
-
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/verification-logs")}
-            >
-              <FaClipboardList className="me-2" />
-              {!collapsed && "Verification Logs"}
-            </button>
-          </li>
-
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/profile")}
-            >
-              <FaUserCog className="me-2" />
-              {!collapsed && "Profile"}
-            </button>
-          </li>
-
-          {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
->>>>>>> main
           <li className="mt-4 border-top pt-2">
             <button
               className="btn sidebar-btn text-start"

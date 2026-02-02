@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,6 +16,7 @@ import "./FactCheckerDashboard.css";
 
 export default function FeedbackPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState("pending");
   const [searchQuery, setSearchQuery] = useState("");
@@ -200,8 +201,9 @@ export default function FeedbackPage() {
 
           <li className="mt-4 border-top pt-2">
             <button
-              className="btn sidebar-btn text-start"
+              className={`btn sidebar-btn text-start ${location.pathname === "/analysis-logged" ? "active" : ""}`}
               onClick={() => navigate("/analysis-logged")}
+              disabled={location.pathname === "/analysis-logged"}
             >
               <FaArrowLeft className="me-2" />
               {!collapsed && "Back to Analysis"}

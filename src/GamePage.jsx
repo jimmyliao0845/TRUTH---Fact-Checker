@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,6 +16,7 @@ import "./FactCheckerDashboard.css";
 
 export default function GamePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -202,20 +203,32 @@ export default function GamePage() {
         <ul className="nav flex-column">
           <li>
             <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/analysis-logged")}
+              className={`btn sidebar-btn text-start ${location.pathname === "/game-page" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/game-page" && setSelectedGame(null)}
+              disabled={location.pathname === "/game-page"}
             >
-              <FaArrowLeft className="me-2" />
-              {!collapsed && "Back to Analysis"}
+              <FaPlay className="me-2" />
+              {!collapsed && "Games"}
             </button>
           </li>
-          <li className="mt-3">
+          <li>
             <button
-              className="btn sidebar-btn text-start"
+              className={`btn sidebar-btn text-start ${location.pathname === "/general-user-profile" ? "active" : ""}`}
               onClick={() => navigate("/general-user-profile")}
+              disabled={location.pathname === "/general-user-profile"}
             >
               <FaTrophy className="me-2" />
               {!collapsed && "My Stats"}
+            </button>
+          </li>
+          <li className="mt-4 border-top pt-2">
+            <button
+              className={`btn sidebar-btn text-start ${location.pathname === "/analysis-logged" ? "active" : ""}`}
+              onClick={() => navigate("/analysis-logged")}
+              disabled={location.pathname === "/analysis-logged"}
+            >
+              <FaArrowLeft className="me-2" />
+              {!collapsed && "Back to Analysis"}
             </button>
           </li>
         </ul>

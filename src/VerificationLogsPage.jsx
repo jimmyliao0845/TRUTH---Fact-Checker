@@ -307,31 +307,16 @@ export default function VerificationLogsPage() {
           </li>
 
           <li>
-<<<<<<< HEAD
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
-=======
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/user-feedback")}
-            >
->>>>>>> main
               <FaCommentDots className="me-2" />
               {!collapsed && "User Feedback"}
             </button>
           </li>
 
           <li>
-<<<<<<< HEAD
-            <button 
-=======
-            <button
->>>>>>> main
-              className={`btn sidebar-btn text-start ${location.pathname === "/professional/verification-logs" ? "active" : ""}`}
+            <button className={`btn sidebar-btn text-start ${location.pathname === "/professional/verification-logs" ? "active" : ""}`}
               onClick={() => location.pathname !== "/professional/verification-logs" && navigate("/professional/verification-logs")}
-              disabled={location.pathname === "/professional/verification-logs"}
             >
-              <FaClipboardList className="me-2" />
-              {!collapsed && "Verification Logs"}
             </button>
           </li>
 
@@ -345,11 +330,7 @@ export default function VerificationLogsPage() {
             </button>
           </li>
 
-<<<<<<< HEAD
           {/* Go Back to Analysis Page */}
-=======
-          {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
->>>>>>> main
           <li className="mt-4 border-top pt-2">
             <button
               className="btn sidebar-btn text-start"

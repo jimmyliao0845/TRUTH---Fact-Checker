@@ -15,6 +15,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import FactCheckerDashboard from "./FactCheckerDashboard";
 import CreateTutorial from "./CreateTutorial";
 import ManageTutorial from "./ManageTutorial";
+import VerificationLogsPage from "./VerificationLogsPage";
+import UserFeedbackPage from "./UserFeedbackpage(Professional)";
+import ProfessionalReportsPage from "./ProfessionalReportsPage";
+import ProfessionalProfile from "./ProfessionalProfile";
 import LinkedUser from "./LinkedUser";
 
 // ✅ Admin Pages
@@ -22,11 +26,7 @@ import AdminDashboard from "./AdminDashboard";
 import AdminUsers from "./AdminUsers"; 
 import AdminTutorialPage from "./AdminTutorialPage";
 import AdminReviewsPage from "./AdminReviewsPage";
-import VerificationLogsPage from "./VerificationLogsPage";
-import UserFeedbackPage from "./UserFeedbackpage(Professional)";
-import ProfessionalReportsPage from "./ProfessionalReportsPage";
-import ProfessionalProfile from "./ProfessionalProfile";
-import LinkedUser from "./LinkedUser";
+
 
 // ✅ General User Pages
 import GeneralUserProfile from "./GeneralUserProfile";
@@ -110,7 +110,7 @@ function AppContent() {
         {/* ✅ General User Pages */}
         <Route path="/general-user-profile" element={<GeneralUserProfile />} />
         <Route path="/game-page" element={<GamePage />} />
-        <Route path="/feedback-page" element={<FeedbackPage />} />
+        <Route path="/general/feedback" element={<FeedbackPage />} />
       </Routes>
     </>
   );

@@ -271,14 +271,7 @@ export default function ProfessionalProfile() {
           </li>
 
           <li>
-<<<<<<< HEAD
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/reports")}>
-=======
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/reports")}
-            >
->>>>>>> main
               <FaChartBar className="me-2" />
               {!collapsed && "Organized Reports"}
             </button>
@@ -295,39 +288,14 @@ export default function ProfessionalProfile() {
           </li>
 
           <li>
-<<<<<<< HEAD
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
-=======
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/user-feedback")}
-            >
->>>>>>> main
-              <FaCommentDots className="me-2" />
-              {!collapsed && "User Feedback"}
-            </button>
-          </li>
-
-          <li>
-<<<<<<< HEAD
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/verification-logs")}>
-=======
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/verification-logs")}
-            >
->>>>>>> main
               <FaClipboardList className="me-2" />
               {!collapsed && "Verification Logs"}
             </button>
           </li>
 
           <li>
-<<<<<<< HEAD
             <button 
-=======
-            <button
->>>>>>> main
               className={`btn sidebar-btn text-start ${location.pathname === "/professional/profile" ? "active" : ""}`}
               onClick={() => location.pathname !== "/professional/profile" && navigate("/professional/profile")}
               disabled={location.pathname === "/professional/profile"}
@@ -337,11 +305,7 @@ export default function ProfessionalProfile() {
             </button>
           </li>
 
-<<<<<<< HEAD
           {/* Go Back to Analysis Page */}
-=======
-          {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
->>>>>>> main
           <li className="mt-4 border-top pt-2">
             <button
               className="btn sidebar-btn text-start"

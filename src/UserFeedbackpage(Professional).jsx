@@ -281,11 +281,7 @@ export default function UserFeedbackPage() {
           </li>
 
           <li>
-<<<<<<< HEAD
             <button 
-=======
-            <button
->>>>>>> main
               className={`btn sidebar-btn text-start ${location.pathname === "/professional/user-feedback" ? "active" : ""}`}
               onClick={() => location.pathname !== "/professional/user-feedback" && navigate("/professional/user-feedback")}
               disabled={location.pathname === "/professional/user-feedback"}
@@ -296,14 +292,7 @@ export default function UserFeedbackPage() {
           </li>
 
           <li>
-<<<<<<< HEAD
             <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/verification-logs")}>
-=======
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/verification-logs")}
-            >
->>>>>>> main
               <FaClipboardList className="me-2" />
               {!collapsed && "Verification Logs"}
             </button>
@@ -319,11 +308,7 @@ export default function UserFeedbackPage() {
             </button>
           </li>
 
-<<<<<<< HEAD
           {/* Go Back to Analysis Page */}
-=======
-          {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
->>>>>>> main
           <li className="mt-4 border-top pt-2">
             <button
               className="btn sidebar-btn text-start"
