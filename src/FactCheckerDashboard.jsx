@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -51,6 +51,7 @@ ChartJS.register(
 
 export default function FactCheckerDashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const db = getFirestore();
 
   const [collapsed, setCollapsed] = useState(false);
@@ -250,8 +251,9 @@ export default function FactCheckerDashboard() {
         <ul className="nav flex-column">
           <li>
             <button
-              className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("dashboard")}
+              className={`btn sidebar-btn text-start ${location.pathname === "/factcheckerdashboard" ? "active" : ""}`}
+              onClick={() => location.pathname !== "/factcheckerdashboard" && scrollToSection("dashboard")}
+              disabled={location.pathname === "/factcheckerdashboard"}
             >
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}

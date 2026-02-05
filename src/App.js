@@ -15,6 +15,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import FactCheckerDashboard from "./FactCheckerDashboard";
 import CreateTutorial from "./CreateTutorial";
 import ManageTutorial from "./ManageTutorial";
+import LinkedUser from "./LinkedUser";
 
 // ✅ Admin Pages
 import AdminDashboard from "./AdminDashboard";
@@ -93,6 +94,7 @@ function AppContent() {
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
         <Route path="/professional/logs" element={<ProfessionalReportsPage />} />
         <Route path="/professional/profile" element={<ProfessionalProfile />} />  
+        <Route path="/professional/linked-users" element={<LinkedUser />} />
 
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
