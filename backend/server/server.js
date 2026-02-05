@@ -25,28 +25,168 @@ const upload = multer({
 });
 
 // ============================================
+// CREDIT & USAGE TRACKING SYSTEM
+// ============================================
+const creditManager = {
+  // Configure based on your Copyleaks plan
+  totalMonthlyCredits: 98, // UPDATE THIS: Total credits per month from your plan
+  maxUsagePercent: 80, // Use only 80% of credits as safety buffer
+  
+  // Credit costs per scan type (adjust based on Copyleaks pricing)
+  costs: {
+    text: 1,      // Cost per text scan
+    document: 1,  // Cost per document scan
+    image: 2      // Cost per image scan (usually costs more)
+  },
+  
+  // Track usage (resets monthly)
+  usage: {
+    creditsUsed: 0,
+    lastResetDate: new Date().toISOString().slice(0, 7), // YYYY-MM format
+    scanHistory: []
+  },
+  
+  // Check if we need to reset monthly counter
+  checkMonthlyReset() {
+    const currentMonth = new Date().toISOString().slice(0, 7);
+    if (this.usage.lastResetDate !== currentMonth) {
+      console.log(`📅 Monthly reset: ${this.usage.lastResetDate} → ${currentMonth}`);
+      this.usage.creditsUsed = 0;
+      this.usage.lastResetDate = currentMonth;
+      this.usage.scanHistory = [];
+    }
+  },
+  
+  // Calculate max allowed credits (80% of total)
+  getMaxAllowedCredits() {
+    return Math.floor(this.totalMonthlyCredits * (this.maxUsagePercent / 100));
+  },
+  
+  // Get remaining credits
+  getRemainingCredits() {
+    this.checkMonthlyReset();
+    const maxAllowed = this.getMaxAllowedCredits();
+    return maxAllowed - this.usage.creditsUsed;
+  },
+  
+  // Check if we can perform a scan
+  canScan(scanType) {
+    this.checkMonthlyReset();
+    
+    const cost = this.costs[scanType] || 1;
+    const remaining = this.getRemainingCredits();
+    const maxAllowed = this.getMaxAllowedCredits();
+    
+    if (remaining < cost) {
+      return {
+        allowed: false,
+        reason: `Credit limit reached. You've used ${this.usage.creditsUsed}/${maxAllowed} credits (${this.maxUsagePercent}% of ${this.totalMonthlyCredits} total). Resets next month.`,
+        creditsRemaining: remaining,
+        creditsUsed: this.usage.creditsUsed,
+        maxAllowed: maxAllowed
+      };
+    }
+    
+    return {
+      allowed: true,
+      creditsRemaining: remaining - cost, // After this scan
+      creditsUsed: this.usage.creditsUsed,
+      cost: cost
+    };
+  },
+  
+  // Record a scan
+  recordScan(scanType) {
+    this.checkMonthlyReset();
+    const cost = this.costs[scanType] || 1;
+    
+    this.usage.creditsUsed += cost;
+    this.usage.scanHistory.push({
+      type: scanType,
+      cost: cost,
+      timestamp: new Date().toISOString()
+    });
+    
+    console.log(`💳 Credit used: ${cost} | Total used: ${this.usage.creditsUsed}/${this.getMaxAllowedCredits()}`);
+  },
+  
+  // Get usage stats
+  getStats() {
+    this.checkMonthlyReset();
+    const maxAllowed = this.getMaxAllowedCredits();
+    
+    return {
+      creditsUsed: this.usage.creditsUsed,
+      creditsRemaining: this.getRemainingCredits(),
+      maxAllowedCredits: maxAllowed,
+      totalMonthlyCredits: this.totalMonthlyCredits,
+      usagePercent: Math.round((this.usage.creditsUsed / maxAllowed) * 100),
+      maxUsagePercent: this.maxUsagePercent,
+      currentMonth: this.usage.lastResetDate,
+      scanHistory: this.usage.scanHistory
+    };
+  }
+};
+
+// ============================================
+// RATE LIMITING (ADDITIONAL SAFETY)
+// ============================================
+const rateLimiter = {
+  scans: [],
+  maxScansPerHour: 10,
+  
+  addScan(type) {
+    this.scans.push({
+      type,
+      timestamp: Date.now()
+    });
+    
+    // Clean up scans older than 1 hour
+    const oneHourAgo = Date.now() - (60 * 60 * 1000);
+    this.scans = this.scans.filter(scan => scan.timestamp > oneHourAgo);
+  },
+  
+  canScan() {
+    const oneHourAgo = Date.now() - (60 * 60 * 1000);
+    const recentScans = this.scans.filter(scan => scan.timestamp > oneHourAgo).length;
+    
+    if (recentScans >= this.maxScansPerHour) {
+      const oldestScan = this.scans[0];
+      const resetTime = oldestScan.timestamp + (60 * 60 * 1000);
+      const minutesLeft = Math.ceil((resetTime - Date.now()) / (60 * 1000));
+      
+      return {
+        allowed: false,
+        reason: `Rate limit: ${this.maxScansPerHour} scans/hour. Try again in ${minutesLeft} minutes.`
+      };
+    }
+    
+    return { allowed: true };
+  }
+};
+
+// ============================================
 // COPYLEAKS AUTHENTICATION
 // ============================================
 let authToken = null;
 let tokenExpiry = null;
 
 async function getCopyleaksToken() {
-  // Return cached token if still valid (with 5 min buffer)
   if (authToken && tokenExpiry && Date.now() < tokenExpiry - 300000) {
     console.log('✅ Using cached Copyleaks token');
     return authToken;
   }
 
   try {
-    console.log('🔐 Authenticating with Copyleaks...');
+    console.log('🔐 Authenticating with Copyleaks v3 API...');
     const response = await axios.post('https://id.copyleaks.com/v3/account/login/api', {
       email: process.env.COPYLEAKS_EMAIL,
       key: process.env.COPYLEAKS_API_KEY
     });
 
     authToken = response.data.access_token;
-    // Copyleaks tokens last 48 hours
-    tokenExpiry = Date.now() + (48 * 60 * 60 * 1000);
+    const expiresIn = response.data.expires_in || 86400;
+    tokenExpiry = Date.now() + (expiresIn * 1000);
     
     console.log('✅ Copyleaks authentication successful');
     return authToken;
@@ -57,103 +197,197 @@ async function getCopyleaksToken() {
 }
 
 // ============================================
-// IMAGE DETECTION ENDPOINT
+// USAGE STATS ENDPOINT
 // ============================================
-app.post('/api/detect/image', upload.single('file'), async (req, res) => {
-  try {
-    console.log('📥 Received image detection request');
+app.get('/api/usage', (req, res) => {
+  res.json({
+    credits: creditManager.getStats(),
+    rateLimit: {
+      scansInLastHour: rateLimiter.scans.length,
+      maxScansPerHour: rateLimiter.maxScansPerHour
+    }
+  });
+});
 
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+// ============================================
+// UPDATE CREDIT SETTINGS ENDPOINT
+// ============================================
+app.post('/api/credits/configure', (req, res) => {
+  const { totalMonthlyCredits, maxUsagePercent } = req.body;
+  
+  if (totalMonthlyCredits) {
+    creditManager.totalMonthlyCredits = totalMonthlyCredits;
+  }
+  
+  if (maxUsagePercent) {
+    creditManager.maxUsagePercent = Math.min(100, Math.max(0, maxUsagePercent));
+  }
+  
+  res.json({
+    message: 'Credit settings updated',
+    settings: {
+      totalMonthlyCredits: creditManager.totalMonthlyCredits,
+      maxUsagePercent: creditManager.maxUsagePercent,
+      maxAllowedCredits: creditManager.getMaxAllowedCredits()
+    }
+  });
+});
+
+// ============================================
+// TEXT DETECTION ENDPOINT
+// ============================================
+app.post('/api/detect/text', async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    // Check rate limiting
+    const rateCheck = rateLimiter.canScan();
+    if (!rateCheck.allowed) {
+      return res.status(429).json({ 
+        error: 'Rate limit exceeded',
+        message: rateCheck.reason
+      });
     }
 
-    // Convert buffer to base64
-    const base64Image = req.file.buffer.toString('base64');
-    const scanId = `scan-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+    // Check credit limit
+    const creditCheck = creditManager.canScan('text');
+    if (!creditCheck.allowed) {
+      return res.status(429).json({ 
+        error: 'Credit limit exceeded',
+        message: creditCheck.reason,
+        creditsUsed: creditCheck.creditsUsed,
+        maxAllowed: creditCheck.maxAllowed
+      });
+    }
 
-    console.log(`🔍 Processing image: ${req.file.originalname} (${req.file.size} bytes)`);
+    if (!text) {
+      return res.status(400).json({ error: 'No text provided' });
+    }
 
-    // Get authentication token
+    const MIN_TEXT_LENGTH = 50;
+    if (text.trim().length < MIN_TEXT_LENGTH) {
+      return res.status(400).json({ 
+        error: 'Text too short',
+        message: `Text must contain at least ${MIN_TEXT_LENGTH} characters. Found: ${text.trim().length} characters.`,
+        extractedLength: text.trim().length,
+        minimumRequired: MIN_TEXT_LENGTH
+      });
+    }
+
+    const scanId = `scan-text-${Date.now()}-${Math.random().toString(36).substring(7)}`;
     const token = await getCopyleaksToken();
 
-    // Prepare Copyleaks request body
-    const requestBody = {
-      base64: base64Image,
-      filename: req.file.originalname,
-      sandbox: process.env.COPYLEAKS_SANDBOX === 'true',
-      model: 'ai-image-1-ultra'
-    };
+    console.log(`📝 Submitting text scan with ID: ${scanId}`);
 
-    console.log('📤 Sending to Copyleaks:', {
-      scanId,
-      filename: req.file.originalname,
-      base64Length: base64Image.length,
-      sandbox: requestBody.sandbox,
-      model: requestBody.model
-    });
-
-    // Call Copyleaks AI Image Detection API
-    const copyleaksResponse = await axios.post(
-      `https://api.copyleaks.com/v1/ai-image-detector/${scanId}/check`,
-      requestBody,
+    await axios.put(
+      `https://api.copyleaks.com/v3/writer-detector/${scanId}/submit`,
+      {
+        text: text,
+        sandbox: process.env.COPYLEAKS_SANDBOX === 'true'
+      },
       {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        },
-        timeout: 30000 // 30 second timeout
+        }
       }
     );
 
-    console.log('✅ Copyleaks response received');
+    console.log('✅ Scan submitted, polling for results...');
 
-    // Transform Copyleaks response to match frontend expectations
-    const data = copyleaksResponse.data;
+    let attempts = 0;
+    const maxAttempts = 15;
+    let resultData = null;
+
+    while (attempts < maxAttempts) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const resultResponse = await axios.get(
+          `https://api.copyleaks.com/v3/writer-detector/${scanId}/result`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        resultData = resultResponse.data;
+        console.log('✅ Results retrieved successfully');
+        break;
+      } catch (pollError) {
+        if (pollError.response?.status === 404) {
+          attempts++;
+          console.log(`⏳ Results not ready, attempt ${attempts}/${maxAttempts}...`);
+        } else {
+          throw pollError;
+        }
+      }
+    }
+
+    if (!resultData) {
+      return res.status(408).json({
+        error: 'Timeout',
+        message: 'Scan is taking longer than expected. Please try again later.',
+        scanId: scanId
+      });
+    }
+
+    // Record successful scan
+    creditManager.recordScan('text');
+    rateLimiter.addScan('text');
+
+    const summary = resultData.summary || {};
     
-    // Copyleaks returns decimals (0.0-1.0), convert to percentages
-    const humanPercent = Math.round((data.summary?.human || 0) * 100);
-    const aiPercent = Math.round((data.summary?.ai || 0) * 100);
-
     const result = {
-      ai_probability: aiPercent,
-      human_probability: humanPercent,
-      model: data.model || 'ai-image-1-ultra',
+      ai_probability: Math.round((summary.ai || 0) * 100),
+      human_probability: Math.round((summary.human || 0) * 100),
       scanId: scanId,
       timestamp: new Date().toISOString(),
-      imageInfo: data.imageInfo,
-      // Include RLE mask data if needed for visualization
-      result: data.result
+      creditsRemaining: creditManager.getRemainingCredits(),
+      details: resultData
     };
 
-    console.log(`📊 Results: AI=${aiPercent}%, Human=${humanPercent}%`);
+    console.log(`✅ Text Results: AI=${result.ai_probability}%, Human=${result.human_probability}%`);
     res.json(result);
 
   } catch (error) {
-    console.error('❌ Image detection error:', error.response?.data || error.message);
+    console.error('❌ Text detection error:', error.response?.data || error.message);
     
-    // Log full error details for debugging
-    if (error.response?.data?.error?.details) {
-      console.error('📋 Error details:', JSON.stringify(error.response.data.error.details, null, 2));
-    }
-    
-    // Return detailed error information
-    const errorResponse = {
-      error: 'Image detection failed',
-      message: error.response?.data?.error?.message || error.message,
-      details: error.response?.data?.error?.details || null,
-      copyleaksError: error.response?.data || null
-    };
-
-    res.status(error.response?.status || 500).json(errorResponse);
+    res.status(error.response?.status || 500).json({
+      error: 'Text detection failed',
+      message: error.response?.data?.message || error.message,
+      details: error.response?.data || null
+    });
   }
 });
 
 // ============================================
-// DOCUMENT DETECTION ENDPOINT (DOCX, PDF, TXT)
+// DOCUMENT DETECTION ENDPOINT
 // ============================================
 app.post('/api/detect/document', upload.single('file'), async (req, res) => {
   try {
     console.log('📥 Received document detection request');
+
+    // Check rate limiting
+    const rateCheck = rateLimiter.canScan();
+    if (!rateCheck.allowed) {
+      return res.status(429).json({ 
+        error: 'Rate limit exceeded',
+        message: rateCheck.reason
+      });
+    }
+
+    // Check credit limit
+    const creditCheck = creditManager.canScan('document');
+    if (!creditCheck.allowed) {
+      return res.status(429).json({ 
+        error: 'Credit limit exceeded',
+        message: creditCheck.reason,
+        creditsUsed: creditCheck.creditsUsed,
+        maxAllowed: creditCheck.maxAllowed
+      });
+    }
 
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -163,17 +397,14 @@ app.post('/api/detect/document', upload.single('file'), async (req, res) => {
 
     let extractedText = '';
 
-    // Extract text based on file type
     if (req.file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
         req.file.originalname.endsWith('.docx')) {
-      // DOCX file - extract text using mammoth
       console.log('📄 Extracting text from DOCX...');
       const result = await mammoth.extractRawText({ buffer: req.file.buffer });
       extractedText = result.value;
       console.log(`✅ Extracted ${extractedText.length} characters from DOCX`);
     } 
     else if (req.file.mimetype === 'application/pdf' || req.file.originalname.endsWith('.pdf')) {
-      // PDF file - extract text using pdf-parse
       console.log('📄 Extracting text from PDF...');
       try {
         const pdfData = await pdfParse(req.file.buffer);
@@ -188,13 +419,11 @@ app.post('/api/detect/document', upload.single('file'), async (req, res) => {
       }
     }
     else if (req.file.mimetype === 'text/plain' || req.file.originalname.endsWith('.txt')) {
-      // Plain text file
       console.log('📄 Reading plain text file...');
       extractedText = req.file.buffer.toString('utf8');
       console.log(`✅ Read ${extractedText.length} characters from TXT`);
     }
     else {
-      // Unsupported format
       return res.status(400).json({ 
         error: 'Unsupported file format',
         message: 'Please upload .docx, .pdf, or .txt files',
@@ -202,7 +431,6 @@ app.post('/api/detect/document', upload.single('file'), async (req, res) => {
       });
     }
 
-    // Check if we got any text
     if (!extractedText || extractedText.trim().length === 0) {
       return res.status(400).json({ 
         error: 'No text found',
@@ -210,112 +438,25 @@ app.post('/api/detect/document', upload.single('file'), async (req, res) => {
       });
     }
 
-    // Check minimum length requirement (Copyleaks requires 255 characters minimum)
-    const MIN_TEXT_LENGTH = 255;
+    const MIN_TEXT_LENGTH = 50;
     if (extractedText.trim().length < MIN_TEXT_LENGTH) {
       return res.status(400).json({ 
         error: 'Text too short',
         message: `Document must contain at least ${MIN_TEXT_LENGTH} characters. Found: ${extractedText.trim().length} characters.`,
         extractedLength: extractedText.trim().length,
-        minimumRequired: MIN_TEXT_LENGTH,
-        suggestion: 'Please upload a document with more content for accurate AI detection.'
-      });
-    }
-
-    console.log(`📝 Sending ${extractedText.length} characters to Copyleaks...`);
-
-    const scanId = `scan-doc-${Date.now()}-${Math.random().toString(36).substring(7)}`;
-    const token = await getCopyleaksToken();
-
-    // Call Copyleaks Writer Detector API with extracted text
-    const copyleaksResponse = await axios.post(
-      `https://api.copyleaks.com/v2/writer-detector/${scanId}/check`,
-      {
-        text: extractedText,
-        sandbox: process.env.COPYLEAKS_SANDBOX === 'true'
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        timeout: 60000 // 60 second timeout for documents
-      }
-    );
-
-    console.log('✅ Copyleaks document response received');
-
-    const data = copyleaksResponse.data;
-    
-    // Transform response
-    const humanPercent = Math.round((data.summary?.human || 0) * 100);
-    const aiPercent = Math.round((data.summary?.ai || 0) * 100);
-    const mixedPercent = Math.round((data.summary?.mixed || 0) * 100);
-
-    const result = {
-      ai_probability: aiPercent,
-      human_probability: humanPercent,
-      mixed_probability: mixedPercent,
-      scanId: scanId,
-      timestamp: new Date().toISOString(),
-      documentInfo: {
-        filename: req.file.originalname,
-        size: req.file.size,
-        type: req.file.mimetype,
-        textLength: extractedText.length,
-        wordCount: extractedText.split(/\s+/).filter(w => w.length > 0).length
-      }
-    };
-
-    console.log(`📊 Document Results: AI=${aiPercent}%, Human=${humanPercent}%, Mixed=${mixedPercent}%`);
-    res.json(result);
-
-  } catch (error) {
-    console.error('❌ Document detection error:', error.response?.data || error.message);
-    
-    if (error.response?.data?.error?.details) {
-      console.error('📋 Error details:', JSON.stringify(error.response.data.error.details, null, 2));
-    }
-    
-    res.status(error.response?.status || 500).json({
-      error: 'Document detection failed',
-      message: error.response?.data?.error?.message || error.message,
-      details: error.response?.data?.error?.details || null,
-      copyleaksError: error.response?.data || null
-    });
-  }
-});
-
-// ============================================
-// TEXT DETECTION ENDPOINT
-// ============================================
-app.post('/api/detect/text', async (req, res) => {
-  try {
-    const { text } = req.body;
-
-    if (!text) {
-      return res.status(400).json({ error: 'No text provided' });
-    }
-
-    // Check minimum length requirement
-    const MIN_TEXT_LENGTH = 255;
-    if (text.trim().length < MIN_TEXT_LENGTH) {
-      return res.status(400).json({ 
-        error: 'Text too short',
-        message: `Text must contain at least ${MIN_TEXT_LENGTH} characters. Found: ${text.trim().length} characters.`,
-        extractedLength: text.trim().length,
         minimumRequired: MIN_TEXT_LENGTH
       });
     }
 
-    const scanId = `scan-text-${Date.now()}`;
+    const scanId = `scan-doc-${Date.now()}-${Math.random().toString(36).substring(7)}`;
     const token = await getCopyleaksToken();
 
-    // Call Copyleaks AI Text Detection API
-    const copyleaksResponse = await axios.post(
-      `https://api.copyleaks.com/v2/writer-detector/${scanId}/check`,
+    console.log(`📝 Submitting document scan with ID: ${scanId}`);
+
+    await axios.put(
+      `https://api.copyleaks.com/v3/writer-detector/${scanId}/submit`,
       {
-        text: text,
+        text: extractedText,
         sandbox: process.env.COPYLEAKS_SANDBOX === 'true'
       },
       {
@@ -326,26 +467,193 @@ app.post('/api/detect/text', async (req, res) => {
       }
     );
 
-    const data = copyleaksResponse.data;
+    console.log('✅ Document scan submitted, polling for results...');
+
+    let attempts = 0;
+    const maxAttempts = 15;
+    let resultData = null;
+
+    while (attempts < maxAttempts) {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        const resultResponse = await axios.get(
+          `https://api.copyleaks.com/v3/writer-detector/${scanId}/result`,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
+        );
+
+        resultData = resultResponse.data;
+        console.log('✅ Results retrieved successfully');
+        break;
+      } catch (pollError) {
+        if (pollError.response?.status === 404) {
+          attempts++;
+          console.log(`⏳ Results not ready, attempt ${attempts}/${maxAttempts}...`);
+        } else {
+          throw pollError;
+        }
+      }
+    }
+
+    if (!resultData) {
+      return res.status(408).json({
+        error: 'Timeout',
+        message: 'Scan is taking longer than expected. Please try again later.',
+        scanId: scanId
+      });
+    }
+
+    // Record successful scan
+    creditManager.recordScan('document');
+    rateLimiter.addScan('document');
+
+    const summary = resultData.summary || {};
     
-    // Transform response
     const result = {
-      ai_probability: Math.round((data.summary?.ai || 0) * 100),
-      human_probability: Math.round((data.summary?.human || 0) * 100),
-      mixed_probability: Math.round((data.summary?.mixed || 0) * 100),
+      ai_probability: Math.round((summary.ai || 0) * 100),
+      human_probability: Math.round((summary.human || 0) * 100),
       scanId: scanId,
       timestamp: new Date().toISOString(),
-      details: data
+      creditsRemaining: creditManager.getRemainingCredits(),
+      documentInfo: {
+        filename: req.file.originalname,
+        size: req.file.size,
+        type: req.file.mimetype,
+        textLength: extractedText.length,
+        wordCount: extractedText.split(/\s+/).filter(w => w.length > 0).length
+      },
+      details: resultData
     };
 
+    console.log(`📊 Document Results: AI=${result.ai_probability}%, Human=${result.human_probability}%`);
     res.json(result);
 
   } catch (error) {
-    console.error('❌ Text detection error:', error.response?.data || error.message);
+    console.error('❌ Document detection error:', error.response?.data || error.message);
+    
     res.status(error.response?.status || 500).json({
-      error: 'Text detection failed',
-      message: error.response?.data?.error?.message || error.message,
-      details: error.response?.data?.error?.details || null
+      error: 'Document detection failed',
+      message: error.response?.data?.message || error.message,
+      details: error.response?.data || null
+    });
+  }
+});
+
+// ============================================
+// IMAGE DETECTION ENDPOINT
+// ============================================
+app.post('/api/detect/image', upload.single('file'), async (req, res) => {
+  try {
+    console.log('📥 Received image detection request');
+
+    // Check rate limiting
+    const rateCheck = rateLimiter.canScan();
+    if (!rateCheck.allowed) {
+      return res.status(429).json({ 
+        error: 'Rate limit exceeded',
+        message: rateCheck.reason
+      });
+    }
+
+    // Check credit limit
+    const creditCheck = creditManager.canScan('image');
+    if (!creditCheck.allowed) {
+      return res.status(429).json({ 
+        error: 'Credit limit exceeded',
+        message: creditCheck.reason,
+        creditsUsed: creditCheck.creditsUsed,
+        maxAllowed: creditCheck.maxAllowed
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const base64Image = req.file.buffer.toString('base64');
+    const scanId = `scan-img-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+    console.log(`🔍 Processing image: ${req.file.originalname} (${req.file.size} bytes)`);
+
+    const token = await getCopyleaksToken();
+
+    const requestBody = {
+      base64: base64Image,
+      filename: req.file.originalname,
+      model: 'ai-image-1-ultra' // ✅ Fixed: Added -ultra
+    };
+
+    if (process.env.COPYLEAKS_SANDBOX === 'true') {
+      requestBody.sandbox = true;
+    }
+
+    console.log('📤 Sending request with params:', {
+      scanId,
+      filename: req.file.originalname,
+      base64Length: base64Image.length,
+      model: requestBody.model,
+      hasSandbox: requestBody.sandbox || false
+    });
+
+    const copyleaksResponse = await axios.post(
+      `https://api.copyleaks.com/v1/ai-image-detector/${scanId}/check`,
+      requestBody,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000
+      }
+    );
+
+    // Record successful scan
+    creditManager.recordScan('image');
+    rateLimiter.addScan('image');
+
+    console.log('✅ Image scan response received');
+
+    const data = copyleaksResponse.data;
+    const summary = data.summary || {};
+    
+    const result = {
+      ai_probability: Math.round((summary.ai || 0) * 100),
+      human_probability: Math.round((summary.human || 0) * 100),
+      model: data.model || 'ai-image-1-ultra',
+      scanId: scanId,
+      timestamp: new Date().toISOString(),
+      creditsRemaining: creditManager.getRemainingCredits(),
+      imageInfo: data.imageInfo,
+      details: data
+    };
+
+    console.log(`📊 Image Results: AI=${result.ai_probability}%, Human=${result.human_probability}%`);
+    res.json(result);
+
+  } catch (error) {
+    console.error('❌ Image detection error:', error.response?.data || error.message);
+    
+    if (error.response?.data?.error?.details) {
+      console.error('📋 Full error details:', JSON.stringify(error.response.data.error.details, null, 2));
+    }
+    
+    if (error.response?.status === 403 || error.response?.status === 402) {
+      return res.status(403).json({
+        error: 'Feature not available',
+        message: 'Image detection is not available with your current plan.',
+        upgradeUrl: 'https://copyleaks.com/pricing',
+        details: error.response?.data
+      });
+    }
+    
+    res.status(error.response?.status || 500).json({
+      error: 'Image detection failed',
+      message: error.response?.data?.message || error.message,
+      details: error.response?.data || null
     });
   }
 });
@@ -357,7 +665,9 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     message: 'Copyleaks AI Detection Backend is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    apiVersion: 'v3',
+    credits: creditManager.getStats()
   });
 });
 
@@ -378,19 +688,30 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════╗
-║  🚀 Copyleaks Detection Server Running   ║
+║  🚀 Copyleaks Detection Server (v3 API)  ║
 ║  📍 http://localhost:${PORT}                ║
 ║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ║
 ║  Endpoints:                               ║
-║  • POST /api/detect/image                 ║
-║  • POST /api/detect/document              ║
 ║  • POST /api/detect/text                  ║
+║  • POST /api/detect/document              ║
+║  • POST /api/detect/image                 ║
+║  • GET  /api/usage                        ║
+║  • POST /api/credits/configure            ║
 ║  • GET  /api/health                       ║
+║  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  ║
+║  Credit Management:                       ║
+║  • Total: ${creditManager.totalMonthlyCredits} credits/month           ║
+║  • Limit: ${creditManager.maxUsagePercent}% (${creditManager.getMaxAllowedCredits()} credits)          ║
+║  • Text: ${creditManager.costs.text} credit  | Doc: ${creditManager.costs.document} credit        ║
+║  • Image: ${creditManager.costs.image} credits                      ║
 ╚═══════════════════════════════════════════╝
   `);
   
-  // Test authentication on startup
   getCopyleaksToken()
-    .then(() => console.log('✅ Initial Copyleaks authentication successful'))
-    .catch(err => console.error('❌ Initial authentication failed:', err.message));
+    .then(() => {
+      console.log('✅ Initial Copyleaks v3 authentication successful');
+      console.log('💳 Credit tracking enabled');
+      console.log(`🎯 Using max ${creditManager.getMaxAllowedCredits()}/${creditManager.totalMonthlyCredits} credits (${creditManager.maxUsagePercent}% limit)`);
+    })
+    .catch(err => console.error('❌ Initial setup error:', err.message));
 });

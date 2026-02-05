@@ -59,12 +59,6 @@ export default function ManageTutorial() {
     return sorted;
   }, [sortOption, tutorials]);
 
-  // ✅ Smooth scroll
-  const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-    if (section) section.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <div className="d-flex" style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}>
       {/* Sidebar */}
@@ -91,16 +85,16 @@ export default function ManageTutorial() {
           </button>
         </div>
 
-        {/* Sidebar Menu */}
+        {/* Sidebar Menu - NOW WITH WORKING NAVIGATION */}
         <ul className="nav flex-column">
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("dashboard")}><FaTachometerAlt className="me-2" />{!collapsed && "Dashboard"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("create-tutorial")}><FaPlusCircle className="me-2" />{!collapsed && "Create Tutorial"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/dashboard")}><FaTachometerAlt className="me-2" />{!collapsed && "Dashboard"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/create-tutorial")}><FaPlusCircle className="me-2" />{!collapsed && "Create Tutorial"}</button></li>
           <li><button className="btn sidebar-btn text-start active"><FaEdit className="me-2" />{!collapsed && "Manage Tutorial"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("reports")}><FaChartBar className="me-2" />{!collapsed && "Organized Reports"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("linked-users")}><FaUsers className="me-2" />{!collapsed && "Linked Users"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("feedback")}><FaCommentDots className="me-2" />{!collapsed && "User Feedback"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("logs")}><FaClipboardList className="me-2" />{!collapsed && "Verification Data Logs"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => scrollToSection("profile")}><FaUserCog className="me-2" />{!collapsed && "Profile Settings"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/reports")}><FaChartBar className="me-2" />{!collapsed && "Organized Reports"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/linked-users")}><FaUsers className="me-2" />{!collapsed && "Linked Users"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/feedback")}><FaCommentDots className="me-2" />{!collapsed && "User Feedback"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/logs")}><FaClipboardList className="me-2" />{!collapsed && "Verification Data Logs"}</button></li>
+          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/profile")}><FaUserCog className="me-2" />{!collapsed && "Profile Settings"}</button></li>
         </ul>
 
         {!collapsed && (

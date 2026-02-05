@@ -14,16 +14,23 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { auth, db } from "./firebase";
-import { collection, getDocs, updateDoc, doc, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, getDoc, updateDoc, doc, query, orderBy } from "firebase/firestore";
+import "./AdminDashboard.css";
+import "./AdminUsers.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend);
 
 export default function AdminDashboard() {
+  const [currentUserRole, setCurrentUserRole] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [modalActionType, setModalActionType] = useState(""); // "promote" or "demote"
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [growthLabels, setGrowthLabels] = useState([]);
   const [growthValues, setGrowthValues] = useState([]);
   const [newUsersMonth, setNewUsersMonth] = useState(0);
+  const [currentUserEmail, setCurrentUserEmail] = useState("");
 
   const userGrowthData = {
   labels: growthLabels,
@@ -114,6 +121,24 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchUsers();
+  
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setCurrentUserEmail(user.email);
+    
+        try {
+          const userDocRef = doc(db, "users", user.uid); // DocumentReference
+          const userDoc = await getDoc(userDocRef);     // <-- use getDoc instead of getDocs
+          if (userDoc.exists()) {
+            setCurrentUserRole(userDoc.data().role);
+          }
+        } catch (err) {
+          console.error("Failed to fetch current user role:", err);
+        }
+      }
+    });
+  
+    return () => unsubscribe();
   }, []);
 
   // Promote/Demote user role
@@ -214,7 +239,7 @@ export default function AdminDashboard() {
             <p>Loading users...</p>
           ) : (
             <div className="table-responsive border rounded shadow-sm">
-              <table className="table table-striped mb-0 text-center align-middle">
+              <table className="table table-striped mb-0 text-center align-middle admin-dashboard-table">
                 <thead className="table-dark">
                   <tr>
                     <th>Name</th>
@@ -226,27 +251,100 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.role}</td>
-                      <td>{user.provider}</td>
-                      <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                      <td>
-                        <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() => toggleRole(user)}
-                        >
-                          {user.role === "admin" ? "Demote" : "Promote"}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {users.map((user) => {
+                    const isCurrentUser = user.email === currentUserEmail;
+                  
+                    // Disable button if:
+                    // 1. User is trying to change their own role
+                    // 2. User is superadmin (cannot touch)
+                    // 3. User is admin and currentUser is not superadmin
+                    const disableButton =
+                      isCurrentUser ||                      // cannot change self
+                      user.role === "superadmin" ||          // cannot touch superadmin
+                      (user.role === "admin" && currentUserRole !== "superadmin"); // only superadmin can touch admin
+                  
+                    // Determine button label
+                    let buttonLabel = "";
+                    if (user.role === "user") buttonLabel = "Promote";
+                    else if (user.role === "admin") buttonLabel = "Demote";
+                    else if (user.role === "superadmin") buttonLabel = "Demote";
+                  
+                    return (
+                      <tr key={user.id}>
+                        <td><div className="cell-content">{user.name}</div></td>
+                        <td><div className="cell-content">{user.email}</div></td>
+                        <td><div className="cell-content">{user.role}</div></td>
+                        <td><div className="cell-content">{user.provider}</div></td>
+                        <td><div className="cell-content">{new Date(user.created_at).toLocaleDateString()}</div></td>
+                        <td>
+                          <div className="cell-content">
+                            <button
+                              className={`btn btn-sm ${
+                                user.role === "admin" ? "btn-demote" : "btn-outline-primary"
+                              }`}
+                              onClick={() => {
+                                if (!disableButton) {
+                                  setSelectedUser(user);
+                                  setModalActionType(user.role === "user" ? "promote" : "demote");
+                                  setShowModal(true);
+                                }
+                              }}
+                              disabled={disableButton}
+                              title={disableButton ? "You cannot change this user's role" : ""}
+                            >
+                              {buttonLabel}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           )}
+        </div>
+
+        {/* Confirmation Modal */}
+        <div
+          className={`modal fade dashboard-modal ${showModal ? "show d-block" : ""}`}
+          tabIndex="-1"
+          style={{ backgroundColor: showModal ? "rgba(0,0,0,0.5)" : "transparent" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {modalActionType === "promote" ? "Confirm Promotion" : "Confirm Demotion"}
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>
+                  Are you sure you want to {modalActionType} this user:{" "}
+                  <strong>{selectedUser?.name}</strong>?
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    toggleRole(selectedUser);
+                    setShowModal(false);
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

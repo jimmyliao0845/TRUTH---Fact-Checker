@@ -91,6 +91,7 @@ function AppContent() {
         <Route path="/professional/verification-logs" element={<VerificationLogsPage />} />
         <Route path="/professional/user-feedback" element={<UserFeedbackPage />} />
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
+        <Route path="/professional/logs" element={<ProfessionalReportsPage />} />
         <Route path="/professional/profile" element={<ProfessionalProfile />} />  
 
         {/* ✅ Admin Pages */}
