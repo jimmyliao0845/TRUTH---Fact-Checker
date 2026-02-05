@@ -213,7 +213,7 @@ export default function ManageTutorial() {
             <i
               className="bi bi-bell fs-5 text-dark"
               data-bs-toggle="dropdown"
-                     ]             aria-expanded="false"
+                                  aria-expanded="false"
               style={{ cursor: "pointer" }}
             ></i>
             <ul
