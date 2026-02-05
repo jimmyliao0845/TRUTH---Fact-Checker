@@ -89,16 +89,6 @@ export default function ManageTutorial() {
 
         {/* Sidebar Menu - NOW WITH WORKING NAVIGATION */}
         <ul className="nav flex-column">
-<<<<<<< HEAD
-          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/dashboard")}><FaTachometerAlt className="me-2" />{!collapsed && "Dashboard"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/create-tutorial")}><FaPlusCircle className="me-2" />{!collapsed && "Create Tutorial"}</button></li>
-          <li><button className="btn sidebar-btn text-start active"><FaEdit className="me-2" />{!collapsed && "Manage Tutorial"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/reports")}><FaChartBar className="me-2" />{!collapsed && "Organized Reports"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/linked-users")}><FaUsers className="me-2" />{!collapsed && "Linked Users"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/feedback")}><FaCommentDots className="me-2" />{!collapsed && "User Feedback"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/logs")}><FaClipboardList className="me-2" />{!collapsed && "Verification Data Logs"}</button></li>
-          <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factchecker/profile")}><FaUserCog className="me-2" />{!collapsed && "Profile Settings"}</button></li>
-=======
           <li>
             <button
               className="btn sidebar-btn text-start"
@@ -190,7 +180,6 @@ export default function ManageTutorial() {
               {!collapsed && "Go Back to Analysis Page"}
             </button>
           </li>
->>>>>>> 5d208c9ff05b1e16f7cedd2fb6c5ebedbb9eeb67
         </ul>
 
 
@@ -224,7 +213,7 @@ export default function ManageTutorial() {
             <i
               className="bi bi-bell fs-5 text-dark"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
+                     ]             aria-expanded="false"
               style={{ cursor: "pointer" }}
             ></i>
             <ul
