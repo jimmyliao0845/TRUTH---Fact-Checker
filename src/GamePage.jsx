@@ -12,7 +12,6 @@ import {
   FaSearch,
   FaClock,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
 
 export default function GamePage() {
   const navigate = useNavigate();

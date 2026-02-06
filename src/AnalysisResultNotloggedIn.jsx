@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./analysis.css";
 import { FaDownload, FaShare, FaRedo } from "react-icons/fa";
 
 export default function AnalysisResultNotLoggedIn() {

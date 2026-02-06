@@ -16,7 +16,6 @@ import {
   FaThumbsUp,
   FaShare,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
 
 export default function GeneralUserProfile() {
   const navigate = useNavigate();
@@ -121,13 +120,18 @@ export default function GeneralUserProfile() {
   );
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ 
+      backgroundColor: "var(--primary-color)", 
+      paddingTop: "56px",
+      minHeight: "100vh",
+      color: "var(--text-color)"
+    }}>
       {/* SIDEBAR */}
       <div
         className="d-flex flex-column p-3 border-end"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "var(--sidebar-color)",
+          backgroundColor: "var(--secondary-color)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
@@ -135,13 +139,22 @@ export default function GeneralUserProfile() {
           left: 0,
           overflowY: "auto",
           zIndex: 900,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+          borderRight: `2px solid var(--accent-color)`
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
-            className="btn btn-outline-dark btn-sm"
+            className="btn btn-sm"
             onClick={() => setCollapsed(!collapsed)}
-            style={{ border: "none" }}
+            style={{ 
+              border: "none",
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
           >
             <FaBars />
           </button>
@@ -234,15 +247,16 @@ export default function GeneralUserProfile() {
       >
         {/* NAVBAR */}
         <nav
-          className="navbar navbar-light bg-light d-flex justify-content-between align-items-center px-4 py-2 shadow-sm"
+          className="navbar d-flex justify-content-between align-items-center px-4 py-2 shadow-sm"
           style={{
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            borderBottom: "1px solid #ddd",
+            backgroundColor: "var(--primary-color)",
+            borderBottom: `1px solid var(--accent-color)`,
           }}
         >
-          <h5 className="mb-0">
+          <h5 className="mb-0" style={{ color: "var(--text-color)" }}>
             {activeTab === "profile" && "My Profile"}
             {activeTab === "submissions" && "My Submissions"}
             {activeTab === "games" && "Game Statistics"}
@@ -252,7 +266,14 @@ export default function GeneralUserProfile() {
           {activeTab !== "messages" && (
             <div style={{ width: 300 }}>
               <div className="input-group">
-                <span className="input-group-text bg-white">
+                <span 
+                  className="input-group-text"
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                >
                   <FaSearch />
                 </span>
                 <input
@@ -260,6 +281,11 @@ export default function GeneralUserProfile() {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 />
               </div>
             </div>
@@ -267,44 +293,66 @@ export default function GeneralUserProfile() {
         </nav>
 
         {/* CONTENT */}
-        <div className="p-4">
+        <div className="p-4" style={{ backgroundColor: "var(--primary-color)" }}>
           {/* PROFILE TAB */}
           {activeTab === "profile" && (
             <div className="container">
               <div className="row">
                 <div className="col-md-4">
-                  <div className="card shadow-sm">
+                  <div 
+                    className="card shadow-sm"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: `2px solid var(--accent-color)`,
+                      color: "var(--text-color)"
+                    }}
+                  >
                     <div className="card-body text-center">
                       <div
                         style={{
                           width: "100px",
                           height: "100px",
-                          backgroundColor: "#0d6efd",
+                          backgroundColor: "var(--accent-color)",
                           borderRadius: "50%",
                           margin: "0 auto 1rem",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          color: "white",
+                          color: "var(--primary-color)",
                           fontSize: "48px",
                         }}
                       >
                         <FaUser />
                       </div>
-                      <h5>{profile.displayName}</h5>
-                      <p className="text-muted small">{profile.email}</p>
-                      <p className="text-muted small">Joined {profile.joinDate}</p>
-                      <hr />
-                      <p className="mb-1">
+                      <h5 style={{ color: "var(--text-color)" }}>{profile.displayName}</h5>
+                      <p style={{ color: "var(--text-color)", opacity: 0.7 }} className="small">{profile.email}</p>
+                      <p style={{ color: "var(--text-color)", opacity: 0.7 }} className="small">Joined {profile.joinDate}</p>
+                      <hr style={{ borderColor: "var(--accent-color)", opacity: 0.3 }} />
+                      <p className="mb-1" style={{ color: "var(--text-color)" }}>
                         <strong>{profile.totalSubmissions}</strong> Submissions
                       </p>
-                      <p className="mb-1">
+                      <p className="mb-1" style={{ color: "var(--text-color)" }}>
                         <strong>{profile.gamesPlayed}</strong> Games Played
                       </p>
-                      <p>
+                      <p style={{ color: "var(--text-color)" }}>
                         <strong>{profile.accuracyScore}%</strong> Accuracy
                       </p>
-                      <button className="btn btn-primary btn-sm w-100">
+                      <button 
+                        className="btn btn-sm w-100"
+                        style={{
+                          backgroundColor: "var(--accent-color)",
+                          color: "var(--primary-color)",
+                          border: `1px solid var(--accent-color)`
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "var(--accent-color)";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
+                        }}
+                      >
                         Edit Profile
                       </button>
                     </div>
@@ -312,26 +360,74 @@ export default function GeneralUserProfile() {
                 </div>
 
                 <div className="col-md-8">
-                  <div className="card shadow-sm mb-3">
-                    <div className="card-header bg-primary text-white">
+                  <div 
+                    className="card shadow-sm mb-3"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: `2px solid var(--accent-color)`,
+                      color: "var(--text-color)"
+                    }}
+                  >
+                    <div 
+                      className="card-header"
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        color: "var(--primary-color)"
+                      }}
+                    >
                       <h6 className="mb-0">About Me</h6>
                     </div>
                     <div className="card-body">
                       <p>{profile.bio}</p>
-                      <button className="btn btn-outline-primary btn-sm">
+                      <button 
+                        className="btn btn-sm"
+                        style={{
+                          backgroundColor: "transparent",
+                          border: `1px solid var(--accent-color)`,
+                          color: "var(--accent-color)"
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "var(--accent-color)";
+                        }}
+                      >
                         Edit Bio
                       </button>
                     </div>
                   </div>
 
-                  <div className="card shadow-sm">
-                    <div className="card-header bg-primary text-white">
+                  <div 
+                    className="card shadow-sm"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: `2px solid var(--accent-color)`,
+                      color: "var(--text-color)"
+                    }}
+                  >
+                    <div 
+                      className="card-header"
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        color: "var(--primary-color)"
+                      }}
+                    >
                       <h6 className="mb-0">Badges & Achievements</h6>
                     </div>
                     <div className="card-body">
                       <div className="d-flex gap-2 flex-wrap">
                         {profile.badges.map((badge, idx) => (
-                          <span key={idx} className="badge bg-success">
+                          <span 
+                            key={idx} 
+                            className="badge"
+                            style={{
+                              backgroundColor: "var(--accent-color)",
+                              color: "var(--primary-color)"
+                            }}
+                          >
                             {badge}
                           </span>
                         ))}
@@ -346,15 +442,28 @@ export default function GeneralUserProfile() {
           {/* SUBMISSIONS TAB */}
           {activeTab === "submissions" && (
             <div className="container">
-              <div className="card shadow-sm">
-                <div className="card-header bg-primary text-white">
+              <div 
+                className="card shadow-sm"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: `2px solid var(--accent-color)`,
+                  color: "var(--text-color)"
+                }}
+              >
+                <div 
+                  className="card-header"
+                  style={{
+                    backgroundColor: "var(--accent-color)",
+                    color: "var(--primary-color)"
+                  }}
+                >
                   <h6 className="mb-0">Submission History ({filteredSubmissions.length})</h6>
                 </div>
                 <div className="card-body">
                   {filteredSubmissions.length > 0 ? (
                     <div className="table-responsive">
-                      <table className="table table-striped table-hover">
-                        <thead className="table-dark">
+                      <table className="table table-striped table-hover" style={{ color: "var(--text-color)" }}>
+                        <thead style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}>
                           <tr>
                             <th>Title</th>
                             <th>Type</th>
@@ -365,19 +474,27 @@ export default function GeneralUserProfile() {
                         </thead>
                         <tbody>
                           {filteredSubmissions.map((sub) => (
-                            <tr key={sub.id}>
+                            <tr key={sub.id} style={{ borderColor: "var(--accent-color)", opacity: 0.3 }}>
                               <td>{sub.title}</td>
                               <td>
-                                <span className="badge bg-info">{sub.type}</span>
+                                <span 
+                                  className="badge"
+                                  style={{
+                                    backgroundColor: "var(--accent-color)",
+                                    color: "var(--primary-color)"
+                                  }}
+                                >
+                                  {sub.type}
+                                </span>
                               </td>
                               <td>{sub.date}</td>
                               <td>
                                 <span
-                                  className={`badge ${
-                                    sub.result === "AI-generated"
-                                      ? "bg-warning text-dark"
-                                      : "bg-success"
-                                  }`}
+                                  className="badge"
+                                  style={{
+                                    backgroundColor: sub.result === "AI-generated" ? "#ffc107" : "var(--accent-color)",
+                                    color: sub.result === "AI-generated" ? "#000" : "var(--primary-color)"
+                                  }}
                                 >
                                   {sub.result}
                                 </span>
@@ -386,7 +503,10 @@ export default function GeneralUserProfile() {
                                 <div className="progress" style={{ height: "20px" }}>
                                   <div
                                     className="progress-bar"
-                                    style={{ width: `${sub.confidence}%` }}
+                                    style={{ 
+                                      width: `${sub.confidence}%`,
+                                      backgroundColor: "var(--accent-color)"
+                                    }}
                                   >
                                     {sub.confidence}%
                                   </div>
@@ -398,7 +518,7 @@ export default function GeneralUserProfile() {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-muted">No submissions found.</p>
+                    <p style={{ color: "var(--text-color)", opacity: 0.7 }}>No submissions found.</p>
                   )}
                 </div>
               </div>
@@ -408,15 +528,28 @@ export default function GeneralUserProfile() {
           {/* GAMES TAB */}
           {activeTab === "games" && (
             <div className="container">
-              <div className="card shadow-sm">
-                <div className="card-header bg-primary text-white">
+              <div 
+                className="card shadow-sm"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: `2px solid var(--accent-color)`,
+                  color: "var(--text-color)"
+                }}
+              >
+                <div 
+                  className="card-header"
+                  style={{
+                    backgroundColor: "var(--accent-color)",
+                    color: "var(--primary-color)"
+                  }}
+                >
                   <h6 className="mb-0">Game Statistics ({gameStats.length})</h6>
                 </div>
                 <div className="card-body">
                   {gameStats.length > 0 ? (
                     <div className="table-responsive">
-                      <table className="table table-striped table-hover">
-                        <thead className="table-dark">
+                      <table className="table table-striped table-hover" style={{ color: "var(--text-color)" }}>
+                        <thead style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}>
                           <tr>
                             <th>Game Name</th>
                             <th>Score</th>
@@ -426,16 +559,27 @@ export default function GeneralUserProfile() {
                         </thead>
                         <tbody>
                           {gameStats.map((game) => (
-                            <tr key={game.gameId}>
+                            <tr key={game.gameId} style={{ borderColor: "var(--accent-color)", opacity: 0.3 }}>
                               <td>{game.gameName}</td>
                               <td>
-                                <span className="badge bg-primary">{game.score}</span>
+                                <span 
+                                  className="badge"
+                                  style={{
+                                    backgroundColor: "var(--accent-color)",
+                                    color: "var(--primary-color)"
+                                  }}
+                                >
+                                  {game.score}
+                                </span>
                               </td>
                               <td>
                                 <div className="progress" style={{ height: "20px" }}>
                                   <div
                                     className="progress-bar"
-                                    style={{ width: `${game.accuracy}%` }}
+                                    style={{ 
+                                      width: `${game.accuracy}%`,
+                                      backgroundColor: "var(--accent-color)"
+                                    }}
                                   >
                                     {game.accuracy}%
                                   </div>
@@ -448,7 +592,7 @@ export default function GeneralUserProfile() {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-muted">No games played yet.</p>
+                    <p style={{ color: "var(--text-color)", opacity: 0.7 }}>No games played yet.</p>
                   )}
                 </div>
               </div>
@@ -459,32 +603,78 @@ export default function GeneralUserProfile() {
           {activeTab === "messages" && (
             <div className="container">
               <div className="row">
-                <div className="col-md-4">
-                  <div className="card shadow-sm">
-                    <div className="card-header bg-primary text-white">
+                <div 
+                  className="col-md-4"
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    border: `2px solid var(--accent-color)`,
+                    borderRadius: "8px"
+                  }}
+                >
+                  <div 
+                    className="card shadow-sm"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "none",
+                      color: "var(--text-color)"
+                    }}
+                  >
+                    <div 
+                      className="card-header"
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        color: "var(--primary-color)",
+                        borderBottom: "none"
+                      }}
+                    >
                       <h6 className="mb-0">Conversations</h6>
                     </div>
                     <div className="card-body p-0">
                       {conversations.map((conv) => (
                         <div
                           key={conv.id}
-                          className="p-3 border-bottom"
-                          style={{ cursor: "pointer" }}
+                          className="p-3"
+                          style={{ 
+                            cursor: "pointer",
+                            borderBottom: `1px solid var(--accent-color)`,
+                            color: "var(--text-color)"
+                          }}
                         >
                           <p className="mb-1 fw-bold">{conv.name}</p>
-                          <p className="mb-0 small text-muted">{conv.lastMessage}</p>
-                          <small className="text-muted">{conv.timestamp}</small>
+                          <p className="mb-0 small" style={{ opacity: 0.7 }}>{conv.lastMessage}</p>
+                          <small style={{ opacity: 0.6 }}>{conv.timestamp}</small>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
-                <div className="col-md-8">
-                  <div className="card shadow-sm">
-                    <div className="card-header bg-primary text-white">
+                <div 
+                  className="col-md-8"
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    border: `2px solid var(--accent-color)`,
+                    borderRadius: "8px"
+                  }}
+                >
+                  <div 
+                    className="card shadow-sm"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "none",
+                      color: "var(--text-color)"
+                    }}
+                  >
+                    <div 
+                      className="card-header"
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        color: "var(--primary-color)",
+                        borderBottom: "none"
+                      }}
+                    >
                       <h6 className="mb-0">Select a conversation to view messages</h6>
                     </div>
-                    <div className="card-body text-center text-muted">
+                    <div className="card-body" style={{ color: "var(--text-color)" }}>
                       <p>Click on a conversation to start messaging</p>
                     </div>
                   </div>
@@ -496,21 +686,39 @@ export default function GeneralUserProfile() {
           {/* SETTINGS TAB */}
           {activeTab === "settings" && (
             <div className="container">
-              <div className="card shadow-sm">
-                <div className="card-header bg-primary text-white">
+              <div 
+                className="card shadow-sm"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: `2px solid var(--accent-color)`,
+                  color: "var(--text-color)"
+                }}
+              >
+                <div 
+                  className="card-header"
+                  style={{
+                    backgroundColor: "var(--accent-color)",
+                    color: "var(--primary-color)"
+                  }}
+                >
                   <h6 className="mb-0">Account Settings</h6>
                 </div>
                 <div className="card-body">
                   <div className="mb-3">
-                    <label className="form-label">Email Notifications</label>
+                    <label className="form-label" style={{ color: "var(--text-color)" }}>Email Notifications</label>
                     <div className="form-check">
                       <input
                         className="form-check-input"
                         type="checkbox"
                         id="notif1"
                         defaultChecked
+                        style={{ borderColor: "var(--accent-color)" }}
                       />
-                      <label className="form-check-label" htmlFor="notif1">
+                      <label 
+                        className="form-check-label" 
+                        htmlFor="notif1"
+                        style={{ color: "var(--text-color)" }}
+                      >
                         Notify me on new game releases
                       </label>
                     </div>
@@ -520,16 +728,28 @@ export default function GeneralUserProfile() {
                         type="checkbox"
                         id="notif2"
                         defaultChecked
+                        style={{ borderColor: "var(--accent-color)" }}
                       />
-                      <label className="form-check-label" htmlFor="notif2">
+                      <label 
+                        className="form-check-label" 
+                        htmlFor="notif2"
+                        style={{ color: "var(--text-color)" }}
+                      >
                         Notify me on feedback received
                       </label>
                     </div>
                   </div>
-                  <hr />
+                  <hr style={{ borderColor: "var(--accent-color)", opacity: 0.3 }} />
                   <div className="mb-3">
-                    <label className="form-label">Privacy</label>
-                    <select className="form-select">
+                    <label className="form-label" style={{ color: "var(--text-color)" }}>Privacy</label>
+                    <select 
+                      className="form-select"
+                      style={{
+                        backgroundColor: "var(--primary-color)",
+                        borderColor: "var(--accent-color)",
+                        color: "var(--text-color)"
+                      }}
+                    >
                       <option>Public Profile</option>
                       <option>Private Profile</option>
                     </select>

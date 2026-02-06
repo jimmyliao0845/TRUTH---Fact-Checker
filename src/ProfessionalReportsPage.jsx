@@ -20,8 +20,6 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 
-import "./FactCheckerDashboard.css";
-
 export default function ProfessionalReportsPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -203,13 +201,15 @@ export default function ProfessionalReportsPage() {
 
   // --- JSX ---
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", paddingTop: "56px", minHeight: "100vh" }}>
       {/* SIDEBAR */}
       <div
-        className="d-flex flex-column p-3 border-end"
+        className="d-flex flex-column p-3"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--secondary-color)",
+          borderRight: `2px solid var(--accent-color)`,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
@@ -221,8 +221,15 @@ export default function ProfessionalReportsPage() {
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button 
-             className="btn btn-outline-dark btn-sm" 
-             onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
+             className="btn btn-sm"
+             onClick={() => setCollapsed(!collapsed)}
+             style={{
+               backgroundColor: "var(--accent-color)",
+               color: "var(--primary-color)",
+               border: "none",
+               borderRadius: "6px"
+             }}
+          >
             <FaBars />
           </button>
         </div>
@@ -230,9 +237,25 @@ export default function ProfessionalReportsPage() {
                 <ul className="nav flex-column">
                   <li>
                     <button
-                      className={`btn sidebar-btn text-start ${location.pathname === "/factcheckerdashboard" ? "active" : ""}`}
+                      className={`btn sidebar-btn text-start`}
                       onClick={() => location.pathname !== "/factcheckerdashboard" && navigate("/factcheckerdashboard")}
                       disabled={location.pathname === "/factcheckerdashboard"}
+                      style={{
+                        color: location.pathname === "/factcheckerdashboard" ? "var(--primary-color)" : "var(--text-color)",
+                        backgroundColor: location.pathname === "/factcheckerdashboard" ? "var(--accent-color)" : "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        if (location.pathname !== "/factcheckerdashboard") {
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (location.pathname !== "/factcheckerdashboard") {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "var(--text-color)";
+                        }
+                      }}
                     >
                       <FaTachometerAlt className="me-2" />
                       {!collapsed && "Dashboard"}
@@ -243,6 +266,18 @@ export default function ProfessionalReportsPage() {
                     <button 
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/create-tutorial")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaPlusCircle className="me-2" />
                       {!collapsed && "Create Tutorial"}
@@ -253,6 +288,18 @@ export default function ProfessionalReportsPage() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/manage-tutorial")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaEdit className="me-2" />
                       {!collapsed && "Manage Tutorial"}
@@ -261,9 +308,25 @@ export default function ProfessionalReportsPage() {
         
                   <li>
                     <button
-                      className={`btn sidebar-btn text-start ${location.pathname === "/professional/reports" ? "active" : ""}`}
+                      className={`btn sidebar-btn text-start`}
                       onClick={() => location.pathname !== "/professional/reports" && navigate("/professional/reports")}
                       disabled={location.pathname === "/professional/reports"}
+                      style={{
+                        color: location.pathname === "/professional/reports" ? "var(--primary-color)" : "var(--text-color)",
+                        backgroundColor: location.pathname === "/professional/reports" ? "var(--accent-color)" : "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        if (location.pathname !== "/professional/reports") {
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (location.pathname !== "/professional/reports") {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "var(--text-color)";
+                        }
+                      }}
                     >
                       <FaChartBar className="me-2" />
                       {!collapsed && "Organized Reports"}
@@ -274,6 +337,18 @@ export default function ProfessionalReportsPage() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/linked-users")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaUsers className="me-2" />
                       {!collapsed && "Linked Users"}
@@ -284,6 +359,18 @@ export default function ProfessionalReportsPage() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/user-feedback")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaCommentDots className="me-2" />
                       {!collapsed && "User Feedback"}
@@ -294,6 +381,18 @@ export default function ProfessionalReportsPage() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/verification-logs")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaClipboardList className="me-2" />
                       {!collapsed && "Verification Logs"}
@@ -304,6 +403,18 @@ export default function ProfessionalReportsPage() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/profile")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaUserCog className="me-2" />
                       {!collapsed && "Profile"}
@@ -315,6 +426,18 @@ export default function ProfessionalReportsPage() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/analysis")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaArrowLeft className="me-2" />
                       {!collapsed && "Go Back to Analysis Page"}
@@ -323,7 +446,7 @@ export default function ProfessionalReportsPage() {
                 </ul>
 
         {!collapsed && (
-          <div className="mt-auto small text-muted">
+          <div className="mt-auto small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
             Verified professionals workspace
           </div>
         )}
@@ -336,34 +459,83 @@ export default function ProfessionalReportsPage() {
           marginLeft: collapsed ? "80px" : "250px",
           transition: "margin-left 0.3s ease",
           minHeight: "100vh",
+          backgroundColor: "var(--primary-color)",
+          color: "var(--text-color)"
         }}
       >
         {/* NAVBAR */}
         <nav
-          className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
-          style={{ position: "sticky", top: 0, zIndex: 1000, borderBottom: "1px solid #ddd" }}
+          className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
+          style={{ 
+            position: "sticky", 
+            top: 0, 
+            zIndex: 1000, 
+            backgroundColor: "var(--primary-color)",
+            borderBottom: `1px solid var(--accent-color)`
+          }}
         ></nav>
 
         {/* CONTENT */}
         <div className="container-fluid py-4 px-5">
-          <h2 className="fw-bold mb-4">Organized Reports</h2>
+          <h2 className="fw-bold mb-4" style={{ color: "var(--text-color)" }}>Organized Reports</h2>
           <div className="d-flex gap-2 mb-4">
             <button
-              className={`btn ${viewMode === "organize" ? "btn-primary" : "btn-outline-primary"}`}
+              className="btn"
               onClick={() => setViewMode("organize")}
+              style={{
+                backgroundColor: viewMode === "organize" ? "var(--accent-color)" : "transparent",
+                color: viewMode === "organize" ? "var(--primary-color)" : "var(--accent-color)",
+                border: `1px solid var(--accent-color)`
+              }}
+              onMouseOver={(e) => {
+                if (viewMode !== "organize") {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (viewMode !== "organize") {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--accent-color)";
+                }
+              }}
             >
               Create Report
             </button>
             <button
-              className={`btn ${viewMode === "history" ? "btn-primary" : "btn-outline-primary"}`}
+              className="btn"
               onClick={() => setViewMode("history")}
+              style={{
+                backgroundColor: viewMode === "history" ? "var(--accent-color)" : "transparent",
+                color: viewMode === "history" ? "var(--primary-color)" : "var(--accent-color)",
+                border: `1px solid var(--accent-color)`
+              }}
+              onMouseOver={(e) => {
+                if (viewMode !== "history") {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (viewMode !== "history") {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--accent-color)";
+                }
+              }}
             >
               Organized Report History
             </button>
           </div>
 
           {viewMode === "organize" && (
-          <div className="card shadow-sm p-4 mb-4">
+          <div 
+            className="card shadow-sm p-4 mb-4"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: `2px solid var(--accent-color)`,
+              color: "var(--text-color)"
+            }}
+          >
             <h4>Create Organized Report</h4>
 
             {/* Select account */}
@@ -379,6 +551,11 @@ export default function ProfessionalReportsPage() {
                     .filter((r) => r.professional_id === e.target.value)
                     .flatMap((r) => r.logs);
                   setOrganizerLogs(accountLogs);
+                }}
+                style={{
+                  backgroundColor: "var(--primary-color)",
+                  borderColor: "var(--accent-color)",
+                  color: "var(--text-color)"
                 }}
               >
                 <option value="">-- Select account --</option>
@@ -459,7 +636,23 @@ export default function ProfessionalReportsPage() {
             )}
 
             {/* Save button */}
-            <button className="btn btn-primary" onClick={saveOrganizedReport}>
+            <button
+              className="btn"
+              onClick={saveOrganizedReport}
+              style={{
+                backgroundColor: "var(--accent-color)",
+                color: "var(--primary-color)",
+                border: "2px solid var(--accent-color)",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                e.currentTarget.style.color = "var(--accent-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+            >
               Save Report
             </button>
           </div>
@@ -472,7 +665,7 @@ export default function ProfessionalReportsPage() {
               <div className="mb-4 d-flex gap-2 align-items-center">
                 <div style={{ maxWidth: 500, flexGrow: 1 }}>
                   <div className="input-group">
-                    <span className="input-group-text bg-white">
+                    <span className="input-group-text" style={{ backgroundColor: "var(--secondary-color)", borderColor: "var(--accent-color)", color: "var(--text-color)" }}>
                       <FaSearch />
                     </span>
                     <input
@@ -482,6 +675,11 @@ export default function ProfessionalReportsPage() {
                       onChange={(e) => {
                         setSearchQuery(e.target.value);
                         setPage(1);
+                      }}
+                      style={{
+                        backgroundColor: "var(--primary-color)",
+                        borderColor: "var(--accent-color)",
+                        color: "var(--text-color)",
                       }}
                     />
                   </div>
@@ -525,7 +723,7 @@ export default function ProfessionalReportsPage() {
                             </video>
                           )}
                           {log.file_type === "text" && (
-                            <pre style={{ background: "#f8f9fa", padding: "10px", borderRadius: 5 }}>
+                            <pre style={{ background: "var(--secondary-color)", color: "var(--text-color)", padding: "10px", borderRadius: 5, border: "2px solid var(--accent-color)" }}>
                               {log.filename}
                             </pre>
                           )}
@@ -537,10 +735,42 @@ export default function ProfessionalReportsPage() {
                   </div>
 
                   <div className="d-flex justify-content-end gap-2 mt-3">
-                    <button className="btn btn-outline-secondary" onClick={() => setSelectedReport(null)}>
+                    <button
+                      className="btn"
+                      onClick={() => setSelectedReport(null)}
+                      style={{
+                        backgroundColor: "transparent",
+                        color: "var(--accent-color)",
+                        border: "2px solid var(--accent-color)",
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--accent-color)";
+                      }}
+                    >
                       Close
                     </button>
-                    <button className="btn btn-primary" onClick={() => exportCSV(selectedReport)}>
+                    <button
+                      className="btn"
+                      onClick={() => exportCSV(selectedReport)}
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        color: "var(--primary-color)",
+                        border: "2px solid var(--accent-color)",
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                        e.currentTarget.style.color = "var(--accent-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                    >
                       <FaDownload className="me-1" /> Export CSV
                     </button>
                   </div>

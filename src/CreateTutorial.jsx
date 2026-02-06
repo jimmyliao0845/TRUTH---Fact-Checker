@@ -18,7 +18,6 @@ import {
   FaCloudUploadAlt,
   FaArrowLeft,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
 
 /**
  * CreateTutorialFull.jsx
@@ -191,13 +190,15 @@ export default function CreateTutorialFull() {
 
   // Render
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", paddingTop: "56px", minHeight: "100vh" }}>
       {/* Sidebar */}
       <div
-        className="d-flex flex-column p-3 border-end"
+        className="d-flex flex-column p-3"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--secondary-color)",
+          borderRight: `2px solid var(--accent-color)`,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
@@ -208,7 +209,16 @@ export default function CreateTutorialFull() {
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <button className="btn btn-outline-dark btn-sm" onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
+          <button 
+            className="btn btn-sm"
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              border: "none",
+              borderRadius: "6px"
+            }}
+          >
             <FaBars />
           </button>
         </div>
@@ -219,6 +229,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/factcheckerdashboard")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaTachometerAlt className="me-2" />
                       {!collapsed && "Dashboard"}
@@ -227,9 +249,25 @@ export default function CreateTutorialFull() {
         
                   <li>
                     <button 
-                      className={`btn sidebar-btn text-start ${location.pathname === "/professional/create-tutorial" ? "active" : ""}`}
+                      className={`btn sidebar-btn text-start`}
                       onClick={() => location.pathname !== "/professional/create-tutorial" && navigate("/professional/create-tutorial")}
                       disabled={location.pathname === "/professional/create-tutorial"}
+                      style={{
+                        backgroundColor: location.pathname === "/professional/create-tutorial" ? "var(--accent-color)" : "transparent",
+                        color: location.pathname === "/professional/create-tutorial" ? "var(--primary-color)" : "var(--text-color)"
+                      }}
+                      onMouseOver={(e) => {
+                        if (location.pathname !== "/professional/create-tutorial") {
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (location.pathname !== "/professional/create-tutorial") {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.color = "var(--text-color)";
+                        }
+                      }}
                     >
                       <FaPlusCircle className="me-2" />
                       {!collapsed && "Create Tutorial"}
@@ -240,6 +278,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/manage-tutorial")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaEdit className="me-2" />
                       {!collapsed && "Manage Tutorial"}
@@ -250,6 +300,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/reports")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaChartBar className="me-2" />
                       {!collapsed && "Organized Reports"}
@@ -260,6 +322,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/linked-users")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaUsers className="me-2" />
                       {!collapsed && "Linked Users"}
@@ -270,6 +344,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/user-feedback")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaCommentDots className="me-2" />
                       {!collapsed && "User Feedback"}
@@ -280,6 +366,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/verification-logs")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaClipboardList className="me-2" />
                       {!collapsed && "Verification Logs"}
@@ -290,6 +388,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/professional/profile")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaUserCog className="me-2" />
                       {!collapsed && "Profile"}
@@ -301,6 +411,18 @@ export default function CreateTutorialFull() {
                     <button
                       className="btn sidebar-btn text-start"
                       onClick={() => navigate("/analysis")}
+                      style={{
+                        color: "var(--text-color)",
+                        backgroundColor: "transparent"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--text-color)";
+                      }}
                     >
                       <FaArrowLeft className="me-2" />
                       {!collapsed && "Go Back to Analysis Page"}
@@ -308,7 +430,7 @@ export default function CreateTutorialFull() {
                   </li>
                 </ul>
 
-        {!collapsed && <div className="mt-auto small text-muted">Verified professionals workspace</div>}
+        {!collapsed && <div className="mt-auto small" style={{ color: "var(--text-color)", opacity: 0.7 }}>Verified professionals workspace</div>}
       </div>
 
       {/* Main content */}
@@ -318,16 +440,19 @@ export default function CreateTutorialFull() {
           marginLeft: collapsed ? "80px" : "250px",
           transition: "margin-left 0.3s ease",
           minHeight: "100vh",
+          backgroundColor: "var(--primary-color)",
+          color: "var(--text-color)"
         }}
       >
         {/* Notification Navbar */}
         <nav
-          className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
+          className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
           style={{
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            borderBottom: "1px solid #ddd",
+            backgroundColor: "var(--primary-color)",
+            borderBottom: `1px solid var(--accent-color)`,
           }}
         >
           <div className="dropdown">
@@ -353,17 +478,46 @@ export default function CreateTutorialFull() {
         </nav>
 
         {/* Page Content */}
-        <div className="container-fluid py-4 px-5" id="create-tutorial">
+        <div className="container-fluid py-4 px-5" id="create-tutorial" style={{ backgroundColor: "var(--primary-color)" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2 className="fw-bold mb-0">Create Tutorial</h2>
+            <h2 className="fw-bold mb-0" style={{ color: "var(--text-color)" }}>Create Tutorial</h2>
             <div className="d-flex gap-2">
-              <button className="btn btn-outline-secondary" onClick={saveDraft}>
+              <button 
+                className="btn"
+                onClick={saveDraft}
+                style={{
+                  backgroundColor: "transparent",
+                  border: `1px solid var(--accent-color)`,
+                  color: "var(--accent-color)"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--accent-color)";
+                }}
+              >
                 <FaSave className="me-2" /> Save Draft
               </button>
               <button
-                className="btn btn-primary"
+                className="btn"
                 onClick={() => {
                   if (validateBeforePublish()) publishTutorial();
+                }}
+                style={{
+                  backgroundColor: "var(--accent-color)",
+                  color: "var(--primary-color)",
+                  border: `1px solid var(--accent-color)`
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--accent-color)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
                 }}
               >
                 Publish Tutorial
@@ -372,17 +526,42 @@ export default function CreateTutorialFull() {
           </div>
 
           {/* Tutorial info card */}
-          <div className="card shadow-sm p-4 mb-4">
+          <div 
+            className="card shadow-sm p-4 mb-4"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: `2px solid var(--accent-color)`,
+              color: "var(--text-color)"
+            }}
+          >
             <h5 className="fw-semibold mb-3">Tutorial Information</h5>
             <div className="row g-3">
               <div className="col-md-6">
                 <label className="form-label">Title</label>
-                <input className="form-control" value={tutorial.title} onChange={(e) => setTutorial({ ...tutorial, title: e.target.value })} />
+                <input 
+                  className="form-control" 
+                  value={tutorial.title} 
+                  onChange={(e) => setTutorial({ ...tutorial, title: e.target.value })}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                />
               </div>
 
               <div className="col-md-6">
                 <label className="form-label">Category</label>
-                <select className="form-select" value={tutorial.category} onChange={(e) => setTutorial({ ...tutorial, category: e.target.value })}>
+                <select 
+                  className="form-select" 
+                  value={tutorial.category} 
+                  onChange={(e) => setTutorial({ ...tutorial, category: e.target.value })}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                >
                   <option value="text">Text Classification</option>
                   <option value="image">Image Classification</option>
                   <option value="mixed">Mixed</option>
@@ -391,29 +570,78 @@ export default function CreateTutorialFull() {
 
               <div className="col-12">
                 <label className="form-label">Description</label>
-                <textarea className="form-control" rows={3} value={tutorial.description} onChange={(e) => setTutorial({ ...tutorial, description: e.target.value })} />
+                <textarea 
+                  className="form-control" 
+                  rows={3} 
+                  value={tutorial.description} 
+                  onChange={(e) => setTutorial({ ...tutorial, description: e.target.value })}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                />
               </div>
             </div>
           </div>
 
           {/* Questions */}
-          <div className="card shadow-sm p-4 mb-4">
+          <div 
+            className="card shadow-sm p-4 mb-4"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: `2px solid var(--accent-color)`,
+              color: "var(--text-color)"
+            }}
+          >
             <h5 className="fw-semibold mb-3">Questions (10)</h5>
 
             {tutorial.questions.map((q, i) => (
-              <div key={i} className="mb-4 p-3 border rounded bg-white">
+              <div 
+                key={i} 
+                className="mb-4 p-3 rounded"
+                style={{
+                  backgroundColor: "var(--primary-color)",
+                  border: `1px solid var(--accent-color)`,
+                  borderRadius: "6px"
+                }}
+              >
                 <div className="d-flex justify-content-between align-items-start">
                   <div>
                     <h6 className="mb-0">Item {i + 1}</h6>
-                    <small className="text-muted">Select content below or paste/upload</small>
+                    <small style={{ opacity: 0.7 }}>Select content below or paste/upload</small>
                   </div>
 
                   <div className="d-flex gap-2">
-                    <button className="btn btn-outline-primary btn-sm" onClick={() => setModalOpenIndex(i)}>
+                    <button 
+                      className="btn btn-sm"
+                      onClick={() => setModalOpenIndex(i)}
+                      style={{
+                        backgroundColor: "transparent",
+                        border: `1px solid var(--accent-color)`,
+                        color: "var(--accent-color)"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                        e.currentTarget.style.color = "var(--primary-color)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = "var(--accent-color)";
+                      }}
+                    >
                       <FaCloudUploadAlt className="me-1" /> Select Content
                     </button>
                     {q.imageUrl && (
-                      <button className="btn btn-outline-danger btn-sm" onClick={() => clearImageUrlObject(i)}>
+                      <button 
+                        className="btn btn-sm"
+                        onClick={() => clearImageUrlObject(i)}
+                        style={{
+                          backgroundColor: "#dc3545",
+                          color: "white",
+                          border: "1px solid #dc3545"
+                        }}
+                      >
                         Remove Image
                       </button>
                     )}
@@ -421,7 +649,13 @@ export default function CreateTutorialFull() {
                 </div>
 
                 {/* Preview */}
-                <div className="mt-3 border p-3 rounded bg-light">
+                <div 
+                  className="mt-3 border p-3 rounded"
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)"
+                  }}
+                >
                   <p className="small text-muted mb-2">Preview</p>
 
                   {/* text preview */}

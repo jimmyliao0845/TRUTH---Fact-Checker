@@ -968,3 +968,594 @@ ul li span {
 .custom-colors-section .gap-2 {
   gap: 10px;
 }
+
+/* ================================
+   FROM index.css
+================================ */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* ================================
+   FROM App.css
+================================ */
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================================
+   FROM analysis.css
+================================ */
+.white-box {
+  background: var(--secondary-color);
+  border-radius: 8px;
+  width: 100%;
+  min-height: 200px;
+  color: var(--text-color);
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid var(--accent-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.analysis-sidebar {
+  width: 220px;
+  background: var(--sidebar-color);
+  color: var(--text-color);
+  height: auto;
+  min-height: 100vh;
+  position: relative;
+  padding-top: 20px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
+}
+
+.analysis-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+}
+
+.analysis-sidebar p {
+  font-size: 14px;
+  color: var(--text-color);
+  text-align: center;
+  opacity: 0.8;
+}
+
+.top-links {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.analysis-main {
+  flex-grow: 1;
+  padding: 40px;
+}
+
+/* ================================
+   FROM register.css
+================================ */
+.register-container {
+    max-width: 500px;
+    margin: auto;
+    padding: 2rem;
+}
+
+.btn-signup {
+    background-color: var(--secondary-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    font-weight: 500;
+    padding: 0.6rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-signup:hover {
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body.night-mode .btn-signup {
+    background-color: var(--secondary-color) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-color);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+body.night-mode .btn-signup:hover {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.register-social-btn {
+    background-color: var(--secondary-color) !important;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    color: var(--text-color) !important;
+    font-weight: 500;
+}
+
+.register-social-btn img {
+    filter: none;
+}
+
+.register-social-btn:hover {
+    background-color: #f0f0f0 !important;
+    color: #000 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body.night-mode .register-social-btn {
+    background-color: #343541 !important;
+    border: 1px solid #565869;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+body.night-mode .register-social-btn img {
+    filter: brightness(0) invert(1);
+}
+
+body.night-mode .register-social-btn:hover {
+    background-color: #444654 !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.register-terms {
+    font-size: 0.9rem;
+    color: inherit;
+}
+
+.register-terms a {
+    text-decoration: underline;
+}
+
+.register-toggle-wrapper {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+@media (max-width: 576px) {
+    .register-container {
+        padding: 1rem;
+    }
+}
+
+/* ================================
+   FROM night-mode.css
+================================ */
+body.night-mode {
+  background-color: var(--background-color);
+  color: var(--text-color) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.night-mode h1,
+body.night-mode h2,
+body.night-mode h3,
+body.night-mode h4,
+body.night-mode h5,
+body.night-mode h6,
+body.night-mode p,
+body.night-mode label,
+body.night-mode span,
+body.night-mode div,
+body.night-mode a,
+body.night-mode li {
+  color: var(--text-color) !important;
+}
+
+body.night-mode .card {
+  background-color: var(--secondary-color);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+body.night-mode .form-control {
+  background-color: var(--button-color);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.night-mode .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body.night-mode a {
+  color: var(--accent-color) !important;
+}
+
+body.night-mode a:hover {
+  color: var(--accent-color) !important;
+  opacity: 0.8;
+}
+
+button,
+.btn {
+  border-radius: 10px;
+  padding: 10px 16px;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+button:hover,
+.btn:hover {
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+body.night-mode button:hover,
+body.night-mode .btn:hover {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+#login-btn {
+  color: #fff;
+  border: 1px solid #fff;
+  background-color: transparent;
+}
+
+#login-btn:hover {
+  background-color: #fff;
+  color: #000;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+body.night-mode #login-btn {
+  color: #ccc !important;
+  border: 1px solid #ccc !important;
+}
+
+body.night-mode #login-btn:hover {
+  background-color: #ccc !important;
+  color: #000 !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+#signup-btn {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #fff;
+}
+
+#signup-btn:hover {
+  background-color: #ddd;
+  color: #000;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+body.night-mode #signup-btn {
+  background-color: #ccc !important;
+  color: #000 !important;
+  border: 1px solid #ccc !important;
+}
+
+body.night-mode #signup-btn:hover {
+  background-color: #bbb !important;
+  color: #000 !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+body.night-mode .alert-danger {
+  background-color: #5a1e1e;
+  color: #f5c2c2;
+  border: 1px solid #7a2b2b;
+}
+
+body.night-mode .alert-success {
+  background-color: #1e5a2e;
+  color: #c2f5c2;
+  border: 1px solid #2b7a3b;
+}
+
+/* ================================
+   FROM FactCheckerDashboard.css
+================================ */
+.bg-light-grey {
+  background-color: var(--secondary-color);
+}
+
+.sidebar {
+  transition: width 0.3s ease;
+  overflow: hidden;
+  background-color: var(--sidebar-color);
+}
+
+.sidebar-open {
+  width: 280px;
+}
+
+.sidebar-collapsed {
+  width: 70px;
+}
+
+.sidebar-btn {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: none;
+  text-align: left;
+  color: var(--text-color);
+  font-size: 15px;
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar-btn:hover {
+  background-color: var(--accent-color);
+  color: #ffffff;
+}
+
+.sidebar-btn:focus {
+  outline: none;
+  background-color: var(--accent-color);
+  color: #ffffff;
+}
+
+.sidebar-btn.active {
+  background-color: var(--primary-color);
+  color: var(--accent-color);
+  cursor: not-allowed;
+}
+
+.sidebar-btn.active:hover {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+h3 {
+  color: #0d6efd;
+  font-weight: 600;
+}
+
+.table thead th {
+  background-color: #333 !important;
+  color: #fff !important;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* ================================
+   FROM AdminDashboard.css
+================================ */
+.dashboard-modal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.dashboard-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dashboard-modal .modal-content {
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transform: translateY(-30px) scale(0.95);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.dashboard-modal.show .modal-content {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.table-responsive {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  max-width: 100%;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-responsive {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.admin-dashboard-table tbody tr td .cell-content {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.admin-dashboard-table tbody tr:hover td .cell-content {
+  transform: translateX(5px);
+}
+
+.admin-dashboard-table .btn-outline-primary {
+  transition: all 0.2s ease;
+}
+
+.admin-dashboard-table .btn-outline-primary:hover {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+}
+
+.admin-dashboard-table .btn-demote {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+  background-color: transparent !important;
+  transition: all 0.2s ease;
+}
+
+.admin-dashboard-table .btn-demote:hover:not(:disabled) {
+  background-color: #dc3545 !important;
+  color: white !important;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4) !important;
+}
+
+/* ================================
+   FROM AdminUsers.css
+================================ */
+.table-hover tbody tr {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.dashboard-modal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.dashboard-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dashboard-modal .modal-content {
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  transform: translateY(-20px) scale(0.95);
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.dashboard-modal.show .modal-content {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.admin-dashboard-table .btn[disabled] {
+  background-color: #e0e0e0 !important;
+  border-color: #ccc !important;
+  color: #888 !important;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}
+
+.admin-dashboard-table .btn:not([disabled]):hover {
+  background-color: #007bff;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0,123,255,0.4);
+}
+
+/* ================================
+   FROM social-login.css
+================================ */
+.social-login-btn {
+    font-weight: 500;
+    font-size: 14px;
+    background-color: var(--secondary-color);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    color: var(--text-color);
+}
+
+.social-login-btn img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: none;
+}
+
+.social-login-btn:hover {
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+body.night-mode .social-login-btn {
+    background-color: var(--secondary-color) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+body.night-mode .social-login-btn img {
+    filter: brightness(0) invert(1);
+}
+
+body.night-mode .social-login-btn:hover {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.social-login-btn img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* ================================
+   END OF CONSOLIDATED CSS FILES
+================================ */

@@ -16,10 +16,7 @@ import { doc, setDoc, getDoc } from "firebase/firestore";
 import { ColorThemeManager } from "./ColorManager/Marketplace";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./register.css";
 import "./styles.css";
-import "./night-mode.css";
-import "./social-login.css";
 
 export default function RegisterPage() {
   const navigate = useNavigate();

@@ -139,16 +139,16 @@ export const ColorThemeManager = {
   },
 
   resetToDefault: () => {
-    const defaultTheme = THEMES.black;
+    // Reset to original design from main branch (Light mode)
     const root = document.documentElement;
-    root.style.setProperty("--primary-color", defaultTheme.colors.primary);
-    root.style.setProperty("--secondary-color", defaultTheme.colors.secondary);
-    root.style.setProperty("--navbar-color", defaultTheme.colors.navbar);
-    root.style.setProperty("--sidebar-color", defaultTheme.colors.sidebar);
-    root.style.setProperty("--background-color", defaultTheme.colors.background);
-    root.style.setProperty("--button-color", defaultTheme.colors.button);
-    root.style.setProperty("--text-color", defaultTheme.colors.text);
-    root.style.setProperty("--accent-color", defaultTheme.colors.accent);
+    root.style.setProperty("--primary-color", "#ffffff");       // white
+    root.style.setProperty("--secondary-color", "#f5f5f5");     // light gray
+    root.style.setProperty("--navbar-color", "#ffffff");        // white navbar (changed from #09090d)
+    root.style.setProperty("--sidebar-color", "#f5f5f5");       // light sidebar
+    root.style.setProperty("--background-color", "#ffffff");    // white background
+    root.style.setProperty("--button-color", "#0d6efd");        // blue button
+    root.style.setProperty("--text-color", "#000000");          // black text
+    root.style.setProperty("--accent-color", "#0d6efd");        // blue accent
     
     localStorage.removeItem("selectedTheme");
     localStorage.removeItem("customColors");
@@ -160,8 +160,9 @@ export const ColorThemeManager = {
       ColorThemeManager.applyTheme(saved);
       return saved;
     }
-    ColorThemeManager.applyTheme("black");
-    return "black";
+    // Default to original light mode design (not Black theme)
+    ColorThemeManager.resetToDefault();
+    return "default";
   },
 
   isThemeUnlocked: (themeName, unlockedThemes) => {

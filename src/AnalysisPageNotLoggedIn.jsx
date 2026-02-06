@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./analysis.css";
 import { FaKeyboard, FaCloudUploadAlt } from "react-icons/fa";
 import mammoth from "mammoth";
 

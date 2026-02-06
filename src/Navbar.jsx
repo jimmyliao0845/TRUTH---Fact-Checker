@@ -47,7 +47,7 @@ export default function Navbar() {
         right: 0,
         zIndex: 1050,
         backgroundColor: "var(--navbar-color)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
       }}
     >
       <div className="container-fluid d-flex align-items-center justify-content-between">

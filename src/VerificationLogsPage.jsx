@@ -20,7 +20,6 @@ import {
   FaPlus,
   FaArrowLeft,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
 
 /**
  * VerificationLogsPage.jsx
@@ -232,13 +231,15 @@ export default function VerificationLogsPage() {
   // const exportLogsToServer = async (ids) => { /* call API */ };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", paddingTop: "56px", minHeight: "100vh" }}>
       {/* Sidebar */}
       <div
-        className="d-flex flex-column p-3 border-end"
+        className="d-flex flex-column p-3"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--secondary-color)",
+          borderRight: `2px solid var(--accent-color)`,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
@@ -249,7 +250,16 @@ export default function VerificationLogsPage() {
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <button className="btn btn-outline-dark btn-sm" onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
+          <button 
+            className="btn btn-sm"
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              border: "none",
+              borderRadius: "6px"
+            }}
+          >
             <FaBars />
           </button>
         </div>
@@ -260,6 +270,18 @@ export default function VerificationLogsPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/factcheckerdashboard")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
@@ -270,6 +292,18 @@ export default function VerificationLogsPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/create-tutorial")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
@@ -280,6 +314,18 @@ export default function VerificationLogsPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/manage-tutorial")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaEdit className="me-2" />
               {!collapsed && "Manage Tutorial"}
@@ -290,6 +336,18 @@ export default function VerificationLogsPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/reports")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaChartBar className="me-2" />
               {!collapsed && "Organized Reports"}
@@ -300,6 +358,18 @@ export default function VerificationLogsPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/linked-users")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaUsers className="me-2" />
               {!collapsed && "Linked Users"}
@@ -307,16 +377,51 @@ export default function VerificationLogsPage() {
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
+            <button 
+              className="btn sidebar-btn text-start"
+              onClick={() => navigate("/professional/user-feedback")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <FaCommentDots className="me-2" />
               {!collapsed && "User Feedback"}
             </button>
           </li>
 
           <li>
-            <button className={`btn sidebar-btn text-start ${location.pathname === "/professional/verification-logs" ? "active" : ""}`}
+            <button 
+              className={`btn sidebar-btn text-start`}
               onClick={() => location.pathname !== "/professional/verification-logs" && navigate("/professional/verification-logs")}
+              disabled={location.pathname === "/professional/verification-logs"}
+              style={{
+                color: location.pathname === "/professional/verification-logs" ? "var(--primary-color)" : "var(--text-color)",
+                backgroundColor: location.pathname === "/professional/verification-logs" ? "var(--accent-color)" : "transparent"
+              }}
+              onMouseOver={(e) => {
+                if (location.pathname !== "/professional/verification-logs") {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (location.pathname !== "/professional/verification-logs") {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-color)";
+                }
+              }}
             >
+              <FaClipboardList className="me-2" />
+              {!collapsed && "Verification Logs"}
             </button>
           </li>
 
@@ -324,6 +429,18 @@ export default function VerificationLogsPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/profile")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaUserCog className="me-2" />
               {!collapsed && "Profile"}
@@ -335,6 +452,18 @@ export default function VerificationLogsPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/analysis")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaArrowLeft className="me-2" />
               {!collapsed && "Go Back to Analysis Page"}
@@ -343,7 +472,7 @@ export default function VerificationLogsPage() {
         </ul>
 
         {!collapsed && (
-          <div className="mt-auto small text-muted">
+          <div className="mt-auto small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
             Verified professionals workspace
           </div>
         )}
@@ -356,48 +485,134 @@ export default function VerificationLogsPage() {
           marginLeft: collapsed ? "80px" : "250px",
           transition: "margin-left 0.3s ease",
           minHeight: "100vh",
+          backgroundColor: "var(--primary-color)",
+          color: "var(--text-color)"
         }}
       >
         {/* Navbar */}
         <nav
-          className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
+          className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
           style={{
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            borderBottom: "1px solid #ddd",
+            backgroundColor: "var(--primary-color)",
+            borderBottom: `1px solid var(--accent-color)`,
           }}
         >
           <div className="d-flex align-items-center gap-3" style={{ width: "100%", maxWidth: 900 }}>
             <div className="input-group" style={{ width: "100%" }}>
-              <span className="input-group-text bg-white"><FaSearch /></span>
-              <input className="form-control" placeholder="Search log id, user, filename, source..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }} />
+              <span 
+                className="input-group-text"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  borderColor: "var(--accent-color)",
+                  color: "var(--text-color)"
+                }}
+              >
+                <FaSearch />
+              </span>
+              <input 
+                className="form-control" 
+                placeholder="Search log id, user, filename, source..." 
+                value={searchQuery} 
+                onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  borderColor: "var(--accent-color)",
+                  color: "var(--text-color)"
+                }}
+              />
             </div>
           </div>
         </nav>
 
         <div className="container-fluid py-4 px-5">
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2 className="fw-bold">Verification Data Logs</h2>
+            <h2 className="fw-bold" style={{ color: "var(--text-color)" }}>Verification Data Logs</h2>
             <div className="d-flex gap-2">
-              <button className="btn btn-outline-secondary" onClick={() => { setSelectedIds([]); setFilterFileType(""); setFilterLabel(""); setDateFrom(""); setDateTo(""); setSearchQuery(""); }}>
+              <button 
+                className="btn"
+                onClick={() => { setSelectedIds([]); setFilterFileType(""); setFilterLabel(""); setDateFrom(""); setDateTo(""); setSearchQuery(""); }}
+                style={{
+                  backgroundColor: "transparent",
+                  border: `1px solid var(--accent-color)`,
+                  color: "var(--accent-color)"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--accent-color)";
+                }}
+              >
                 Clear Filters
               </button>
-              <button className="btn btn-primary" onClick={() => exportSelectedCSV()}>
+              <button 
+                className="btn"
+                onClick={() => exportSelectedCSV()}
+                style={{
+                  backgroundColor: "var(--accent-color)",
+                  color: "var(--primary-color)",
+                  border: `1px solid var(--accent-color)`
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--accent-color)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }}
+              >
                 <FaFileCsv className="me-1" /> Export Selected
               </button>
-              <button className="btn btn-success" onClick={() => addSelectedToReport()}>
+              <button 
+                className="btn"
+                onClick={() => addSelectedToReport()}
+                style={{
+                  backgroundColor: "#28a745",
+                  color: "white",
+                  border: `1px solid #28a745`
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "#28a745";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "#28a745";
+                  e.currentTarget.style.color = "white";
+                }}
+              >
                 <FaPlus className="me-1" /> Add to Report
               </button>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="card shadow-sm p-3 mb-3">
+          <div 
+            className="card shadow-sm p-3 mb-3"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: `2px solid var(--accent-color)`,
+              color: "var(--text-color)"
+            }}
+          >
             <div className="row g-2 align-items-center">
               <div className="col-md-3">
                 <label className="form-label small mb-1">File type</label>
-                <select className="form-select form-select-sm" value={filterFileType} onChange={(e) => { setFilterFileType(e.target.value); setCurrentPage(1); }}>
+                <select 
+                  className="form-select form-select-sm" 
+                  value={filterFileType} 
+                  onChange={(e) => { setFilterFileType(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                >
                   <option value="">All</option>
                   <option value="image">Image</option>
                   <option value="video">Video</option>
@@ -406,7 +621,16 @@ export default function VerificationLogsPage() {
               </div>
               <div className="col-md-3">
                 <label className="form-label small mb-1">Result Label</label>
-                <select className="form-select form-select-sm" value={filterLabel} onChange={(e) => { setFilterLabel(e.target.value); setCurrentPage(1); }}>
+                <select 
+                  className="form-select form-select-sm" 
+                  value={filterLabel} 
+                  onChange={(e) => { setFilterLabel(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                >
                   <option value="">All</option>
                   <option value="AI-generated">AI-generated</option>
                   <option value="Human-made">Human-made</option>
@@ -415,7 +639,17 @@ export default function VerificationLogsPage() {
               </div>
               <div className="col-md-3">
                 <label className="form-label small mb-1">Date From</label>
-                <input type="date" className="form-control form-control-sm" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setCurrentPage(1); }} />
+                <input 
+                  type="date" 
+                  className="form-control form-control-sm" 
+                  value={dateFrom} 
+                  onChange={(e) => { setDateFrom(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                />
               </div>
               <div className="col-md-3">
                 <label className="form-label small mb-1">Date To</label>

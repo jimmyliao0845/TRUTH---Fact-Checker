@@ -17,7 +17,6 @@ import {
   FaTrash,
   FaCheck,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
 
 export default function LinkedUser() {
   const navigate = useNavigate();
@@ -103,13 +102,18 @@ export default function LinkedUser() {
   };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ 
+      backgroundColor: "var(--primary-color)", 
+      paddingTop: "56px",
+      minHeight: "100vh",
+      color: "var(--text-color)"
+    }}>
       {/* SIDEBAR */}
       <div
         className="d-flex flex-column p-3 border-end"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--secondary-color)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
@@ -117,13 +121,22 @@ export default function LinkedUser() {
           left: 0,
           overflowY: "auto",
           zIndex: 900,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+          borderRight: `2px solid var(--accent-color)`
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
-            className="btn btn-outline-dark btn-sm"
+            className="btn btn-sm"
             onClick={() => setCollapsed(!collapsed)}
-            style={{ border: "none" }}
+            style={{ 
+              border: "none",
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
           >
             <FaBars />
           </button>
@@ -241,28 +254,32 @@ export default function LinkedUser() {
           minHeight: "100vh",
         }}
       >
-        {/* NAVBAR */}
+        {/* NAVBAR - THEME AWARE */}
         <nav
-          className="navbar navbar-light bg-light d-flex justify-content-between align-items-center px-4 py-2 shadow-sm"
+          className="navbar d-flex justify-content-between align-items-center px-4 py-2 shadow-sm"
           style={{
+            backgroundColor: "var(--primary-color)",
+            borderBottom: `1px solid var(--accent-color)`,
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            borderBottom: "1px solid #ddd",
           }}
         >
-          <h5 className="mb-0">Linked Users Management</h5>
+          <h5 className="mb-0" style={{ color: "var(--text-color)" }}>Linked Users Management</h5>
         </nav>
 
         {/* MAIN CONTENT */}
-        <main className="p-4">
+        <main className="p-4" style={{ backgroundColor: "var(--primary-color)" }}>
           {/* Alert Messages */}
           {message && (
             <div
-              className={`alert ${
-                messageType === "success" ? "alert-success" : "alert-danger"
-              } alert-dismissible fade show`}
+              className={`alert alert-dismissible fade show`}
               role="alert"
+              style={{
+                backgroundColor: messageType === "success" ? "rgba(40, 167, 69, 0.2)" : "rgba(220, 53, 69, 0.2)",
+                borderColor: messageType === "success" ? "#28a745" : "#dc3545",
+                color: "var(--text-color)",
+              }}
             >
               {message}
               <button
@@ -270,17 +287,34 @@ export default function LinkedUser() {
                 className="btn-close"
                 onClick={() => setMessage("")}
                 aria-label="Close"
+                style={{
+                  filter: "invert(1)",
+                }}
               ></button>
             </div>
           )}
 
           {/* Link New User Section */}
-          <div className="card mb-4 shadow-sm">
-            <div className="card-header bg-primary text-white">
-              <h6 className="mb-0">Link New User</h6>
+          <div
+            className="card mb-4 shadow-sm"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: "2px solid var(--accent-color)",
+            }}
+          >
+            <div
+              className="card-header text-white"
+              style={{
+                backgroundColor: "var(--accent-color)",
+                borderColor: "var(--accent-color)",
+              }}
+            >
+              <h6 className="mb-0" style={{ color: "var(--primary-color)" }}>
+                Link New User
+              </h6>
             </div>
-            <div className="card-body">
-              <p className="text-muted small">
+            <div className="card-body" style={{ backgroundColor: "var(--secondary-color)" }}>
+              <p className="small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
                 Enter the Account ID of the user you want to link. You will need to authenticate the connection.
               </p>
               <div className="row">
@@ -293,11 +327,33 @@ export default function LinkedUser() {
                       value={accountId}
                       onChange={(e) => setAccountId(e.target.value)}
                       onKeyPress={(e) => e.key === "Enter" && handleLinkUser()}
+                      style={{
+                        backgroundColor: "var(--primary-color)",
+                        borderColor: "var(--accent-color)",
+                        color: "var(--text-color)",
+                      }}
                     />
                     <button
-                      className="btn btn-primary"
+                      className="btn"
                       onClick={handleLinkUser}
                       disabled={loading}
+                      style={{
+                        backgroundColor: "var(--accent-color)",
+                        color: "var(--primary-color)",
+                        border: "2px solid var(--accent-color)",
+                      }}
+                      onMouseOver={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                          e.currentTarget.style.color = "var(--accent-color)";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (!loading) {
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
+                        }
+                      }}
                     >
                       {loading ? "Linking..." : "Link User"}
                     </button>
@@ -308,42 +364,75 @@ export default function LinkedUser() {
           </div>
 
           {/* Linked Users Table */}
-          <div className="card shadow-sm">
-            <div className="card-header bg-primary text-white">
-              <h6 className="mb-0">
+          <div
+            className="card shadow-sm"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: "2px solid var(--accent-color)",
+            }}
+          >
+            <div
+              className="card-header text-white"
+              style={{
+                backgroundColor: "var(--accent-color)",
+                borderColor: "var(--accent-color)",
+              }}
+            >
+              <h6 className="mb-0" style={{ color: "var(--primary-color)" }}>
                 Your Linked Users ({linkedUsers.length})
               </h6>
             </div>
-            <div className="card-body">
+            <div className="card-body" style={{ backgroundColor: "var(--secondary-color)", padding: 0 }}>
               {linkedUsers.length > 0 ? (
                 <div className="table-responsive">
-                  <table className="table table-striped table-hover">
-                    <thead className="table-dark">
+                  <table
+                    className="table table-striped table-hover mb-0"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                    }}
+                  >
+                    <thead style={{ backgroundColor: "var(--accent-color)" }}>
                       <tr>
-                        <th>Account ID</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Linked Date</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th style={{ color: "var(--primary-color)" }}>Account ID</th>
+                        <th style={{ color: "var(--primary-color)" }}>Username</th>
+                        <th style={{ color: "var(--primary-color)" }}>Email</th>
+                        <th style={{ color: "var(--primary-color)" }}>Linked Date</th>
+                        <th style={{ color: "var(--primary-color)" }}>Status</th>
+                        <th style={{ color: "var(--primary-color)" }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {linkedUsers.map((user) => (
-                        <tr key={user.id}>
+                        <tr
+                          key={user.id}
+                          style={{
+                            color: "var(--text-color)",
+                            borderBottomColor: "var(--accent-color)",
+                            opacity: 0.9,
+                          }}
+                        >
                           <td>
-                            <code>{user.accountId}</code>
+                            <code style={{ backgroundColor: "var(--primary-color)", color: "var(--accent-color)" }}>
+                              {user.accountId}
+                            </code>
                           </td>
                           <td>{user.username}</td>
                           <td>{user.email}</td>
                           <td>{user.linkedDate}</td>
                           <td>
                             <span
-                              className={`badge ${
-                                user.status === "active"
-                                  ? "bg-success"
-                                  : "bg-warning text-dark"
-                              }`}
+                              style={{
+                                display: "inline-block",
+                                padding: "4px 8px",
+                                borderRadius: "4px",
+                                backgroundColor:
+                                  user.status === "active"
+                                    ? "rgba(40, 167, 69, 0.3)"
+                                    : "rgba(255, 193, 7, 0.3)",
+                                color: user.status === "active" ? "#28a745" : "#ffc107",
+                                fontWeight: "bold",
+                                fontSize: "0.875rem",
+                              }}
                             >
                               {user.status}
                             </span>
@@ -351,17 +440,43 @@ export default function LinkedUser() {
                           <td>
                             {user.status === "pending" && (
                               <button
-                                className="btn btn-sm btn-success me-2"
+                                className="btn btn-sm me-2"
                                 onClick={() => handleApproveUser(user.id)}
                                 title="Approve User"
+                                style={{
+                                  backgroundColor: "rgba(40, 167, 69, 0.2)",
+                                  color: "#28a745",
+                                  border: "2px solid #28a745",
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.backgroundColor = "#28a745";
+                                  e.currentTarget.style.color = "#fff";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.backgroundColor = "rgba(40, 167, 69, 0.2)";
+                                  e.currentTarget.style.color = "#28a745";
+                                }}
                               >
                                 <FaCheck />
                               </button>
                             )}
                             <button
-                              className="btn btn-sm btn-danger"
+                              className="btn btn-sm"
                               onClick={() => handleRemoveUser(user.id)}
                               title="Remove User"
+                              style={{
+                                backgroundColor: "rgba(220, 53, 69, 0.2)",
+                                color: "#dc3545",
+                                border: "2px solid #dc3545",
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.backgroundColor = "#dc3545";
+                                e.currentTarget.style.color = "#fff";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.backgroundColor = "rgba(220, 53, 69, 0.2)";
+                                e.currentTarget.style.color = "#dc3545";
+                              }}
                             >
                               <FaTrash />
                             </button>
@@ -372,7 +487,7 @@ export default function LinkedUser() {
                   </table>
                 </div>
               ) : (
-                <p className="text-muted text-center py-4">
+                <p className="text-center py-4" style={{ color: "var(--text-color)", opacity: 0.7 }}>
                   No linked users yet. Add one to get started!
                 </p>
               )}
@@ -380,9 +495,19 @@ export default function LinkedUser() {
           </div>
 
           {/* Information Section */}
-          <div className="alert alert-info mt-4" role="alert">
-            <h6 className="alert-heading">ℹ️ How Linking Works</h6>
-            <ul className="mb-0">
+          <div
+            className="alert mt-4"
+            role="alert"
+            style={{
+              backgroundColor: "rgba(23, 162, 184, 0.1)",
+              borderColor: "var(--accent-color)",
+              color: "var(--text-color)",
+            }}
+          >
+            <h6 className="alert-heading" style={{ color: "var(--text-color)" }}>
+              ℹ️ How Linking Works
+            </h6>
+            <ul className="mb-0" style={{ color: "var(--text-color)", opacity: 0.9 }}>
               <li>Enter the Account ID of the user you want to link</li>
               <li>
                 The user will receive an authentication request on their end

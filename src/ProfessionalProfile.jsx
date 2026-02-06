@@ -23,8 +23,6 @@ import {
   FaArrowLeft,
 } from "react-icons/fa";
 
-import "./FactCheckerDashboard.css";
-
 export default function ProfessionalProfile() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -210,40 +208,78 @@ export default function ProfessionalProfile() {
 
   // ---------------- UI ----------------
   return (
-    <div className="d-flex" style={{ paddingTop: 56 }}>
-      {/* SIDEBAR */}
+    <div className="d-flex" style={{ 
+      paddingTop: "56px", 
+      backgroundColor: "var(--primary-color)", 
+      minHeight: "100vh", 
+      color: "var(--text-color)" 
+    }}>
+      {/* SIDEBAR - SAME STYLING AS ANALYSIS PAGE */}
       <div
         className="d-flex flex-column p-3 border-end"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "var(--sidebar-color)",
+          backgroundColor: "var(--secondary-color)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
           top: "56px",
           left: 0,
           overflowY: "auto",
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+          borderRight: `2px solid var(--accent-color)`,
           zIndex: 900
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
-                  <button
-                    className="btn btn-outline-dark btn-sm"
-                    onClick={() => setCollapsed(!collapsed)}
-                    style={{ border: "none" }}
-                  >
-                    <FaBars />
-                  </button>
-                </div>
+          <button
+            className="btn btn-sm"
+            onClick={() => setCollapsed(!collapsed)}
+            style={{ 
+              border: "none",
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
+          >
+            <FaBars />
+          </button>
+        </div>
         
-
-        {/* Sidebar Menu */}
-        <ul className="nav flex-column">
+        {/* Sidebar Menu with Theme-Aware Styling */}
+        <ul className="nav flex-column mt-3">
           <li>
             <button
-              className={`btn sidebar-btn text-start ${location.pathname === "/factcheckerdashboard" ? "active" : ""}`}
+              className={`btn sidebar-btn ${location.pathname === "/factcheckerdashboard" ? "active" : ""}`}
               onClick={() => location.pathname !== "/factcheckerdashboard" && navigate("/factcheckerdashboard")}
               disabled={location.pathname === "/factcheckerdashboard"}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: location.pathname === "/factcheckerdashboard" ? "not-allowed" : "pointer"
+              }}
+              onMouseOver={(e) => {
+                if (location.pathname !== "/factcheckerdashboard") {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (location.pathname !== "/factcheckerdashboard") {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-color)";
+                }
+              }}
             >
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
@@ -252,8 +288,29 @@ export default function ProfessionalProfile() {
 
           <li>
             <button 
-              className="btn sidebar-btn text-start"
+              className="btn sidebar-btn"
               onClick={() => navigate("/professional/create-tutorial")}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: "pointer"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
@@ -262,8 +319,29 @@ export default function ProfessionalProfile() {
 
           <li>
             <button
-              className="btn sidebar-btn text-start"
+              className="btn sidebar-btn"
               onClick={() => navigate("/professional/manage-tutorial")}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: "pointer"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaEdit className="me-2" />
               {!collapsed && "Manage Tutorial"}
@@ -271,7 +349,31 @@ export default function ProfessionalProfile() {
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/reports")}>
+            <button 
+              className="btn sidebar-btn"
+              onClick={() => navigate("/professional/reports")}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: "pointer"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <FaChartBar className="me-2" />
               {!collapsed && "Organized Reports"}
             </button>
@@ -279,8 +381,29 @@ export default function ProfessionalProfile() {
 
           <li>
             <button
-              className="btn sidebar-btn text-start"
+              className="btn sidebar-btn"
               onClick={() => navigate("/professional/linked-users")}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: "pointer"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaUsers className="me-2" />
               {!collapsed && "Linked Users"}
@@ -288,7 +411,31 @@ export default function ProfessionalProfile() {
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/user-feedback")}>
+            <button 
+              className="btn sidebar-btn"
+              onClick={() => navigate("/professional/user-feedback")}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: "pointer"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <FaClipboardList className="me-2" />
               {!collapsed && "Verification Logs"}
             </button>
@@ -296,9 +443,34 @@ export default function ProfessionalProfile() {
 
           <li>
             <button 
-              className={`btn sidebar-btn text-start ${location.pathname === "/professional/profile" ? "active" : ""}`}
+              className={`btn sidebar-btn ${location.pathname === "/professional/profile" ? "active" : ""}`}
               onClick={() => location.pathname !== "/professional/profile" && navigate("/professional/profile")}
               disabled={location.pathname === "/professional/profile"}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: location.pathname === "/professional/profile" ? "not-allowed" : "pointer"
+              }}
+              onMouseOver={(e) => {
+                if (location.pathname !== "/professional/profile") {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (location.pathname !== "/professional/profile") {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-color)";
+                }
+              }}
             >
               <FaUserCog className="me-2" />
               {!collapsed && "Profile"}
@@ -306,32 +478,71 @@ export default function ProfessionalProfile() {
           </li>
 
           {/* Go Back to Analysis Page */}
-          <li className="mt-4 border-top pt-2">
+          <li className="mt-4 border-top pt-2" style={{ borderColor: "rgba(255,255,255,0.2)" }}>
             <button
-              className="btn sidebar-btn text-start"
+              className="btn sidebar-btn"
               onClick={() => navigate("/analysis")}
+              style={{
+                color: "var(--text-color)",
+                transition: "all 0.2s",
+                borderRadius: "6px",
+                fontSize: "0.95rem",
+                fontWeight: "500",
+                padding: "10px 12px",
+                width: "100%",
+                textAlign: "left",
+                border: "none",
+                background: "none",
+                cursor: "pointer"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaArrowLeft className="me-2" />
-              {!collapsed && "Go Back to Analysis Page"}
+              {!collapsed && "Go Back"}
             </button>
           </li>
         </ul>
 
         {!collapsed && (
-          <div className="mt-auto small text-muted">
-            Verified professionals workspace
+          <div className="mt-auto small" style={{ opacity: 0.7, color: "var(--text-color)" }}>
+            Professional workspace
           </div>
         )}
       </div>
 
-      {/* MAIN */}
-      <div className="flex-grow-1" style={{ marginLeft: collapsed ? 80 : 250 }}>
-        {/* TOP BAR */}
-        <nav className="navbar bg-white shadow-sm px-4">
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-grow-1" style={{ 
+        marginLeft: collapsed ? "80px" : "250px",
+        transition: "margin-left 0.3s ease",
+        backgroundColor: "var(--primary-color)",
+        minHeight: "calc(100vh - 56px)"
+      }}>
+        {/* TOP BAR - THEME AWARE */}
+        <nav 
+          className="navbar shadow-sm px-4"
+          style={{
+            backgroundColor: "var(--primary-color)",
+            borderBottom: `1px solid var(--accent-color)`
+          }}
+        >
           {activeTab !== "messages" && (
             <div style={{ width: 360 }}>
               <div className="input-group">
-                <span className="input-group-text bg-white">
+                <span 
+                  className="input-group-text"
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
+                >
                   <FaSearch />
                 </span>
                 <input
@@ -339,6 +550,11 @@ export default function ProfessionalProfile() {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 />
               </div>
             </div>
@@ -346,8 +562,15 @@ export default function ProfessionalProfile() {
         </nav>
 
         <div className="container-fluid p-4">
-          {/* PROFILE HEADER */}
-          <div className="card shadow-sm mb-4 p-4">
+          {/* PROFILE HEADER - THEME AWARE */}
+          <div 
+            className="card shadow-sm mb-4 p-4"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              borderColor: "var(--accent-color)",
+              border: "2px solid var(--accent-color)"
+            }}
+          >
             <div className="d-flex align-items-center gap-4">
               <img
                 src={profile.avatarUrl || "https://via.placeholder.com/120"}
@@ -355,29 +578,50 @@ export default function ProfessionalProfile() {
                 className="rounded-circle"
                 width={120}
                 height={120}
+                style={{ border: `2px solid var(--accent-color)` }}
               />
               <div>
-                <h4 className="mb-1">{profile.displayName}</h4>
-                <div className="text-muted">{profile.caption}</div>
+                <h4 className="mb-1" style={{ color: "var(--text-color)" }}>{profile.displayName}</h4>
+                <div style={{ color: "rgba(255,255,255,0.7)" }}>{profile.caption}</div>
               </div>
             </div>
           </div>
 
-          {/* TABS */}
+          {/* TABS - THEME AWARE */}
           <ul className="nav nav-pills mb-4">
             {["posts", "messages", "reviews", "bookmarks"].map((t) => (
               <li key={t} className="nav-item">
-                <button className={`nav-link ${activeTab === t ? "active" : ""}`} onClick={() => setActiveTab(t)}>
+                <button 
+                  className={`nav-link ${activeTab === t ? "active" : ""}`}
+                  onClick={() => setActiveTab(t)}
+                  style={{
+                    backgroundColor: activeTab === t ? "var(--accent-color)" : "transparent",
+                    color: activeTab === t ? "var(--primary-color)" : "var(--text-color)",
+                    borderRadius: "6px",
+                    transition: "all 0.2s",
+                    marginRight: "8px"
+                  }}
+                  onMouseOver={(e) => {
+                    if (activeTab !== t) {
+                      e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (activeTab !== t) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }
+                  }}
+                >
                   {t.charAt(0).toUpperCase() + t.slice(1)}
                 </button>
               </li>
             ))}
           </ul>
 
-          {/* CONTENT */}
+          {/* CONTENT AREA - THEME AWARE */}
           {activeTab === "messages" ? (
             <div className="row" style={{ minHeight: 450 }}>
-              <div className="col-md-4 border-end">
+              <div className="col-md-4" style={{ borderRight: `1px solid var(--accent-color)` }}>
                 <input
                   className="form-control mb-2"
                   placeholder="Add Account ID or Name"
@@ -394,14 +638,35 @@ export default function ProfessionalProfile() {
                       setAddContactInput("");
                     }
                   }}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 />
                 <ul className="list-group">
                   {conversations.map((c) => (
                     <li
                       key={c.id}
-                      className={`list-group-item ${c.id === activeConversationId ? "active" : ""}`}
+                      className={`list-group-item`}
                       onClick={() => setActiveConversationId(c.id)}
-                      style={{ cursor: "pointer" }}
+                      style={{ 
+                        cursor: "pointer",
+                        backgroundColor: c.id === activeConversationId ? "var(--accent-color)" : "var(--secondary-color)",
+                        color: c.id === activeConversationId ? "var(--primary-color)" : "var(--text-color)",
+                        border: `1px solid var(--accent-color)`,
+                        transition: "all 0.2s"
+                      }}
+                      onMouseOver={(e) => {
+                        if (c.id !== activeConversationId) {
+                          e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        if (c.id !== activeConversationId) {
+                          e.currentTarget.style.backgroundColor = "var(--secondary-color)";
+                        }
+                      }}
                     >
                       {c.name}
                     </li>
@@ -410,9 +675,15 @@ export default function ProfessionalProfile() {
               </div>
 
               <div className="col-md-8 d-flex flex-column">
-                <div className="flex-grow-1 border rounded p-3 mb-2 bg-light overflow-auto">
+                <div 
+                  className="flex-grow-1 rounded p-3 mb-2 overflow-auto"
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    border: `2px solid var(--accent-color)`
+                  }}
+                >
                   {activeConversation?.messages.map((m, i) => (
-                    <div key={i} className="mb-2">
+                    <div key={i} className="mb-2" style={{ color: "var(--text-color)" }}>
                       <strong>{m.sender}:</strong> {m.text}
                     </div>
                   ))}
@@ -425,8 +696,31 @@ export default function ProfessionalProfile() {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      borderColor: "var(--accent-color)",
+                      color: "var(--text-color)"
+                    }}
                   />
-                  <button className="btn btn-primary" onClick={sendMessage}>
+                  <button 
+                    className="btn"
+                    onClick={sendMessage}
+                    style={{
+                      backgroundColor: "var(--accent-color)",
+                      color: "var(--primary-color)",
+                      fontWeight: "600",
+                      transition: "all 0.2s",
+                      borderRadius: "6px"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                      e.currentTarget.style.color = "var(--accent-color)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "var(--primary-color)";
+                    }}
+                  >
                     Send
                   </button>
                 </div>
@@ -435,13 +729,29 @@ export default function ProfessionalProfile() {
           ) : (
             <div className="row">
               {items.length === 0 ? (
-                <div className="text-muted text-center py-5">No content available.</div>
+                <div style={{ color: "rgba(255,255,255,0.7)" }} className="text-center py-5 w-100">No content available.</div>
               ) : (
                 items.map((item) => (
                   <div key={item.id} className="col-md-6 mb-3">
-                    <div className="card shadow-sm p-3">
+                    <div 
+                      className="card shadow-sm p-3"
+                      style={{
+                        backgroundColor: "var(--secondary-color)",
+                        borderColor: "var(--accent-color)",
+                        border: "2px solid var(--accent-color)",
+                        transition: "all 0.2s"
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = "translateY(-2px)";
+                        e.currentTarget.style.boxShadow = `0 8px 16px rgba(255,255,255,0.2)`;
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+                      }}
+                    >
                       <div className="d-flex justify-content-between mb-2">
-                        <strong>{item.author || item.reviewer}</strong>
+                        <strong style={{ color: "var(--text-color)" }}>{item.author || item.reviewer}</strong>
                         <button
                           className="btn btn-link p-0"
                           onClick={() =>
@@ -451,28 +761,98 @@ export default function ProfessionalProfile() {
                               ? toggleBookmark("review", item.id)
                               : null
                           }
+                          style={{ color: "var(--accent-color)" }}
                         >
                           {item.bookmarked ? <FaBookmark /> : <FaRegBookmark />}
                         </button>
                       </div>
-                      <div className="mb-2">{item.content || item.comment}</div>
-                      <small className="text-muted">{item.time || item.tutorial}</small>
+                      <div className="mb-2" style={{ color: "var(--text-color)" }}>{item.content || item.comment}</div>
+                      <small style={{ color: "rgba(255,255,255,0.7)" }}>{item.time || item.tutorial}</small>
                       {(item.type === "post" || activeTab === "posts") && (
                         <div className="d-flex gap-3 mt-2">
-                          <button className="btn btn-sm btn-outline-primary">
+                          <button 
+                            className="btn btn-sm"
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "var(--accent-color)",
+                              border: `1px solid var(--accent-color)`,
+                              transition: "all 0.2s",
+                              borderRadius: "6px"
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "var(--accent-color)";
+                            }}
+                          >
                             <FaThumbsUp /> Like
                           </button>
-                          <button className="btn btn-sm btn-outline-secondary">
+                          <button 
+                            className="btn btn-sm"
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "var(--accent-color)",
+                              border: `1px solid var(--accent-color)`,
+                              transition: "all 0.2s",
+                              borderRadius: "6px"
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "var(--accent-color)";
+                            }}
+                          >
                             <FaCommentDots /> Comment
                           </button>
-                          <button className="btn btn-sm btn-outline-success">
+                          <button 
+                            className="btn btn-sm"
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "var(--accent-color)",
+                              border: `1px solid var(--accent-color)`,
+                              transition: "all 0.2s",
+                              borderRadius: "6px"
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "var(--accent-color)";
+                            }}
+                          >
                             <FaShare /> Share
                           </button>
                         </div>
                       )}
                       {activeTab === "bookmarks" && (
                         <div className="mt-2 text-end">
-                          <button className="btn btn-sm btn-danger" onClick={() => removeBookmark(item.id)}>
+                          <button 
+                            className="btn btn-sm"
+                            onClick={() => removeBookmark(item.id)}
+                            style={{
+                              backgroundColor: "var(--accent-color)",
+                              color: "var(--primary-color)",
+                              fontWeight: "600",
+                              transition: "all 0.2s",
+                              borderRadius: "6px"
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                              e.currentTarget.style.color = "var(--accent-color)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
+                            }}
+                          >
                             Remove Bookmark
                           </button>
                         </div>
@@ -490,16 +870,17 @@ export default function ProfessionalProfile() {
         .sidebar-btn {
           background: none;
           border: none;
-          color: #000;
+          color: var(--text-color);
           padding: 10px 12px;
-          border-radius: 5px;
+          border-radius: 6px;
           width: 100%;
           text-align: left;
           font-weight: 500;
+          transition: all 0.2s;
         }
         .sidebar-btn:hover {
-          background-color: #000;
-          color: #fff;
+          background-color: var(--accent-color);
+          color: var(--primary-color);
         }
       `}</style>
     </div>

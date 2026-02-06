@@ -15,8 +15,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { auth, db } from "./firebase";
 import { collection, getDocs, getDoc, updateDoc, doc, query, orderBy } from "firebase/firestore";
-import "./AdminDashboard.css";
-import "./AdminUsers.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend);
 
@@ -155,63 +153,217 @@ export default function AdminDashboard() {
   return (
     <div className="d-flex">
       {/* Sidebar */}
-      <div className="d-flex flex-column p-3 text-white" style={{ width: "240px", minHeight: "100vh", backgroundColor: "#20232a" }}>
-        <h4 className="text-center mb-4 fw-semibold">Admin Panel</h4>
+      <div
+        className="d-flex flex-column p-3"
+        style={{
+          width: "240px",
+          minHeight: "100vh",
+          backgroundColor: "var(--secondary-color)",
+          borderRight: "2px solid var(--accent-color)",
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+          color: "var(--text-color)",
+        }}
+      >
+        <h4 className="text-center mb-4 fw-semibold" style={{ color: "var(--text-color)" }}>
+          Admin Panel
+        </h4>
         <ul className="nav flex-column">
           <li className="nav-item mb-2">
-            <Link to="/admin-dashboard" className="nav-link text-white">
+            <Link
+              to="/admin-dashboard"
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent",
+                padding: "10px",
+                borderRadius: "4px",
+                display: "inline-block",
+                textDecoration: "none",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <i className="fas fa-home me-2"></i> Dashboard
             </Link>
           </li>
           <li className="nav-item mb-2">
-            <Link to="/admin/users" className="nav-link text-white">
+            <Link
+              to="/admin/users"
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent",
+                padding: "10px",
+                borderRadius: "4px",
+                display: "inline-block",
+                textDecoration: "none",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <i className="fas fa-users me-2"></i> Users
             </Link>
           </li>
           <li className="nav-item mb-2">
-            <Link to="/admin/tutorials" className="nav-link text-white">
+            <Link
+              to="/admin/tutorials"
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent",
+                padding: "10px",
+                borderRadius: "4px",
+                display: "inline-block",
+                textDecoration: "none",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <i className="fas fa-chalkboard-teacher me-2"></i> Tutorials
             </Link>
           </li>
           <li className="nav-item mb-2">
-            <Link to="/admin/reviews" className="nav-link text-white">
+            <Link
+              to="/admin/reviews"
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent",
+                padding: "10px",
+                borderRadius: "4px",
+                display: "inline-block",
+                textDecoration: "none",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <i className="fas fa-comment-dots me-2"></i> Reviews
             </Link>
           </li>
           <li className="nav-item mb-2">
-            <Link to="/admin/analytics" className="nav-link text-white">
+            <Link
+              to="/admin/analytics"
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent",
+                padding: "10px",
+                borderRadius: "4px",
+                display: "inline-block",
+                textDecoration: "none",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <i className="fas fa-chart-line me-2"></i> Analytics
             </Link>
           </li>
         </ul>
-        <hr className="border-secondary" />
+        <hr style={{ borderColor: "var(--accent-color)" }} />
         <div className="mt-auto text-center">
-          <a href="/" className="text-white text-decoration-none"><i className="fas fa-sign-out-alt me-2"></i> Logout</a>
+          <a
+            href="/"
+            style={{
+              color: "var(--text-color)",
+              textDecoration: "none",
+              padding: "10px",
+              borderRadius: "4px",
+              display: "inline-block",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+              e.currentTarget.style.color = "var(--primary-color)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--text-color)";
+            }}
+          >
+            <i className="fas fa-sign-out-alt me-2"></i> Logout
+          </a>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container-fluid py-4 px-5" style={{ background: "#f8f9fa", minHeight: "100vh" }}>
-        <h2 className="fw-bold mb-4 text-dark">Dashboard Overview</h2>
+      <div
+        className="container-fluid py-4 px-5"
+        style={{
+          backgroundColor: "var(--primary-color)",
+          minHeight: "100vh",
+          color: "var(--text-color)",
+        }}
+      >
+        <h2 className="fw-bold mb-4" style={{ color: "var(--text-color)" }}>
+          Dashboard Overview
+        </h2>
 
         {/* Stats Summary */}
         <div className="row mb-4">
           <div className="col-md-4">
-            <div className="card shadow-sm p-3 border-0 text-center">
-              <h6 className="text-muted">Total Users</h6>
-              <h3 className="fw-bold text-primary">{users.length}</h3>
+            <div
+              className="card shadow-sm p-3 text-center"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)",
+              }}
+            >
+              <h6 style={{ color: "var(--text-color)" }}>Total Users</h6>
+              <h3 className="fw-bold" style={{ color: "var(--accent-color)" }}>
+                {users.length}
+              </h3>
             </div>
           </div>
           <div className="col-md-4">
-            <div className="card shadow-sm p-3 border-0 text-center">
-              <h6 className="text-muted">Active Users</h6>
-              <h3 className="fw-bold text-success">{newUsersMonth}</h3>
+            <div
+              className="card shadow-sm p-3 text-center"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)",
+              }}
+            >
+              <h6 style={{ color: "var(--text-color)" }}>Active Users</h6>
+              <h3 className="fw-bold" style={{ color: "var(--accent-color)" }}>
+                {newUsersMonth}
+              </h3>
             </div>
           </div>
           <div className="col-md-4">
-            <div className="card shadow-sm p-3 border-0 text-center">
-              <h6 className="text-muted">New Users This Month</h6>
-              <h3 className="fw-bold text-info">{newUsersMonth}</h3>
+            <div
+              className="card shadow-sm p-3 text-center"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)",
+              }}
+            >
+              <h6 style={{ color: "var(--text-color)" }}>New Users This Month</h6>
+              <h3 className="fw-bold" style={{ color: "var(--accent-color)" }}>
+                {newUsersMonth}
+              </h3>
             </div>
           </div>
         </div>
@@ -219,14 +371,30 @@ export default function AdminDashboard() {
         {/* Charts */}
         <div className="row">
           <div className="col-md-6 mb-4">
-            <div className="card shadow-sm p-3 border-0">
-              <h6 className="text-muted mb-3 text-center">User Growth</h6>
+            <div
+              className="card shadow-sm p-3"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)",
+              }}
+            >
+              <h6 className="mb-3 text-center" style={{ color: "var(--text-color)" }}>
+                User Growth
+              </h6>
               <Line data={userGrowthData} />
             </div>
           </div>
           <div className="col-md-6 mb-4">
-            <div className="card shadow-sm p-3 border-0">
-              <h6 className="text-muted mb-3 text-center">Review Statistics</h6>
+            <div
+              className="card shadow-sm p-3"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)",
+              }}
+            >
+              <h6 className="mb-3 text-center" style={{ color: "var(--text-color)" }}>
+                Review Statistics
+              </h6>
               <Bar data={reviewData} />
             </div>
           </div>
@@ -234,63 +402,111 @@ export default function AdminDashboard() {
 
         {/* Users Table */}
         <div id="users-table" className="mt-5">
-          <h3 className="fw-bold mb-3 text-dark">Registered Users</h3>
+          <h3 className="fw-bold mb-3" style={{ color: "var(--text-color)" }}>
+            Registered Users
+          </h3>
           {loading ? (
-            <p>Loading users...</p>
+            <p style={{ color: "var(--text-color)" }}>Loading users...</p>
           ) : (
-            <div className="table-responsive border rounded shadow-sm">
-              <table className="table table-striped mb-0 text-center align-middle admin-dashboard-table">
-                <thead className="table-dark">
+            <div className="table-responsive rounded shadow-sm" style={{ border: "2px solid var(--accent-color)" }}>
+              <table
+                className="table table-striped mb-0 text-center align-middle admin-dashboard-table"
+                style={{ backgroundColor: "var(--secondary-color)" }}
+              >
+                <thead style={{ backgroundColor: "var(--accent-color)" }}>
                   <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Provider</th>
-                    <th>Created At</th>
-                    <th>Action</th>
+                    <th style={{ color: "var(--primary-color)" }}>Name</th>
+                    <th style={{ color: "var(--primary-color)" }}>Email</th>
+                    <th style={{ color: "var(--primary-color)" }}>Role</th>
+                    <th style={{ color: "var(--primary-color)" }}>Provider</th>
+                    <th style={{ color: "var(--primary-color)" }}>Created At</th>
+                    <th style={{ color: "var(--primary-color)" }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map((user) => {
                     const isCurrentUser = user.email === currentUserEmail;
-                  
+
                     // Disable button if:
                     // 1. User is trying to change their own role
                     // 2. User is superadmin (cannot touch)
                     // 3. User is admin and currentUser is not superadmin
                     const disableButton =
-                      isCurrentUser ||                      // cannot change self
-                      user.role === "superadmin" ||          // cannot touch superadmin
+                      isCurrentUser || // cannot change self
+                      user.role === "superadmin" || // cannot touch superadmin
                       (user.role === "admin" && currentUserRole !== "superadmin"); // only superadmin can touch admin
-                  
+
                     // Determine button label
                     let buttonLabel = "";
                     if (user.role === "user") buttonLabel = "Promote";
                     else if (user.role === "admin") buttonLabel = "Demote";
                     else if (user.role === "superadmin") buttonLabel = "Demote";
-                  
+
                     return (
-                      <tr key={user.id}>
-                        <td><div className="cell-content">{user.name}</div></td>
-                        <td><div className="cell-content">{user.email}</div></td>
-                        <td><div className="cell-content">{user.role}</div></td>
-                        <td><div className="cell-content">{user.provider}</div></td>
-                        <td><div className="cell-content">{new Date(user.created_at).toLocaleDateString()}</div></td>
+                      <tr
+                        key={user.id}
+                        style={{
+                          color: "var(--text-color)",
+                          borderBottom: "2px solid var(--accent-color)",
+                          opacity: 0.9,
+                        }}
+                      >
+                        <td>
+                          <div className="cell-content">{user.name}</div>
+                        </td>
+                        <td>
+                          <div className="cell-content">{user.email}</div>
+                        </td>
+                        <td>
+                          <div className="cell-content">{user.role}</div>
+                        </td>
+                        <td>
+                          <div className="cell-content">{user.provider}</div>
+                        </td>
+                        <td>
+                          <div className="cell-content">
+                            {new Date(user.created_at).toLocaleDateString()}
+                          </div>
+                        </td>
                         <td>
                           <div className="cell-content">
                             <button
-                              className={`btn btn-sm ${
-                                user.role === "admin" ? "btn-demote" : "btn-outline-primary"
-                              }`}
+                              style={{
+                                backgroundColor: "transparent",
+                                color: "var(--accent-color)",
+                                border: "2px solid var(--accent-color)",
+                                padding: "6px 12px",
+                                borderRadius: "4px",
+                                cursor: disableButton ? "not-allowed" : "pointer",
+                                opacity: disableButton ? 0.5 : 1,
+                              }}
+                              onMouseOver={(e) => {
+                                if (!disableButton) {
+                                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                                  e.currentTarget.style.color = "var(--primary-color)";
+                                }
+                              }}
+                              onMouseOut={(e) => {
+                                if (!disableButton) {
+                                  e.currentTarget.style.backgroundColor = "transparent";
+                                  e.currentTarget.style.color = "var(--accent-color)";
+                                }
+                              }}
                               onClick={() => {
                                 if (!disableButton) {
                                   setSelectedUser(user);
-                                  setModalActionType(user.role === "user" ? "promote" : "demote");
+                                  setModalActionType(
+                                    user.role === "user" ? "promote" : "demote"
+                                  );
                                   setShowModal(true);
                                 }
                               }}
                               disabled={disableButton}
-                              title={disableButton ? "You cannot change this user's role" : ""}
+                              title={
+                                disableButton
+                                  ? "You cannot change this user's role"
+                                  : ""
+                              }
                             >
                               {buttonLabel}
                             </button>
@@ -309,35 +525,87 @@ export default function AdminDashboard() {
         <div
           className={`modal fade dashboard-modal ${showModal ? "show d-block" : ""}`}
           tabIndex="-1"
-          style={{ backgroundColor: showModal ? "rgba(0,0,0,0.5)" : "transparent" }}
+          style={{
+            backgroundColor: showModal ? "rgba(0,0,0,0.5)" : "transparent",
+          }}
         >
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">
-                  {modalActionType === "promote" ? "Confirm Promotion" : "Confirm Demotion"}
+            <div
+              className="modal-content"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                color: "var(--text-color)",
+                border: "2px solid var(--accent-color)",
+              }}
+            >
+              <div
+                className="modal-header"
+                style={{
+                  backgroundColor: "var(--accent-color)",
+                  borderColor: "var(--accent-color)",
+                }}
+              >
+                <h5
+                  className="modal-title"
+                  style={{ color: "var(--primary-color)" }}
+                >
+                  {modalActionType === "promote"
+                    ? "Confirm Promotion"
+                    : "Confirm Demotion"}
                 </h5>
                 <button
                   type="button"
                   className="btn-close"
                   onClick={() => setShowModal(false)}
+                  style={{
+                    filter: "invert(1)",
+                  }}
                 ></button>
               </div>
               <div className="modal-body">
-                <p>
+                <p style={{ color: "var(--text-color)" }}>
                   Are you sure you want to {modalActionType} this user:{" "}
                   <strong>{selectedUser?.name}</strong>?
                 </p>
               </div>
-              <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+              <div className="modal-footer" style={{ borderColor: "var(--accent-color)" }}>
+                <button
+                  className="btn"
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "var(--accent-color)",
+                    border: "2px solid var(--accent-color)",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                    e.currentTarget.style.color = "var(--primary-color)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--accent-color)";
+                  }}
+                >
                   Cancel
                 </button>
                 <button
-                  className="btn btn-primary"
+                  className="btn"
                   onClick={() => {
                     toggleRole(selectedUser);
                     setShowModal(false);
+                  }}
+                  style={{
+                    backgroundColor: "var(--accent-color)",
+                    color: "var(--primary-color)",
+                    border: "2px solid var(--accent-color)",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                    e.currentTarget.style.color = "var(--accent-color)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                    e.currentTarget.style.color = "var(--primary-color)";
                   }}
                 >
                   Confirm

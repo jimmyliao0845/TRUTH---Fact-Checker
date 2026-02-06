@@ -10,8 +10,6 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
-import "./night-mode.css";
-import "./social-login.css";
 
 export default function LoginPage() {
   const navigate = useNavigate(); // ✅ initialize navigate

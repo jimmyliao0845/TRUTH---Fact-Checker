@@ -1,7 +1,6 @@
 /* Sidebar for admin dashboard*/
 import React from "react";
 import { Link } from "react-router-dom";
-import "./AdminDashboard.css";
 
 export default function Sidebar() {
   return (

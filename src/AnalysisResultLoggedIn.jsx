@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./analysis.css";
 // Added FaBriefcase to the imports
 import { FaBars, FaDownload, FaShare, FaRedo, FaGamepad, FaCommentAlt, FaBriefcase } from "react-icons/fa";
 

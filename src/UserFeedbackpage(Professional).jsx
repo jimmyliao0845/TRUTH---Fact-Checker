@@ -20,7 +20,6 @@ import {
   FaEye,
   FaArrowLeft,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
 
 /**
  * UserFeedbackPage.jsx
@@ -179,9 +178,20 @@ export default function UserFeedbackPage() {
 
   // UI Component: Table Row
   const FeedbackRow = ({ r }) => (
-    <tr key={r.feedback_id}>
+    <tr
+      key={r.feedback_id}
+      style={{
+        color: "var(--text-color)",
+        borderBottom: "2px solid var(--accent-color)",
+        opacity: 0.9,
+      }}
+    >
       <td>
-        <button className="btn btn-link p-0" onClick={() => setSelectedReview(r)}>
+        <button
+          className="btn btn-link p-0"
+          onClick={() => setSelectedReview(r)}
+          style={{ color: "var(--accent-color)", textDecoration: "none" }}
+        >
           {r.feedback_id}
         </button>
       </td>
@@ -192,13 +202,61 @@ export default function UserFeedbackPage() {
       <td>{formatDate(r.date_posted)}</td>
       <td>
         <div className="d-flex gap-2">
-          <button className="btn btn-sm btn-outline-primary" onClick={() => setSelectedReview(r)}>
+          <button
+            className="btn btn-sm"
+            onClick={() => setSelectedReview(r)}
+            style={{
+              backgroundColor: "transparent",
+              color: "var(--accent-color)",
+              border: "2px solid var(--accent-color)",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+              e.currentTarget.style.color = "var(--primary-color)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--accent-color)";
+            }}
+          >
             <FaEye />&nbsp;View
           </button>
-          <button className="btn btn-sm btn-outline-danger" onClick={() => deleteReview(r.feedback_id)}>
+          <button
+            className="btn btn-sm"
+            onClick={() => deleteReview(r.feedback_id)}
+            style={{
+              backgroundColor: "transparent",
+              color: "#dc3545",
+              border: "2px solid #dc3545",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "#dc3545";
+              e.currentTarget.style.color = "#fff";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#dc3545";
+            }}
+          >
             <FaTrashAlt />
           </button>
-          <button className="btn btn-sm btn-outline-warning" onClick={() => flagReview(r.feedback_id)}>
+          <button
+            className="btn btn-sm"
+            onClick={() => flagReview(r.feedback_id)}
+            style={{
+              backgroundColor: "transparent",
+              color: "#ffc107",
+              border: "2px solid #ffc107",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "#ffc107";
+              e.currentTarget.style.color = "#000";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "#ffc107";
+            }}
+          >
             Flag
           </button>
         </div>
@@ -207,13 +265,15 @@ export default function UserFeedbackPage() {
   );
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", paddingTop: "56px", minHeight: "100vh" }}>
       {/* Sidebar */}
       <div
-        className="d-flex flex-column p-3 border-end"
+        className="d-flex flex-column p-3"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--secondary-color)",
+          borderRight: `2px solid var(--accent-color)`,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
@@ -223,7 +283,16 @@ export default function UserFeedbackPage() {
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <button className="btn btn-outline-dark btn-sm" onClick={() => setCollapsed(!collapsed)} style={{ border: "none" }}>
+          <button 
+            className="btn btn-sm"
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              border: "none",
+              borderRadius: "6px"
+            }}
+          >
             <FaBars />
           </button>
         </div>
@@ -234,6 +303,18 @@ export default function UserFeedbackPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/factcheckerdashboard")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaTachometerAlt className="me-2" />
               {!collapsed && "Dashboard"}
@@ -244,6 +325,18 @@ export default function UserFeedbackPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/create-tutorial")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaPlusCircle className="me-2" />
               {!collapsed && "Create Tutorial"}
@@ -254,6 +347,18 @@ export default function UserFeedbackPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/manage-tutorial")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaEdit className="me-2" />
               {!collapsed && "Manage Tutorial"}
@@ -264,6 +369,18 @@ export default function UserFeedbackPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/reports")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaChartBar className="me-2" />
               {!collapsed && "Organized Reports"}
@@ -274,6 +391,18 @@ export default function UserFeedbackPage() {
             <button
               className="btn sidebar-btn text-start"
               onClick={() => navigate("/professional/linked-users")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
             >
               <FaUsers className="me-2" />
               {!collapsed && "Linked Users"}
@@ -282,9 +411,25 @@ export default function UserFeedbackPage() {
 
           <li>
             <button 
-              className={`btn sidebar-btn text-start ${location.pathname === "/professional/user-feedback" ? "active" : ""}`}
+              className={`btn sidebar-btn text-start`}
               onClick={() => location.pathname !== "/professional/user-feedback" && navigate("/professional/user-feedback")}
               disabled={location.pathname === "/professional/user-feedback"}
+              style={{
+                color: location.pathname === "/professional/user-feedback" ? "var(--primary-color)" : "var(--text-color)",
+                backgroundColor: location.pathname === "/professional/user-feedback" ? "var(--accent-color)" : "transparent"
+              }}
+              onMouseOver={(e) => {
+                if (location.pathname !== "/professional/user-feedback") {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }
+              }}
+              onMouseOut={(e) => {
+                if (location.pathname !== "/professional/user-feedback") {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-color)";
+                }
+              }}
             >
               <FaCommentDots className="me-2" />
               {!collapsed && "User Feedback"}
@@ -292,7 +437,22 @@ export default function UserFeedbackPage() {
           </li>
 
           <li>
-            <button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/verification-logs")}>
+            <button 
+              className="btn sidebar-btn text-start" 
+              onClick={() => navigate("/professional/verification-logs")}
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
               <FaClipboardList className="me-2" />
               {!collapsed && "Verification Logs"}
             </button>
@@ -338,41 +498,58 @@ export default function UserFeedbackPage() {
       >
         {/* Navbar (notifications) */}
         <nav
-          className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
+          className="navbar navbar-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
           style={{
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            borderBottom: "1px solid #ddd",
+            backgroundColor: "var(--primary-color)",
+            borderBottom: "2px solid var(--accent-color)",
           }}
         >
           <div className="d-flex align-items-center gap-3">
             <div className="input-group" style={{ width: 320 }}>
-              <span className="input-group-text bg-white"><FaSearch /></span>
+              <span className="input-group-text" style={{ backgroundColor: "var(--secondary-color)", borderColor: "var(--accent-color)", color: "var(--text-color)" }}>
+                <FaSearch />
+              </span>
               <input
                 className="form-control"
                 placeholder="Search username, tutorial, comment..."
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  borderColor: "var(--accent-color)",
+                  color: "var(--text-color)",
+                }}
               />
             </div>
             <div className="dropdown">
-              <i className="bi bi-bell fs-5 text-dark" style={{ cursor: "pointer" }}></i>
+              <i className="bi bi-bell fs-5" style={{ cursor: "pointer", color: "var(--text-color)" }}></i>
             </div>
           </div>
         </nav>
 
         {/* Page content */}
-        <div className="container-fluid py-4 px-5">
+        <div className="container-fluid py-4 px-5" style={{ backgroundColor: "var(--primary-color)", color: "var(--text-color)" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2 className="fw-bold">User Feedback</h2>
+            <h2 className="fw-bold" style={{ color: "var(--text-color)" }}>User Feedback</h2>
             <div className="d-flex gap-2 align-items-center">
               <div className="d-flex align-items-center me-2">
-                <FaFilter className="me-2" />
-                <small className="text-muted">Filters</small>
+                <FaFilter className="me-2" style={{ color: "var(--text-color)" }} />
+                <small style={{ color: "var(--text-color)" }}>Filters</small>
               </div>
               <div className="d-flex gap-2">
-                <select className="form-select form-select-sm" value={filterRating} onChange={(e) => { setFilterRating(e.target.value); setCurrentPage(1); }}>
+                <select 
+                  className="form-select form-select-sm"
+                  value={filterRating}
+                  onChange={(e) => { setFilterRating(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)",
+                  }}
+                >
                   <option value="">All ratings</option>
                   <option value="5">5 ★</option>
                   <option value="4">4 ★</option>
@@ -381,15 +558,53 @@ export default function UserFeedbackPage() {
                   <option value="1">1 ★</option>
                 </select>
 
-                <select className="form-select form-select-sm" value={filterTutorial} onChange={(e) => { setFilterTutorial(e.target.value); setCurrentPage(1); }}>
+                <select
+                  className="form-select form-select-sm"
+                  value={filterTutorial}
+                  onChange={(e) => { setFilterTutorial(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)",
+                  }}
+                >
                   <option value="">All tutorials</option>
                   {tutorialOptions.map((t) => <option key={t.id} value={t.id}>{t.title}</option>)}
                 </select>
 
-                <input className="form-control form-control-sm" type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setCurrentPage(1); }} />
-                <input className="form-control form-control-sm" type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setCurrentPage(1); }} />
+                <input
+                  className="form-control form-control-sm"
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => { setDateFrom(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)",
+                  }}
+                />
+                <input
+                  className="form-control form-control-sm"
+                  type="date"
+                  value={dateTo}
+                  onChange={(e) => { setDateTo(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)",
+                  }}
+                />
 
-                <select className="form-select form-select-sm" value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}>
+                <select
+                  className="form-select form-select-sm"
+                  value={pageSize}
+                  onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+                  style={{
+                    backgroundColor: "var(--secondary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)",
+                  }}
+                >
                   <option value={4}>4 / page</option>
                   <option value={5}>5 / page</option>
                   <option value={6}>6 / page</option>
@@ -400,25 +615,116 @@ export default function UserFeedbackPage() {
           </div>
 
           {/* Hybrid: Table + cards (table primary) */}
-          <div className="card shadow-sm p-3 mb-3">
+          <div className="card shadow-sm p-3 mb-3" style={{ backgroundColor: "var(--secondary-color)", border: "2px solid var(--accent-color)" }}>
             <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0">
-                <thead>
+              <table className="table table-hover align-middle mb-0" style={{ backgroundColor: "var(--secondary-color)" }}>
+                <thead style={{ backgroundColor: "var(--accent-color)" }}>
                   <tr>
-                    <th>ID</th>
-                    <th>User</th>
-                    <th>Tutorial</th>
-                    <th>Rating</th>
-                    <th>Comment</th>
-                    <th>Date</th>
-                    <th>Actions</th>
+                    <th style={{ color: "var(--primary-color)" }}>ID</th>
+                    <th style={{ color: "var(--primary-color)" }}>User</th>
+                    <th style={{ color: "var(--primary-color)" }}>Tutorial</th>
+                    <th style={{ color: "var(--primary-color)" }}>Rating</th>
+                    <th style={{ color: "var(--primary-color)" }}>Comment</th>
+                    <th style={{ color: "var(--primary-color)" }}>Date</th>
+                    <th style={{ color: "var(--primary-color)" }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {pageItems.length === 0 && (
-                    <tr><td colSpan="7" className="text-muted text-center">No reviews found.</td></tr>
+                    <tr>
+                      <td colSpan="7" className="text-center" style={{ color: "var(--text-color)" }}>
+                        No reviews found.
+                      </td>
+                    </tr>
                   )}
-                  {pageItems.map((r) => <FeedbackRow r={r} key={r.feedback_id} />)}
+                  {pageItems.map((r) => (
+                    <tr
+                      key={r.feedback_id}
+                      style={{
+                        color: "var(--text-color)",
+                        borderBottom: "2px solid var(--accent-color)",
+                        opacity: 0.9,
+                      }}
+                    >
+                      <td>
+                        <button
+                          className="btn btn-link p-0"
+                          onClick={() => setSelectedReview(r)}
+                          style={{ color: "var(--accent-color)", textDecoration: "none" }}
+                        >
+                          {r.feedback_id}
+                        </button>
+                      </td>
+                      <td>{r.username}</td>
+                      <td>{r.tutorial_title}</td>
+                      <td>{r.rating} / 5</td>
+                      <td className="text-truncate" style={{ maxWidth: 240 }}>
+                        {r.comment}
+                      </td>
+                      <td>{formatDate(r.date_posted)}</td>
+                      <td>
+                        <div className="d-flex gap-2">
+                          <button
+                            className="btn btn-sm"
+                            onClick={() => setSelectedReview(r)}
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "var(--accent-color)",
+                              border: "2px solid var(--accent-color)",
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "var(--accent-color)";
+                            }}
+                          >
+                            <FaEye /> View
+                          </button>
+                          <button
+                            className="btn btn-sm"
+                            onClick={() => deleteReview(r.feedback_id)}
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "#dc3545",
+                              border: "2px solid #dc3545",
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "#dc3545";
+                              e.currentTarget.style.color = "#fff";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "#dc3545";
+                            }}
+                          >
+                            <FaTrashAlt />
+                          </button>
+                          <button
+                            className="btn btn-sm"
+                            onClick={() => flagReview(r.feedback_id)}
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "#ffc107",
+                              border: "2px solid #ffc107",
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "#ffc107";
+                              e.currentTarget.style.color = "#000";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "#ffc107";
+                            }}
+                          >
+                            Flag
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -426,19 +732,54 @@ export default function UserFeedbackPage() {
 
           {/* Pagination controls */}
           <div className="d-flex justify-content-between align-items-center">
-            <div className="small text-muted">Showing {pageItems.length} of {totalItems} review(s)</div>
+            <div className="small" style={{ color: "var(--text-color)" }}>
+              Showing {pageItems.length} of {totalItems} review(s)
+            </div>
             <nav>
               <ul className="pagination mb-0">
                 <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}>Prev</button>
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    style={{
+                      backgroundColor: currentPage === 1 ? "var(--secondary-color)" : "var(--secondary-color)",
+                      borderColor: "var(--accent-color)",
+                      color: "var(--text-color)",
+                    }}
+                  >
+                    Prev
+                  </button>
                 </li>
                 {Array.from({ length: totalPages }).map((_, idx) => (
-                  <li key={idx} className={`page-item ${currentPage === idx + 1 ? "active" : ""}`}>
-                    <button className="page-link" onClick={() => setCurrentPage(idx + 1)}>{idx + 1}</button>
+                  <li
+                    key={idx}
+                    className={`page-item ${currentPage === idx + 1 ? "active" : ""}`}
+                  >
+                    <button
+                      className="page-link"
+                      onClick={() => setCurrentPage(idx + 1)}
+                      style={{
+                        backgroundColor: currentPage === idx + 1 ? "var(--accent-color)" : "var(--secondary-color)",
+                        borderColor: "var(--accent-color)",
+                        color: currentPage === idx + 1 ? "var(--primary-color)" : "var(--text-color)",
+                      }}
+                    >
+                      {idx + 1}
+                    </button>
                   </li>
                 ))}
                 <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}>Next</button>
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    style={{
+                      backgroundColor: currentPage === totalPages ? "var(--secondary-color)" : "var(--secondary-color)",
+                      borderColor: "var(--accent-color)",
+                      color: "var(--text-color)",
+                    }}
+                  >
+                    Next
+                  </button>
                 </li>
               </ul>
             </nav>
@@ -448,35 +789,113 @@ export default function UserFeedbackPage() {
         {/* Detail Modal (card view) */}
         {selectedReview && (
           <div style={modalBackdrop}>
-            <div style={modalCard}>
+            <div style={{ ...modalCard, backgroundColor: "var(--secondary-color)", borderColor: "var(--accent-color)", border: "2px solid var(--accent-color)" }}>
               <div className="d-flex justify-content-between align-items-start">
                 <div>
-                  <h5 className="mb-1">{selectedReview.tutorial_title}</h5>
-                  <div className="small text-muted">By: {selectedReview.username} • {formatDate(selectedReview.date_posted)}</div>
+                  <h5 className="mb-1" style={{ color: "var(--text-color)" }}>
+                    {selectedReview.tutorial_title}
+                  </h5>
+                  <div className="small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
+                    By: {selectedReview.username} • {formatDate(selectedReview.date_posted)}
+                  </div>
                 </div>
                 <div>
-                  <button className="btn btn-sm btn-outline-secondary me-2" onClick={() => { navigator.clipboard.writeText(JSON.stringify(selectedReview)); alert("Copied review JSON (demo)."); }}>Copy</button>
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => { deleteReview(selectedReview.feedback_id); setSelectedReview(null); }}>Delete</button>
+                  <button
+                    className="btn btn-sm me-2"
+                    onClick={() => { navigator.clipboard.writeText(JSON.stringify(selectedReview)); alert("Copied review JSON (demo)."); }}
+                    style={{
+                      backgroundColor: "transparent",
+                      color: "var(--accent-color)",
+                      border: "2px solid var(--accent-color)",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "var(--primary-color)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "var(--accent-color)";
+                    }}
+                  >
+                    Copy
+                  </button>
+                  <button
+                    className="btn btn-sm"
+                    onClick={() => { deleteReview(selectedReview.feedback_id); setSelectedReview(null); }}
+                    style={{
+                      backgroundColor: "transparent",
+                      color: "#dc3545",
+                      border: "2px solid #dc3545",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "#dc3545";
+                      e.currentTarget.style.color = "#fff";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "#dc3545";
+                    }}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
 
-              <hr />
+              <hr style={{ borderColor: "var(--accent-color)", opacity: 0.3 }} />
 
               <div className="mb-3">
-                <strong>Rating:</strong> {selectedReview.rating} / 5
+                <strong style={{ color: "var(--text-color)" }}>Rating:</strong>{" "}
+                <span style={{ color: "var(--text-color)" }}>{selectedReview.rating} / 5</span>
               </div>
               <div className="mb-3">
-                <strong>Comment:</strong>
-                <p>{selectedReview.comment}</p>
+                <strong style={{ color: "var(--text-color)" }}>Comment:</strong>
+                <p style={{ color: "var(--text-color)" }}>{selectedReview.comment}</p>
               </div>
 
               <div className="mb-3">
-                <strong>Tutorial ID:</strong> {selectedReview.tutorial_id}
+                <strong style={{ color: "var(--text-color)" }}>Tutorial ID:</strong>{" "}
+                <span style={{ color: "var(--text-color)", opacity: 0.7 }}>{selectedReview.tutorial_id}</span>
               </div>
 
               <div className="d-flex justify-content-end gap-2">
-                <button className="btn btn-outline-secondary" onClick={() => setSelectedReview(null)}>Close</button>
-                <button className="btn btn-warning" onClick={() => { flagReview(selectedReview.feedback_id); setSelectedReview(null); }}>Flag</button>
+                <button
+                  className="btn"
+                  onClick={() => setSelectedReview(null)}
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "var(--accent-color)",
+                    border: "2px solid var(--accent-color)",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                    e.currentTarget.style.color = "var(--primary-color)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--accent-color)";
+                  }}
+                >
+                  Close
+                </button>
+                <button
+                  className="btn"
+                  onClick={() => { flagReview(selectedReview.feedback_id); setSelectedReview(null); }}
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "#ffc107",
+                    border: "2px solid #ffc107",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "#ffc107";
+                    e.currentTarget.style.color = "#000";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "#ffc107";
+                  }}
+                >
+                  Flag
+                </button>
               </div>
             </div>
           </div>

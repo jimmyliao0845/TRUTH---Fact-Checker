@@ -12,7 +12,6 @@ import {
   FaCheckCircle,
   FaTimesCircle,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
 
 export default function FeedbackPage() {
   const navigate = useNavigate();

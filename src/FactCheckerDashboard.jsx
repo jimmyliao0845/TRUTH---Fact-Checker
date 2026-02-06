@@ -35,8 +35,6 @@ import {
 // 🔥 Firestore imports
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
-import "./FactCheckerDashboard.css";
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -220,28 +218,42 @@ export default function FactCheckerDashboard() {
   return (
     <div
       className="d-flex"
-      style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}
+      style={{ 
+        backgroundColor: "var(--primary-color)", 
+        paddingTop: "56px",
+        minHeight: "100vh",
+        color: "var(--text-color)"
+      }}
     >
       {/* SIDEBAR */}
       <div
         className="d-flex flex-column p-3 border-end"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--secondary-color)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
           top: "56px",
           left: 0,
           overflowY: "auto",
-          zIndex: 900
+          zIndex: 900,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+          borderRight: `2px solid var(--accent-color)`
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
-            className="btn btn-outline-dark btn-sm"
+            className="btn btn-sm"
             onClick={() => setCollapsed(!collapsed)}
-            style={{ border: "none" }}
+            style={{ 
+              border: "none",
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
           >
             <FaBars />
           </button>
@@ -343,8 +355,8 @@ export default function FactCheckerDashboard() {
         </ul>
 
         {!collapsed && (
-          <div className="mt-auto small text-muted">
-            Verified professionals workspace
+          <div className="mt-auto small" style={{ opacity: 0.7, color: "var(--text-color)" }}>
+            Professional workspace
           </div>
         )}
       </div>
@@ -356,16 +368,18 @@ export default function FactCheckerDashboard() {
           marginLeft: collapsed ? "80px" : "250px",
           transition: "margin-left 0.3s ease",
           minHeight: "100vh",
+          backgroundColor: "var(--primary-color)"
         }}
       >
-        {/* Navbar */}
+        {/* Navbar - THEME AWARE */}
         <nav
-          className="navbar navbar-light bg-light d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
+          className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
           style={{
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            borderBottom: "1px solid #ddd",
+            backgroundColor: "var(--primary-color)",
+            borderBottom: `1px solid var(--accent-color)`
           }}
         >
           <div className="dropdown">
@@ -388,26 +402,52 @@ export default function FactCheckerDashboard() {
 
         {/* Dashboard Overview */}
         <div className="container-fluid py-4 px-5" id="dashboard">
-          <h2 className="fw-bold mb-4 text-dark">Dashboard Overview</h2>
+          <h2 className="fw-bold mb-4" style={{ color: "var(--text-color)" }}>
+            Dashboard Overview
+          </h2>
 
           {/* Cards */}
           <div className="row mb-4">
             <div className="col-md-4">
-              <div className="card shadow-sm p-3 border-0 text-center">
-                <h6 className="text-muted">Total Users</h6>
-                <h3 className="fw-bold text-primary">{totalUsers}</h3>
+              <div
+                className="card shadow-sm p-3 text-center"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: "2px solid var(--accent-color)",
+                }}
+              >
+                <h6 style={{ color: "var(--text-color)" }}>Total Users</h6>
+                <h3 className="fw-bold" style={{ color: "var(--accent-color)" }}>
+                  {totalUsers}
+                </h3>
               </div>
             </div>
             <div className="col-md-4">
-              <div className="card shadow-sm p-3 border-0 text-center">
-                <h6 className="text-muted">Active Users</h6>
-                <h3 className="fw-bold text-success">{activeUsers}</h3>
+              <div
+                className="card shadow-sm p-3 text-center"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: "2px solid var(--accent-color)",
+                }}
+              >
+                <h6 style={{ color: "var(--text-color)" }}>Active Users</h6>
+                <h3 className="fw-bold" style={{ color: "var(--accent-color)" }}>
+                  {activeUsers}
+                </h3>
               </div>
             </div>
             <div className="col-md-4">
-              <div className="card shadow-sm p-3 border-0 text-center">
-                <h6 className="text-muted">New Users This Month</h6>
-                <h3 className="fw-bold text-info">{newUsersMonth}</h3>
+              <div
+                className="card shadow-sm p-3 text-center"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: "2px solid var(--accent-color)",
+                }}
+              >
+                <h6 style={{ color: "var(--text-color)" }}>New Users This Month</h6>
+                <h3 className="fw-bold" style={{ color: "var(--accent-color)" }}>
+                  {newUsersMonth}
+                </h3>
               </div>
             </div>
           </div>
@@ -415,14 +455,30 @@ export default function FactCheckerDashboard() {
           {/* Charts */}
           <div className="row">
             <div className="col-md-6 mb-4">
-              <div className="card shadow-sm p-3">
-                <h6 className="text-muted mb-3 text-center">User Growth</h6>
+              <div
+                className="card shadow-sm p-3"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: "2px solid var(--accent-color)",
+                }}
+              >
+                <h6 className="mb-3 text-center" style={{ color: "var(--text-color)" }}>
+                  User Growth
+                </h6>
                 <Line data={userGrowthData} />
               </div>
             </div>
             <div className="col-md-6 mb-4">
-              <div className="card shadow-sm p-3 border-0">
-                <h6 className="text-muted mb-3 text-center">Review Statistics</h6>
+              <div
+                className="card shadow-sm p-3"
+                style={{
+                  backgroundColor: "var(--secondary-color)",
+                  border: "2px solid var(--accent-color)",
+                }}
+              >
+                <h6 className="mb-3 text-center" style={{ color: "var(--text-color)" }}>
+                  Review Statistics
+                </h6>
                 <Bar data={reviewData} />
               </div>
             </div>
@@ -436,22 +492,26 @@ export default function FactCheckerDashboard() {
           style={{ minHeight: "80vh" }} 
         >
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="fw-bold text-dark">Manage Tutorial</h2>
+            <h2 className="fw-bold" style={{ color: "var(--text-color)" }}>
+              Manage Tutorial
+            </h2>
             
             <div className="d-flex align-items-center">
-              <span className="fw-bold me-2">Sort by:</span>
+              <span className="fw-bold me-2" style={{ color: "var(--text-color)" }}>
+                Sort by:
+              </span>
               <select
                 className="form-select rounded-pill text-center shadow-sm"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 style={{
-                  backgroundColor: "#d0d0d0",
-                  color: "#000",
-                  border: "none",
+                  backgroundColor: "var(--secondary-color)",
+                  color: "var(--text-color)",
+                  border: "2px solid var(--accent-color)",
                   width: "auto",
                   minWidth: "160px",
                   cursor: "pointer",
-                  fontWeight: "bold"
+                  fontWeight: "bold",
                 }}
               >
                 <option value="Recent Activity">Recent Activity</option>
@@ -460,20 +520,55 @@ export default function FactCheckerDashboard() {
             </div>
           </div>
 
-          <div className="table-responsive bg-white shadow-sm p-3" style={{ border: "1px solid #000", borderRadius: "0px" }}>
-            <table className="table table-bordered border-dark text-center align-middle mb-0">
-              <thead>
-                <tr style={{ borderBottom: "3px solid #000" }}>
-                  <th className="py-3" style={{ fontSize: "1.1rem" }}>Tutorial<br/>Title</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem" }}>Views</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem" }}>Date<br/>Created</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem" }}>Recent<br/>Status</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem" }}>Edit or<br/>Delete</th>
+          <div
+            className="table-responsive shadow-sm p-3"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: "2px solid var(--accent-color)",
+              borderRadius: "8px",
+            }}
+          >
+            <table
+              className="table table-bordered text-center align-middle mb-0"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                borderColor: "var(--accent-color)",
+              }}
+            >
+              <thead style={{ backgroundColor: "var(--accent-color)" }}>
+                <tr>
+                  <th className="py-3" style={{ fontSize: "1.1rem", color: "var(--primary-color)" }}>
+                    Tutorial<br />
+                    Title
+                  </th>
+                  <th className="py-3" style={{ fontSize: "1.1rem", color: "var(--primary-color)" }}>
+                    Views
+                  </th>
+                  <th className="py-3" style={{ fontSize: "1.1rem", color: "var(--primary-color)" }}>
+                    Date<br />
+                    Created
+                  </th>
+                  <th className="py-3" style={{ fontSize: "1.1rem", color: "var(--primary-color)" }}>
+                    Recent<br />
+                    Status
+                  </th>
+                  <th className="py-3" style={{ fontSize: "1.1rem", color: "var(--primary-color)" }}>
+                    Edit or<br />
+                    Delete
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {tutorials.map((item) => (
-                  <tr key={item.id} style={{ height: "60px" }}>
+                  <tr
+                    key={item.id}
+                    style={{
+                      height: "60px",
+                      color: "var(--text-color)",
+                      borderBottomColor: "var(--accent-color)",
+                      opacity: 0.9,
+                    }}
+                  >
                     <td className="fw-bold">{item.title}</td>
                     <td className="fw-bold">{item.views}</td>
                     <td className="fw-bold">{item.date}</td>
@@ -481,13 +576,45 @@ export default function FactCheckerDashboard() {
                     <td>
                       {item.title && (
                         <div className="d-flex justify-content-center gap-3">
-                          <button 
-                            className="btn btn-light border border-dark rounded-circle p-2"
+                          <button
+                            className="btn p-2"
                             onClick={() => handleEditClick(item)}
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "var(--accent-color)",
+                              border: "2px solid var(--accent-color)",
+                              borderRadius: "50%",
+                              padding: "8px",
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "var(--accent-color)";
+                            }}
                           >
                             <FaPen size={18} />
                           </button>
-                          <button className="btn btn-light border border-dark rounded-circle p-2">
+                          <button
+                            className="btn p-2"
+                            style={{
+                              backgroundColor: "transparent",
+                              color: "var(--accent-color)",
+                              border: "2px solid var(--accent-color)",
+                              borderRadius: "50%",
+                              padding: "8px",
+                            }}
+                            onMouseOver={(e) => {
+                              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
+                            }}
+                            onMouseOut={(e) => {
+                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.color = "var(--accent-color)";
+                            }}
+                          >
                             <FaFileAlt size={18} />
                           </button>
                         </div>
@@ -509,22 +636,26 @@ export default function FactCheckerDashboard() {
           style={{ minHeight: "90vh" }} 
         >
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <h2 className="fw-bold text-dark">Manage Linked User</h2>
+            <h2 className="fw-bold" style={{ color: "var(--text-color)" }}>
+              Manage Linked User
+            </h2>
             
             <div className="d-flex align-items-center">
-              <span className="fw-bold me-2">Sort by:</span>
+              <span className="fw-bold me-2" style={{ color: "var(--text-color)" }}>
+                Sort by:
+              </span>
               <select
                 className="form-select rounded-pill text-center shadow-sm"
                 value={linkedSortBy}
                 onChange={(e) => setLinkedSortBy(e.target.value)}
                 style={{
-                  backgroundColor: "#d0d0d0",
-                  color: "#000",
-                  border: "none",
+                  backgroundColor: "var(--secondary-color)",
+                  color: "var(--text-color)",
+                  border: "2px solid var(--accent-color)",
                   width: "auto",
                   minWidth: "160px",
                   cursor: "pointer",
-                  fontWeight: "bold"
+                  fontWeight: "bold",
                 }}
               >
                 <option value="Recent Activity">Recent Activity</option>
@@ -533,29 +664,109 @@ export default function FactCheckerDashboard() {
             </div>
           </div>
 
-          <div className="table-responsive bg-white shadow-sm p-3" style={{ border: "1px solid #000", borderRadius: "0px" }}>
-            <table className="table table-bordered border-dark text-center align-middle mb-0">
-              <thead>
-                <tr style={{ borderBottom: "3px solid #000" }}>
-                  <th className="py-3" style={{ fontSize: "1.1rem", width: "20%" }}>User<br/>Name</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem", width: "20%" }}>No. of<br/>Entries</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem", width: "20%" }}>Date<br/>Created</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem", width: "20%" }}>Account<br/>Status</th>
-                  <th className="py-3" style={{ fontSize: "1.1rem", width: "20%" }}>Unlink<br/>User</th>
+          <div
+            className="table-responsive shadow-sm p-3"
+            style={{
+              backgroundColor: "var(--secondary-color)",
+              border: "2px solid var(--accent-color)",
+              borderRadius: "8px",
+            }}
+          >
+            <table
+              className="table table-bordered text-center align-middle mb-0"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                borderColor: "var(--accent-color)",
+              }}
+            >
+              <thead style={{ backgroundColor: "var(--accent-color)" }}>
+                <tr>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "1.1rem",
+                      width: "20%",
+                      color: "var(--primary-color)",
+                    }}
+                  >
+                    User<br />
+                    Name
+                  </th>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "1.1rem",
+                      width: "20%",
+                      color: "var(--primary-color)",
+                    }}
+                  >
+                    No. of<br />
+                    Entries
+                  </th>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "1.1rem",
+                      width: "20%",
+                      color: "var(--primary-color)",
+                    }}
+                  >
+                    Date<br />
+                    Created
+                  </th>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "1.1rem",
+                      width: "20%",
+                      color: "var(--primary-color)",
+                    }}
+                  >
+                    Account<br />
+                    Status
+                  </th>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "1.1rem",
+                      width: "20%",
+                      color: "var(--primary-color)",
+                    }}
+                  >
+                    Unlink<br />
+                    User
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {linkedUsersData.map((user) => (
-                  <tr key={user.id} style={{ height: "80px" }}>
+                  <tr
+                    key={user.id}
+                    style={{
+                      height: "80px",
+                      color: "var(--text-color)",
+                      borderBottomColor: "var(--accent-color)",
+                      opacity: 0.9,
+                    }}
+                  >
                     <td className="fw-bold">{user.name && user.name}</td>
                     <td className="fw-bold">{user.entries}</td>
                     <td className="fw-bold">{user.date}</td>
                     <td className="fw-bold">{user.status}</td>
                     <td>
                       {user.name && (
-                          <button className="btn p-0 border-0">
-                            <FaTimesCircle size={28} />
-                          </button>
+                        <button
+                          className="btn p-0 border-0"
+                          style={{ color: "var(--accent-color)", cursor: "pointer" }}
+                          onMouseOver={(e) => {
+                            e.currentTarget.style.color = "#dc3545";
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.style.color = "var(--accent-color)";
+                          }}
+                        >
+                          <FaTimesCircle size={28} />
+                        </button>
                       )}
                     </td>
                   </tr>
@@ -578,79 +789,177 @@ export default function FactCheckerDashboard() {
             className="modal-dialog modal-xl modal-dialog-centered"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-content" style={{ backgroundColor: "var(--primary-color)" }}>
+            <div
+              className="modal-content"
+              style={{
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)",
+                color: "var(--text-color)",
+              }}
+            >
               {/* Modal Header */}
-              <div className="modal-header border-0 pb-1">
-                <h5 className="modal-title fw-bold">Edit Tutorial</h5>
+              <div
+                className="modal-header border-0 pb-1"
+                style={{
+                  backgroundColor: "var(--accent-color)",
+                  borderBottom: "2px solid var(--accent-color)",
+                }}
+              >
+                <h5 className="modal-title fw-bold" style={{ color: "var(--primary-color)" }}>
+                  Edit Tutorial
+                </h5>
                 <button 
                   type="button" 
-                  className="btn-close" 
+                  className="btn-close"
                   onClick={handleCloseModal}
+                  style={{
+                    filter: "invert(1)",
+                  }}
                 ></button>
               </div>
 
               {/* Modal Body */}
-              <div className="modal-body px-4 py-3">
+              <div className="modal-body px-4 py-3" style={{ backgroundColor: "var(--secondary-color)" }}>
                 {/* Tutorial Title */}
                 <div className="mb-3">
-                  <label className="form-label fw-bold">Tutorial Title :</label>
+                  <label className="form-label fw-bold" style={{ color: "var(--text-color)" }}>
+                    Tutorial Title :
+                  </label>
                   <input 
                     type="text" 
-                    className="form-control" 
+                    className="form-control"
                     defaultValue={editingTutorial?.title || ""}
-                    style={{ backgroundColor: "var(--primary-color)", color: "var(--text-color)" }}
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      color: "var(--text-color)",
+                      borderColor: "var(--accent-color)",
+                    }}
                   />
                 </div>
 
                 {/* Table */}
                 <div className="table-responsive">
-                  <table className="table table-bordered border-dark bg-white mb-0">
-                    <thead>
+                  <table
+                    className="table table-bordered mb-0"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      borderColor: "var(--accent-color)",
+                    }}
+                  >
+                    <thead style={{ backgroundColor: "var(--accent-color)" }}>
                       <tr>
-                        <th className="text-center" style={{ width: "8%" }}>Item no.</th>
-                        <th className="text-center" style={{ width: "20%" }}>Image / Video</th>
-                        <th className="text-center" style={{ width: "20%" }}>Image / Video<br/>with pointers</th>
-                        <th className="text-center" style={{ width: "26%" }}>Remarks</th>
-                        <th className="text-center" style={{ width: "26%" }}>Hints or Tips</th>
+                        <th className="text-center" style={{ width: "8%", color: "var(--primary-color)" }}>
+                          Item no.
+                        </th>
+                        <th className="text-center" style={{ width: "20%", color: "var(--primary-color)" }}>
+                          Image / Video
+                        </th>
+                        <th className="text-center" style={{ width: "20%", color: "var(--primary-color)" }}>
+                          Image / Video<br />
+                          with pointers
+                        </th>
+                        <th className="text-center" style={{ width: "26%", color: "var(--primary-color)" }}>
+                          Remarks
+                        </th>
+                        <th className="text-center" style={{ width: "26%", color: "var(--primary-color)" }}>
+                          Hints or Tips
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {/* Row 1 */}
-                      <tr>
-                        <td className="text-center align-middle fw-bold">1</td>
+                      <tr style={{ color: "var(--text-color)", borderBottomColor: "var(--accent-color)" }}>
+                        <td className="text-center align-middle fw-bold" style={{ color: "var(--text-color)" }}>
+                          1
+                        </td>
                         <td className="text-center align-middle">
                           <div className="d-flex flex-column align-items-center gap-2">
                             <div 
-                              className="border border-dark rounded d-flex align-items-center justify-content-center"
-                              style={{ width: "80px", height: "60px", backgroundColor: "#e0e0e0" }}
+                              className="border rounded d-flex align-items-center justify-content-center"
+                              style={{
+                                width: "80px",
+                                height: "60px",
+                                backgroundColor: "var(--primary-color)",
+                                borderColor: "var(--accent-color)",
+                              }}
                             >
-                              <i className="bi bi-image text-muted" style={{ fontSize: "2rem" }}></i>
+                              <i
+                                className="bi bi-image"
+                                style={{
+                                  fontSize: "2rem",
+                                  color: "var(--text-color)",
+                                  opacity: 0.5,
+                                }}
+                              ></i>
                             </div>
                             <div className="d-flex gap-2">
-                              <button className="btn btn-sm btn-light border border-dark rounded-circle">
+                              <button
+                                className="btn btn-sm"
+                                style={{
+                                  backgroundColor: "transparent",
+                                  color: "var(--accent-color)",
+                                  border: "2px solid var(--accent-color)",
+                                  borderRadius: "50%",
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                                  e.currentTarget.style.color = "var(--primary-color)";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.backgroundColor = "transparent";
+                                  e.currentTarget.style.color = "var(--accent-color)";
+                                }}
+                              >
                                 <i className="bi bi-plus"></i>
                               </button>
-                              <button className="btn btn-sm btn-light border border-dark rounded-circle">
+                              <button
+                                className="btn btn-sm"
+                                style={{
+                                  backgroundColor: "transparent",
+                                  color: "var(--accent-color)",
+                                  border: "2px solid var(--accent-color)",
+                                  borderRadius: "50%",
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                                  e.currentTarget.style.color = "var(--primary-color)";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.backgroundColor = "transparent";
+                                  e.currentTarget.style.color = "var(--accent-color)";
+                                }}
+                              >
                                 <i className="bi bi-trash"></i>
                               </button>
                             </div>
                           </div>
                         </td>
-                        <td className="text-center align-middle">
-                          <small className="text-muted">Sample Image<br/>with pointer</small>
+                        <td className="text-center align-middle" style={{ color: "var(--text-color)", opacity: 0.7 }}>
+                          <small>Sample Image<br />
+                          with pointer</small>
                         </td>
                         <td className="align-middle">
                           <textarea 
-                            className="form-control border-dark" 
+                            className="form-control"
                             rows="3"
-                            style={{ resize: "none" }}
+                            style={{
+                              resize: "none",
+                              backgroundColor: "var(--primary-color)",
+                              color: "var(--text-color)",
+                              borderColor: "var(--accent-color)",
+                            }}
                           ></textarea>
                         </td>
                         <td className="align-middle">
                           <textarea 
-                            className="form-control border-dark" 
+                            className="form-control"
                             rows="3"
-                            style={{ resize: "none" }}
+                            style={{
+                              resize: "none",
+                              backgroundColor: "var(--primary-color)",
+                              color: "var(--text-color)",
+                              borderColor: "var(--accent-color)",
+                            }}
                           ></textarea>
                         </td>
                       </tr>
@@ -661,8 +970,21 @@ export default function FactCheckerDashboard() {
                 {/* Save Button */}
                 <div className="text-end mt-3">
                   <button 
-                    className="btn btn-dark px-4 py-2"
+                    className="btn px-4 py-2"
                     onClick={handleCloseModal}
+                    style={{
+                      backgroundColor: "var(--accent-color)",
+                      color: "var(--primary-color)",
+                      border: "2px solid var(--accent-color)",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                      e.currentTarget.style.color = "var(--accent-color)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "var(--primary-color)";
+                    }}
                   >
                     Save Changes
                   </button>
