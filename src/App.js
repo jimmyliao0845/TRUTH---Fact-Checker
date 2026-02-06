@@ -106,6 +106,7 @@ function AppContent() {
         <Route path="/professional/verification-logs" element={<VerificationLogsPage />} />
         <Route path="/professional/user-feedback" element={<UserFeedbackPage />} />
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
+<<<<<<< HEAD
         <Route path="/professional/profile" element={<ProfessionalProfile />} />
         <Route path="/professional/linked-users" element={<LinkedUser />} />  
 
@@ -118,6 +119,11 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+=======
+        <Route path="/professional/logs" element={<ProfessionalReportsPage />} />
+        <Route path="/professional/profile" element={<ProfessionalProfile />} />  
+        <Route path="/professional/linked-users" element={<LinkedUser />} />
+>>>>>>> main
 
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />

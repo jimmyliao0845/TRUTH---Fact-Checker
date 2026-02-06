@@ -61,12 +61,6 @@ export default function ManageTutorial() {
     return sorted;
   }, [sortOption, tutorials]);
 
-  // ✅ Smooth scroll
-  const scrollToSection = (id) => {
-    const section = document.getElementById(id);
-    if (section) section.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
     <div className="d-flex" style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}>
       {/* Sidebar */}
@@ -94,7 +88,7 @@ export default function ManageTutorial() {
           </button>
         </div>
 
-        {/* Sidebar Menu */}
+        {/* Sidebar Menu - NOW WITH WORKING NAVIGATION */}
         <ul className="nav flex-column">
           <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/factcheckerdashboard")}><FaTachometerAlt className="me-2" />{!collapsed && "Dashboard"}</button></li>
           <li><button className="btn sidebar-btn text-start" onClick={() => navigate("/professional/create-tutorial")}><FaPlusCircle className="me-2" />{!collapsed && "Create Tutorial"}</button></li>
@@ -148,7 +142,7 @@ export default function ManageTutorial() {
             <i
               className="bi bi-bell fs-5 text-dark"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
+                                  aria-expanded="false"
               style={{ cursor: "pointer" }}
             ></i>
             <ul
