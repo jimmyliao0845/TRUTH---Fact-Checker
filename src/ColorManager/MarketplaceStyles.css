@@ -3,7 +3,7 @@
 .marketplace-container {
   min-height: 100vh;
   padding-top: 80px;
-  color: #ffffff;
+  color: var(--text-color);
 }
 
 .marketplace-container h2,
@@ -11,16 +11,18 @@
 .marketplace-container h4,
 .marketplace-container h5,
 .marketplace-container h6 {
-  color: #ffffff;
+  color: var(--text-color);
   font-weight: 600;
 }
 
 .marketplace-container p {
-  color: #e0e0e0;
+  color: var(--text-color);
+  opacity: 0.9;
 }
 
 .marketplace-container .text-muted {
-  color: #a0a0a0 !important;
+  color: var(--text-color) !important;
+  opacity: 0.7;
 }
 
 .marketplace-header {
@@ -124,11 +126,12 @@
 .shop-item-card h6 {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #ffffff;
+  color: var(--text-color);
 }
 
 .shop-item-card p {
-  color: #d0d0d0;
+  color: var(--text-color);
+  opacity: 0.85;
 }
 
 .shop-item-card .text-info {
@@ -163,7 +166,7 @@
 }
 
 .nav-tabs .nav-link {
-  color: #000000 !important;
+  color: var(--text-color) !important;
   border: 2px solid transparent;
   position: relative;
   transition: all 0.3s ease;
@@ -175,18 +178,18 @@
 }
 
 .nav-tabs .nav-link:hover {
-  color: #000000 !important;
+  color: var(--accent-color) !important;
   background: rgba(255, 255, 255, 0.2);
-  border: 2px solid #00bfff;
+  border: 2px solid var(--accent-color);
   opacity: 1;
   text-decoration: none;
 }
 
 .nav-tabs .nav-link.active {
-  color: #000000 !important;
+  color: var(--accent-color) !important;
   background: rgba(0, 191, 255, 0.3);
-  border: 2px solid #00bfff;
-  border-bottom: 3px solid #00bfff;
+  border: 2px solid var(--accent-color);
+  border-bottom: 3px solid var(--accent-color);
   font-weight: 700;
   opacity: 1;
 }
@@ -205,15 +208,16 @@
 
 /* Button Styling */
 .btn-primary {
-  background-color: #0066ff;
-  border-color: #0066ff;
-  color: #ffffff;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--primary-color);
   font-weight: 600;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #0052cc;
-  border-color: #0052cc;
+  background-color: var(--secondary-color);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .btn-success {
@@ -229,22 +233,22 @@
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  border-color: #6c757d;
-  color: #ffffff;
+  background-color: var(--secondary-color);
+  border-color: var(--text-color);
+  color: var(--text-color);
   font-weight: 600;
 }
 
 .btn-outline-light {
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-color);
+  border-color: var(--text-color);
   font-weight: 500;
 }
 
 .btn-outline-light:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--primary-color);
+  background-color: var(--text-color);
+  border-color: var(--text-color);
 }
 
 /* Responsive */
@@ -366,7 +370,7 @@
 }
 
 .custom-color-group label {
-  color: #ffffff;
+  color: var(--text-color);
   font-weight: 500;
   font-size: 0.95rem;
   margin-bottom: 8px;
@@ -400,7 +404,7 @@
 }
 
 .color-value {
-  color: #ffd93d;
+  color: var(--accent-color);
   font-family: 'Courier New', monospace;
   font-size: 0.9rem;
   font-weight: 500;
@@ -426,9 +430,9 @@
 }
 
 .custom-colors-section .btn-secondary {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+  background: var(--secondary-color);
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
 }
 
 .custom-colors-section .btn-secondary:hover {

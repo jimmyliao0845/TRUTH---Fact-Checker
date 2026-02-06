@@ -35,18 +35,20 @@ export default function Navbar() {
 
   return (
     <nav 
-      className="navbar navbar-expand-lg navbar-dark bg-custom px-3"
+      className="navbar navbar-expand-lg px-3"
       style={{
         position: "fixed",
         top: 0,
         left: 0,
         right: 0,
         zIndex: 1050,
+        backgroundColor: "var(--navbar-color)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
       }}
     >
       <div className="container-fluid d-flex align-items-center justify-content-between">
         {/* Left: Brand */}
-        <Link className="navbar-brand fw-bold" to="/">
+        <Link className="navbar-brand fw-bold" to="/" style={{ color: "var(--text-color)" }}>
           T.R.U.T.H.
         </Link>
 
@@ -57,15 +59,42 @@ export default function Navbar() {
             <>
               <Link
                 to="/login"
-                id="login-btn"
-                className="btn btn-outline-light rounded-pill px-4 py-2 me-2"
+                className="btn rounded-pill px-4 py-2 me-2"
+                style={{
+                  backgroundColor: "transparent",
+                  color: "var(--text-color)",
+                  border: "2px solid var(--text-color)",
+                  transition: "all 0.3s ease"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--text-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-color)";
+                }}
               >
                 Log In
               </Link>
               <Link
                 to="/register"
-                id="signup-btn"
-                className="btn btn-light rounded-pill px-4 py-2"
+                className="btn rounded-pill px-4 py-2"
+                style={{
+                  backgroundColor: "var(--text-color)",
+                  color: "var(--primary-color)",
+                  border: "2px solid var(--text-color)",
+                  fontWeight: "600",
+                  transition: "all 0.3s ease"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = "var(--text-color)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--text-color)";
+                  e.currentTarget.style.color = "var(--primary-color)";
+                }}
               >
                 Sign Up
               </Link>
@@ -81,7 +110,7 @@ export default function Navbar() {
                 style={{
                   cursor: "pointer",
                   objectFit: "cover",
-                  border: "2px solid rgba(255,255,255,0.2)",
+                  border: "2px solid var(--text-color)",
                 }}
                 data-bs-toggle="dropdown"
                 onError={(e) => {
@@ -92,20 +121,48 @@ export default function Navbar() {
               <ul
                 className="dropdown-menu dropdown-menu-end p-3 shadow-lg"
                 style={{
-                  backgroundColor: "#09090d",
+                  backgroundColor: "var(--primary-color)",
                   borderRadius: "10px",
-                  border: "2px solid #3a305033",
+                  border: "2px solid var(--accent-color)",
                 }}
               >
                 <li>
                   <Link
                     to="/settings"
-                    className="btn bg-custom btn-outline-light text-white btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
+                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      transition: "all 0.3s ease"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "#ffffff";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
+                      e.currentTarget.style.color = "var(--text-color)";
+                    }}
                   >
                     <i className="bi bi-gear me-2"></i> Settings
                   </Link>
                   <button
-                    className="btn bg-custom btn-outline-light text-white btn-sm w-100 d-flex align-items-center justify-content-start"
+                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      transition: "all 0.3s ease"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "#ffffff";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
+                      e.currentTarget.style.color = "var(--text-color)";
+                    }}
                     onClick={handleSignOut}
                   >
                     <i className="bi bi-box-arrow-right me-2"></i> Sign Out

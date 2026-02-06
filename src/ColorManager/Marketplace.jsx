@@ -34,7 +34,7 @@ const THEMES = {
       navbar: "#ffffff",
       sidebar: "#f5f5f5",
       background: "#fafafa",
-      button: "#e0e0e0",
+      button: "#e8e8e8",
       text: "#000000",
       accent: "#0066cc",
     },

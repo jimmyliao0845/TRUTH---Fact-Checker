@@ -80,12 +80,24 @@ export default function HomePage() {
             </p>
             
             <button
-              className="btn btn-light btn-lg px-5 py-3 rounded-pill shadow"
+              className="btn btn-lg px-5 py-3 rounded-pill shadow"
               onClick={() => navigate(isLoggedIn ? "/analysis-logged" : "/analysis")}
               style={{ 
                 animation: "fadeInUp 1s ease-out",
                 fontSize: "1.2rem",
-                fontWeight: "600"
+                fontWeight: "600",
+                backgroundColor: "var(--accent-color)",
+                color: "var(--primary-color)",
+                border: "2px solid var(--accent-color)",
+                transition: "all 0.3s ease"
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                e.currentTarget.style.color = "var(--accent-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
               }}
             >
               Try T.R.U.T.H. Now <i className="bi bi-arrow-right ms-2"></i>
