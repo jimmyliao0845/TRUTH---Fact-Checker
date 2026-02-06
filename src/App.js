@@ -26,21 +26,15 @@ import AdminDashboard from "./AdminDashboard";
 import AdminUsers from "./AdminUsers"; 
 import AdminTutorialPage from "./AdminTutorialPage";
 import AdminReviewsPage from "./AdminReviewsPage";
-<<<<<<< Updated upstream
 
+// ✅ Marketplace & Theme
+import Marketplace from "./ColorManager/Marketplace";
+import { ColorThemeManager } from "./ColorManager/Marketplace";
 
 // ✅ General User Pages
 import GeneralUserProfile from "./GeneralUserProfile";
 import GamePage from "./GamePage";
 import FeedbackPage from "./FeedbackPage";
-=======
-import VerificationLogsPage from "./VerificationLogsPage";
-import UserFeedbackPage from "./UserFeedbackpage(Professional)";
-import ProfessionalReportsPage from "./ProfessionalReportsPage";
-import ProfessionalProfile from "./ProfessionalProfile";
-import Marketplace from "./ColorManager/Marketplace";
-import { ColorThemeManager } from "./ColorManager/Marketplace";
->>>>>>> Stashed changes
 
 // Component to handle loading state on route changes
 function AppContent() {
