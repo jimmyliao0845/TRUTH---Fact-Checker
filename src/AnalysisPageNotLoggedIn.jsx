@@ -283,16 +283,17 @@ export default function AnalysisPageNotLoggedIn() {
   };
 
   return (
-    <div className="d-flex" style={{ paddingTop: "56px", background: "white", minHeight: "100vh" }}>
+    <div className="d-flex" style={{ paddingTop: "56px", background: "var(--primary-color)", minHeight: "100vh", color: "var(--text-color)" }}>
       {/* Sidebar */}
       <div
         className="d-flex flex-column align-items-center justify-content-start p-3"
         style={{
           width: "200px",
           minHeight: "100vh",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--secondary-color)",
           textAlign: "center",
-          boxShadow: "2px 0 10px rgba(0,0,0,0.1)"
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+          borderRight: `2px solid var(--accent-color)`
         }}
       >
         <div className="mb-4 mt-3">
@@ -301,17 +302,18 @@ export default function AnalysisPageNotLoggedIn() {
           </a>
         </div>
 
-        <div className="mb-3 p-3 rounded-circle" style={{ backgroundColor: "rgba(255,255,255,0.1)" }}>
+        <div className="mb-3 p-3 rounded-circle" style={{ backgroundColor: "var(--accent-color)", opacity: 0.8 }}>
           <a href="/login">
             <img
               src="https://cdn-icons-png.flaticon.com/512/3064/3064197.png"
               width="40"
               alt="lock"
+              style={{ filter: "brightness(1.2)" }}
             />
           </a>
         </div>
 
-        <p className="small fw-semibold mt-2 text-black" style={{ lineHeight: "1.6" }}>
+        <p className="small fw-semibold mt-2" style={{ color: "var(--text-color)", lineHeight: "1.6", fontSize: "0.9rem" }}>
           Register and Login
           <br />
           Your Account
@@ -320,9 +322,23 @@ export default function AnalysisPageNotLoggedIn() {
         </p>
 
         <button 
-          className="btn btn-light btn-sm mt-3 px-4 rounded-pill"
+          className="btn btn-sm mt-3 px-4 rounded-pill"
           onClick={() => navigate("/login")}
-          style={{ fontWeight: "600" }}
+          style={{ 
+            fontWeight: "600",
+            backgroundColor: "var(--accent-color)",
+            color: "var(--primary-color)",
+            border: `2px solid var(--accent-color)`,
+            transition: "all 0.3s ease"
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--primary-color)";
+            e.currentTarget.style.color = "var(--accent-color)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = "var(--accent-color)";
+            e.currentTarget.style.color = "var(--primary-color)";
+          }}
         >
           Sign In
         </button>
@@ -335,13 +351,14 @@ export default function AnalysisPageNotLoggedIn() {
           transition: "margin-left 0.3s ease",
           minHeight: "calc(100vh - 56px)",
           padding: "2rem",
-          backgroundColor: "white"
+          backgroundColor: "var(--primary-color)",
+          color: "var(--text-color)"
         }}
       >
         {/* Header with Typewriter Effect */}
         <div className="text-center mb-5" style={{ minHeight: "100px", animation: "fadeIn 0.6s ease-in" }}>
           <h1 className="fw-bold d-inline-flex align-items-center justify-content-center gap-2" style={{ fontSize: "2.5rem" }}>
-            <span style={{ color: "#000000ff" }}>{displayedText}</span>
+            <span style={{ color: "var(--text-color)" }}>{displayedText}</span>
             {showLogo && (
               <img 
                 src="/assets/digima_logo.svg" 
@@ -377,13 +394,13 @@ export default function AnalysisPageNotLoggedIn() {
           style={{ 
             width: "70%", 
             maxWidth: "900px",
-            backgroundColor: "white",
+            backgroundColor: "var(--primary-color)",
             animation: "fadeInUp 0.6s ease-out",
-            border: "2px solid black"
+            border: `2px solid var(--text-color)`
           }}
         >
           <div className="text-center mb-4">
-            <h4 className="fw-bold" style={{ color: "#000000ff" }}>
+            <h4 className="fw-bold" style={{ color: "var(--text-color)" }}>
               🔍 Start Your Analysis
             </h4>
             <p className="text-muted">Enter text or upload a document to detect AI-generated content</p>
@@ -391,7 +408,7 @@ export default function AnalysisPageNotLoggedIn() {
 
           {/* Text Input */}
           <div className="mb-4">
-            <label htmlFor="text-input" className="form-label fw-semibold" style={{ color: "#000000ff" }}>
+            <label htmlFor="text-input" className="form-label fw-semibold" style={{ color: "var(--text-color)" }}>
               <FaKeyboard className="me-2" />
               Enter Your Text
             </label>
@@ -418,28 +435,28 @@ export default function AnalysisPageNotLoggedIn() {
 
           {/* Buttons */}
           <div className="d-flex justify-content-center gap-3 flex-wrap">
-                      <button 
+                        <button 
                         className="btn btn-lg px-5 py-3 d-flex align-items-center gap-2"
                         onClick={handleSubmit}
                         disabled={isLoading || !inputText.trim()}
                         style={{
-                          backgroundColor: "black",
-                          border: "2px solid black",
+                          backgroundColor: "var(--accent-color)",
+                          border: "2px solid var(--accent-color)",
                           borderRadius: "50px",
-                          color: "white",
+                          color: "var(--primary-color)",
                           fontWeight: "600",
                           transition: "all 0.3s ease",
                           minWidth: "200px"
                         }}
                         onMouseOver={(e) => {
                           if (!isLoading && inputText.trim()) {
-                            e.currentTarget.style.backgroundColor = "white";
-                            e.currentTarget.style.color = "black";
+                            e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                            e.currentTarget.style.color = "var(--accent-color)";
                           }
                         }}
                         onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "black";
-                          e.currentTarget.style.color = "white";
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
                         }}
                       >
                         {isLoading ? (
@@ -459,23 +476,23 @@ export default function AnalysisPageNotLoggedIn() {
                         onClick={() => fileInputRef.current.click()}
                         disabled={isLoading}
                         style={{
-                          backgroundColor: "black",
-                          border: "2px solid black",
+                          backgroundColor: "var(--accent-color)",
+                          border: "2px solid var(--accent-color)",
                           borderRadius: "50px",
-                          color: "white",
+                          color: "var(--primary-color)",
                           fontWeight: "600",
                           transition: "all 0.3s ease",
                           minWidth: "200px"
                         }}
                         onMouseOver={(e) => {
                           if (!isLoading) {
-                            e.currentTarget.style.backgroundColor = "white";
-                            e.currentTarget.style.color = "black";
+                            e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                            e.currentTarget.style.color = "var(--accent-color)";
                           }
                         }}
                         onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "black";
-                          e.currentTarget.style.color = "white";
+                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                          e.currentTarget.style.color = "var(--primary-color)";
                         }}
                       >
                         <FaCloudUploadAlt /> Upload File

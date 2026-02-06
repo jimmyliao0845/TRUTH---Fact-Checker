@@ -13,6 +13,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
+import { ColorThemeManager } from "./ColorManager/Marketplace";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./register.css";
@@ -451,7 +452,7 @@ export default function RegisterPage() {
                       /* VERIFICATION WAITING SCREEN */
                       <div className="text-center py-4">
                         <div className="mb-4">
-                          <i className="bi bi-envelope-check" style={{ fontSize: "4rem", color: "#4CAF50" }}></i>
+                          <i className="bi bi-envelope-check" style={{ fontSize: "4rem", color: "var(--accent-color)" }}></i>
                         </div>
                         <h5 className="mb-3">Verify Your Email</h5>
                         <p className="mb-3">
@@ -506,6 +507,9 @@ export default function RegisterPage() {
                               className="btn btn-link p-0 ms-1 hover-a"
                               style={{ textDecoration: "none" }}
                               onClick={() => {
+                                // Reset theme to default (Black) on logout
+                                ColorThemeManager.resetToDefault();
+                                
                                 setAwaitingVerification(false);
                                 auth.signOut();
                               }}

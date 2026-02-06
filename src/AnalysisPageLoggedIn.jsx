@@ -153,48 +153,89 @@ const handleFileUpload = (event) => {
   };
 
   return (
-    <div className="d-flex" style={{ paddingTop: "56px", backgroundColor: "white", minHeight: "100vh" }}>
+    <div className="d-flex" style={{ paddingTop: "56px", backgroundColor: "var(--primary-color)", minHeight: "100vh", color: "var(--text-color)" }}>
       {/* Sidebar */}
       <div 
               className="d-flex flex-column p-3 border-end"
               style={{
                 width: collapsed ? "80px" : "200px",
-                backgroundColor: "#d9d9d9",
+                backgroundColor: "var(--secondary-color)",
                 transition: "width 0.3s ease",
                 height: "calc(100vh - 56px)",
                 position: "fixed",
                 top: "56px",
                 left: 0,
                 overflowY: "auto",
-                boxShadow: "2px 0 10px rgba(0,0,0,0.1)"
+                boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+                borderRight: `2px solid var(--accent-color)`
               }}
             >
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <button
-                  className="btn btn-outline-dark btn-sm"
+                  className="btn btn-sm"
                   onClick={() => setCollapsed(!collapsed)}
-                  style={{ border: "none" }}
+                  style={{ 
+                    border: "none",
+                    backgroundColor: "var(--accent-color)",
+                    color: "var(--primary-color)",
+                    padding: "6px 10px",
+                    borderRadius: "6px",
+                    cursor: "pointer"
+                  }}
                 >
                   <FaBars />
                 </button>
               </div>
       
-              {!collapsed && <div className="white-box p-3 mt-3"></div>}
+              {!collapsed && (
+                <div className="white-box p-3 mt-3">
+                  <div style={{ fontSize: "0.85rem", opacity: 0.8 }}>📋 Analysis History</div>
+                  <div style={{ fontSize: "0.75rem", marginTop: "8px", opacity: 0.6 }}>Your previous analyses appear here</div>
+                </div>
+              )}
               
               {/* Action Buttons Integration */}
               <div className="d-flex flex-column gap-3 mt-2">
                 <button 
-                  className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
+                  className="btn btn-link text-decoration-none d-flex align-items-center p-2"
                   onClick={() => navigate("/game")}
-                  style={{ transition: "0.2s" }}
+                  style={{ 
+                    transition: "all 0.2s",
+                    color: "var(--text-color)",
+                    borderRadius: "6px",
+                    fontSize: "0.95rem",
+                    fontWeight: "500"
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                    e.currentTarget.style.color = "var(--primary-color)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--text-color)";
+                  }}
                 >
                   <FaGamepad size={20} />
                   {!collapsed && <span className="ms-3">Find and Play Game</span>}
                 </button>
       
                 <button 
-                  className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
+                  className="btn btn-link text-decoration-none d-flex align-items-center p-2"
                   onClick={() => navigate("/professional/user-feedback")}
+                  style={{ 
+                    color: "var(--text-color)",
+                    borderRadius: "6px",
+                    fontSize: "0.95rem",
+                    fontWeight: "500"
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                    e.currentTarget.style.color = "var(--primary-color)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--text-color)";
+                  }}
                 >
                   <FaCommentAlt size={18} />
                   {!collapsed && <span className="ms-3">User Feedback</span>}
@@ -202,8 +243,22 @@ const handleFileUpload = (event) => {
 
                 {/* UPDATED BUTTON ROUTE */}
                 <button 
-                  className="btn btn-link text-black text-decoration-none d-flex align-items-center p-2"
+                  className="btn btn-link text-decoration-none d-flex align-items-center p-2"
                   onClick={() => navigate("/factcheckerdashboard")}
+                  style={{ 
+                    color: "var(--text-color)",
+                    borderRadius: "6px",
+                    fontSize: "0.95rem",
+                    fontWeight: "500"
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                    e.currentTarget.style.color = "var(--primary-color)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "var(--text-color)";
+                  }}
                 >
                   <FaBriefcase size={18} />
                   {!collapsed && <span className="ms-3">Go to Professional Dashboard</span>}
@@ -218,12 +273,13 @@ const handleFileUpload = (event) => {
           transition: "margin-left 0.3s ease",
           minHeight: "calc(100vh - 56px)",
           padding: "2rem",
-          backgroundColor: "white"
+          backgroundColor: "var(--primary-color)",
+          color: "var(--text-color)"
         }}
       >
         {/* Header with Typewriter Effect */}
         <div className="text-center mb-5" style={{ minHeight: "100px", animation: "fadeIn 0.6s ease-in" }}>
-          <h1 className="fw-bold d-inline-flex align-items-center justify-content-center gap-2" style={{ fontSize: "2.5rem", color: "black" }}>
+          <h1 className="fw-bold d-inline-flex align-items-center justify-content-center gap-2" style={{ fontSize: "2.5rem", color: "var(--text-color)" }}>
             <span>{displayedText}</span>
             {showLogo && (
               <img 
@@ -257,7 +313,7 @@ const handleFileUpload = (event) => {
           }}
         >
           <div className="text-center mb-4">
-            <h4 className="fw-bold" style={{ color: "black" }}>
+            <h4 className="fw-bold" style={{ color: "var(--text-color)" }}>
               🔍 Start Your Analysis
             </h4>
             <p style={{ color: "#666666" }}>Enter text or upload a file to detect AI-generated content</p>
@@ -265,7 +321,7 @@ const handleFileUpload = (event) => {
 
           {/* Text Input */}
           <div className="mb-4">
-            <label htmlFor="text-input" className="form-label fw-semibold" style={{ color: "black" }}>
+            <label htmlFor="text-input" className="form-label fw-semibold" style={{ color: "var(--text-color)" }}>
               <FaKeyboard className="me-2" />
               Enter Your Text
             </label>
@@ -281,8 +337,9 @@ const handleFileUpload = (event) => {
               style={{
                 fontSize: "1rem",
                 borderRadius: "12px",
-                backgroundColor: "white",
-                border: "2px solid #e0e0e0",
+                backgroundColor: "var(--secondary-color)",
+                border: `2px solid var(--accent-color)`,
+                color: "var(--text-color)",
                 resize: "none"
               }}
             ></textarea>
@@ -298,23 +355,23 @@ const handleFileUpload = (event) => {
               onClick={handleSubmit}
               disabled={isLoading || !inputText.trim()}
               style={{
-                backgroundColor: "black",
-                border: "2px solid black",
+                backgroundColor: "var(--accent-color)",
+                border: "2px solid var(--accent-color)",
                 borderRadius: "50px",
-                color: "white",
+                color: "var(--primary-color)",
                 fontWeight: "600",
                 transition: "all 0.3s ease",
                 minWidth: "200px"
               }}
               onMouseOver={(e) => {
                 if (!isLoading && inputText.trim()) {
-                  e.currentTarget.style.backgroundColor = "white";
-                  e.currentTarget.style.color = "black";
+                  e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                  e.currentTarget.style.color = "var(--accent-color)";
                 }
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "black";
-                e.currentTarget.style.color = "white";
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
               }}
             >
               {isLoading ? (
@@ -334,23 +391,23 @@ const handleFileUpload = (event) => {
               onClick={() => fileInputRef.current.click()}
               disabled={isLoading}
               style={{
-                backgroundColor: "black",
-                border: "2px solid black",
+                backgroundColor: "var(--accent-color)",
+                border: "2px solid var(--accent-color)",
                 borderRadius: "50px",
-                color: "white",
+                color: "var(--primary-color)",
                 fontWeight: "600",
                 transition: "all 0.3s ease",
                 minWidth: "200px"
               }}
               onMouseOver={(e) => {
                 if (!isLoading) {
-                  e.currentTarget.style.backgroundColor = "white";
-                  e.currentTarget.style.color = "black";
+                  e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                  e.currentTarget.style.color = "var(--accent-color)";
                 }
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "black";
-                e.currentTarget.style.color = "white";
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
               }}
             >
               <FaCloudUploadAlt /> Upload File

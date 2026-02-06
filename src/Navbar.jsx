@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { ColorThemeManager } from "./ColorManager/Marketplace";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -26,6 +27,9 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     try {
+      // Reset theme to default (Black) on logout
+      ColorThemeManager.resetToDefault();
+      
       await signOut(auth);
       alert("Signed out successfully");
     } catch (error) {

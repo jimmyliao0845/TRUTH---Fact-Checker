@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./MarketplaceStyles.css";
+import "../styles.css";
 
 // ============= COLOR THEME MANAGER =============
 
@@ -136,6 +136,22 @@ export const ColorThemeManager = {
     root.style.setProperty("--accent-color", theme.colors.accent);
 
     localStorage.setItem("selectedTheme", themeName);
+  },
+
+  resetToDefault: () => {
+    const defaultTheme = THEMES.black;
+    const root = document.documentElement;
+    root.style.setProperty("--primary-color", defaultTheme.colors.primary);
+    root.style.setProperty("--secondary-color", defaultTheme.colors.secondary);
+    root.style.setProperty("--navbar-color", defaultTheme.colors.navbar);
+    root.style.setProperty("--sidebar-color", defaultTheme.colors.sidebar);
+    root.style.setProperty("--background-color", defaultTheme.colors.background);
+    root.style.setProperty("--button-color", defaultTheme.colors.button);
+    root.style.setProperty("--text-color", defaultTheme.colors.text);
+    root.style.setProperty("--accent-color", defaultTheme.colors.accent);
+    
+    localStorage.removeItem("selectedTheme");
+    localStorage.removeItem("customColors");
   },
 
   loadSavedTheme: () => {

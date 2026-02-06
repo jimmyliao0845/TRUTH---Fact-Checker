@@ -17,7 +17,7 @@ export default function LoadingScreen() {
     >
       {/* Spinner */}
       <div
-        className="spinner-border text-black"
+        className="spinner-border" style={{ color: "var(--accent-color)" }}
         role="status"
         style={{ width: "4rem", height: "4rem" }}
       >

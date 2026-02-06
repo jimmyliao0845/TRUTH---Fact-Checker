@@ -220,7 +220,7 @@ export default function FactCheckerDashboard() {
   return (
     <div
       className="d-flex"
-      style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}
+      style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}
     >
       {/* SIDEBAR */}
       <div
@@ -578,7 +578,7 @@ export default function FactCheckerDashboard() {
             className="modal-dialog modal-xl modal-dialog-centered"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-content" style={{ backgroundColor: "#ffffffff" }}>
+            <div className="modal-content" style={{ backgroundColor: "var(--primary-color)" }}>
               {/* Modal Header */}
               <div className="modal-header border-0 pb-1">
                 <h5 className="modal-title fw-bold">Edit Tutorial</h5>
@@ -598,7 +598,7 @@ export default function FactCheckerDashboard() {
                     type="text" 
                     className="form-control" 
                     defaultValue={editingTutorial?.title || ""}
-                    style={{ backgroundColor: "#ffffffff" }}
+                    style={{ backgroundColor: "var(--primary-color)", color: "var(--text-color)" }}
                   />
                 </div>
 

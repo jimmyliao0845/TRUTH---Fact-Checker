@@ -207,7 +207,7 @@ export default function UserFeedbackPage() {
   );
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "#f8f9fa", paddingTop: "56px" }}>
+    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
       {/* Sidebar */}
       <div
         className="d-flex flex-column p-3 border-end"
