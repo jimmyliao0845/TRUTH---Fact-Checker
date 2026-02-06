@@ -44,7 +44,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div style={{ paddingTop: "56px", backgroundColor: "white" }}>
+    <div style={{ paddingTop: "56px", backgroundColor: "var(--primary-color)" }}>
       {/* Hero Section */}
       <div className="hero-section" style={{
         minHeight: "calc(100vh - 56px)",
@@ -52,8 +52,8 @@ export default function HomePage() {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white",
-        color: "black",
+        backgroundColor: "var(--primary-color)",
+        color: "var(--text-color)",
         textAlign: "center",
         padding: "2rem",
         position: "relative"
@@ -95,10 +95,10 @@ export default function HomePage() {
       </div>
 
       {/* About Section */}
-      <section className="container py-5" style={{ backgroundColor: "white" }}>
+      <section className="container py-5" style={{ backgroundColor: "var(--primary-color)" }}>
         <div className="text-center mb-5">
-          <h2 className="display-4 fw-bold mb-3" style={{ color: "black" }}>About T.R.U.T.H.</h2>
-          <p className="lead" style={{ maxWidth: "800px", margin: "0 auto", color: "#333333" }}>
+          <h2 className="display-4 fw-bold mb-3" style={{ color: "var(--text-color)" }}>About T.R.U.T.H.</h2>
+          <p className="lead" style={{ maxWidth: "800px", margin: "0 auto", color: "var(--text-color)" }}>
             An AI-powered platform designed to ensure the integrity and authenticity of digital content in an era of sophisticated manipulation.
           </p>
         </div>
@@ -110,31 +110,31 @@ export default function HomePage() {
             <div className="card h-100 hover-lift" 
               style={{ 
                 transition: "all 0.3s ease",
-                backgroundColor: "white",
-                border: "2px solid black"
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)"
               }}
             >
               <div className="card-body p-4">
                 <div className="d-flex align-items-center mb-3">
                   <div className="p-3 rounded-circle me-3" style={{ 
-                    backgroundColor: "black",
+                    backgroundColor: "var(--accent-color)",
                     width: "60px",
                     height: "60px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <i className="bi bi-camera-video-fill fs-3" style={{ color: "white" }}></i>
+                    <i className="bi bi-camera-video-fill fs-3" style={{ color: "var(--text-color)" }}></i>
                   </div>
-                  <h4 className="card-title mb-0 fw-bold" style={{ color: "black" }}>Image & Video Checker</h4>
+                  <h4 className="card-title mb-0 fw-bold" style={{ color: "var(--text-color)" }}>Image & Video Checker</h4>
                 </div>
-                <p className="card-text" style={{ color: "#333333" }}>
+                <p className="card-text" style={{ color: "var(--text-color)" }}>
                   Advanced deepfake detection using state-of-the-art neural networks to identify manipulated visual content.
                 </p>
                 <div className="mt-3">
                   <span className="badge" style={{ 
-                    backgroundColor: "black", 
-                    color: "white",
+                    backgroundColor: "var(--accent-color)", 
+                    color: "var(--primary-color)",
                     padding: "0.5rem 1rem",
                     fontSize: "0.9rem"
                   }}>
@@ -150,31 +150,31 @@ export default function HomePage() {
             <div className="card h-100 hover-lift" 
               style={{ 
                 transition: "all 0.3s ease",
-                backgroundColor: "white",
-                border: "2px solid black"
+                backgroundColor: "var(--secondary-color)",
+                border: "2px solid var(--accent-color)"
               }}
             >
               <div className="card-body p-4">
                 <div className="d-flex align-items-center mb-3">
                   <div className="p-3 rounded-circle me-3" style={{ 
-                    backgroundColor: "black",
+                    backgroundColor: "var(--accent-color)",
                     width: "60px",
                     height: "60px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <i className="bi bi-file-text-fill fs-3" style={{ color: "white" }}></i>
+                    <i className="bi bi-file-text-fill fs-3" style={{ color: "var(--text-color)" }}></i>
                   </div>
-                  <h4 className="card-title mb-0 fw-bold" style={{ color: "black" }}>Text Checker</h4>
+                  <h4 className="card-title mb-0 fw-bold" style={{ color: "var(--text-color)" }}>Text Checker</h4>
                 </div>
-                <p className="card-text" style={{ color: "#333333" }}>
+                <p className="card-text" style={{ color: "var(--text-color)" }}>
                   Detect AI-generated text and distinguish between human-written and machine-generated content with high accuracy.
                 </p>
                 <div className="mt-3">
                   <span className="badge" style={{ 
-                    backgroundColor: "black", 
-                    color: "white",
+                    backgroundColor: "var(--accent-color)", 
+                    color: "var(--primary-color)",
                     padding: "0.5rem 1rem",
                     fontSize: "0.9rem"
                   }}>
@@ -189,8 +189,8 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="py-5 text-center" style={{ 
-        backgroundColor: "black",
-        color: "white"
+        backgroundColor: "var(--secondary-color)",
+        color: "var(--text-color)"
       }}>
         <div className="container">
           <h2 className="display-5 fw-bold mb-3">Ready to Verify Your Content?</h2>
@@ -200,19 +200,19 @@ export default function HomePage() {
               className="btn btn-lg px-5 py-3 rounded-pill"
               onClick={() => navigate("/register")}
               style={{
-                backgroundColor: "white",
-                color: "black",
-                border: "2px solid white",
+                backgroundColor: "var(--accent-color)",
+                color: "var(--primary-color)",
+                border: "2px solid var(--accent-color)",
                 fontWeight: "600",
                 transition: "all 0.3s ease"
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = "black";
-                e.currentTarget.style.color = "white";
+                e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                e.currentTarget.style.color = "var(--accent-color)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = "white";
-                e.currentTarget.style.color = "black";
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
               }}
             >
               Get Started Free
@@ -222,18 +222,18 @@ export default function HomePage() {
               onClick={() => navigate(isLoggedIn ? "/analysis-logged" : "/analysis")}
               style={{
                 backgroundColor: "transparent",
-                color: "white",
-                border: "2px solid white",
+                color: "var(--text-color)",
+                border: "2px solid var(--text-color)",
                 fontWeight: "600",
                 transition: "all 0.3s ease"
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = "white";
-                e.currentTarget.style.color = "black";
+                e.currentTarget.style.backgroundColor = "var(--text-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
               }}
               onMouseOut={(e) => {
                 e.currentTarget.style.backgroundColor = "transparent";
-                e.currentTarget.style.color = "white";
+                e.currentTarget.style.color = "var(--text-color)";
               }}
             >
               Try Now

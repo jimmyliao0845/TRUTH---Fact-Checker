@@ -1,10 +1,11 @@
 .bg-light-grey {
-  background-color: #d6d6d6;
+  background-color: var(--secondary-color);
 }
 
 .sidebar {
   transition: width 0.3s ease;
   overflow: hidden;
+  background-color: var(--sidebar-color);
 }
 
 .sidebar-open {
@@ -21,7 +22,7 @@
   background: transparent;
   border: none;
   text-align: left;
-  color: #000000;
+  color: var(--text-color);
   font-size: 15px;
   margin: 8px 0;
   padding: 8px 10px;
@@ -30,24 +31,24 @@
 }
 
 .sidebar-btn:hover {
-  background-color: #0d6efd;
+  background-color: var(--accent-color);
   color: #ffffff;
 }
 
 .sidebar-btn:focus {
   outline: none;
-  background-color: #0d6efd;
+  background-color: var(--accent-color);
   color: #ffffff;
 }
 
 .sidebar-btn.active {
-  background-color: #007bff;
-  color: #ffffff;
+  background-color: var(--primary-color);
+  color: var(--accent-color);
   cursor: not-allowed;
 }
 
 .sidebar-btn.active:hover {
-  background-color: #007bff;
+  background-color: var(--primary-color);
   color: #ffffff;
 }
 

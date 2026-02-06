@@ -26,17 +26,31 @@ import AdminDashboard from "./AdminDashboard";
 import AdminUsers from "./AdminUsers"; 
 import AdminTutorialPage from "./AdminTutorialPage";
 import AdminReviewsPage from "./AdminReviewsPage";
+<<<<<<< Updated upstream
 
 
 // ✅ General User Pages
 import GeneralUserProfile from "./GeneralUserProfile";
 import GamePage from "./GamePage";
 import FeedbackPage from "./FeedbackPage";
+=======
+import VerificationLogsPage from "./VerificationLogsPage";
+import UserFeedbackPage from "./UserFeedbackpage(Professional)";
+import ProfessionalReportsPage from "./ProfessionalReportsPage";
+import ProfessionalProfile from "./ProfessionalProfile";
+import Marketplace from "./ColorManager/Marketplace";
+import { ColorThemeManager } from "./ColorManager/Marketplace";
+>>>>>>> Stashed changes
 
 // Component to handle loading state on route changes
 function AppContent() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Load saved theme on app startup
+    ColorThemeManager.loadSavedTheme();
+  }, []);
 
   useEffect(() => {
     // Show loading screen when route changes
@@ -100,6 +114,16 @@ function AppContent() {
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
         <Route path="/professional/profile" element={<ProfessionalProfile />} />
         <Route path="/professional/linked-users" element={<LinkedUser />} />  
+
+        {/* Settings */}
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Marketplace />
+            </ProtectedRoute>
+          }
+        />
 
         {/* ✅ Admin Pages */}
         <Route path="/admin-dashboard" element={<AdminDashboard />} />

@@ -18,16 +18,18 @@ export default function Sidebar() {
       <style>{`
         .sidebar {
           width: 230px;
-          background: #1d3557;
-          color: white;
+          background: var(--sidebar-color);
+          color: var(--text-color);
           height: 100vh;
           position: fixed;
           padding: 1rem;
+          transition: background-color 0.3s ease, color 0.3s ease;
         }
         .sidebar-title {
           font-size: 1.4rem;
           font-weight: bold;
           margin-bottom: 1rem;
+          color: var(--text-color);
         }
         .sidebar-nav {
           list-style: none;
@@ -37,12 +39,16 @@ export default function Sidebar() {
           margin: 0.8rem 0;
         }
         .sidebar-nav a {
-          color: #f1faee;
+          color: var(--text-color);
           text-decoration: none;
           transition: 0.2s;
+          display: block;
+          padding: 8px 8px;
+          border-radius: 4px;
         }
         .sidebar-nav a:hover {
-          color: #a8dadc;
+          background-color: var(--accent-color);
+          color: #ffffff;
         }
       `}</style>
     </div>

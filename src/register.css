@@ -6,9 +6,9 @@
 
 /* Sign Up Button (light mode) */
 .btn-signup {
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    color: black;
+    background-color: var(--secondary-color);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
     font-weight: 500;
     padding: 0.6rem;
     border-radius: 10px;
@@ -17,31 +17,31 @@
 }
 
 .btn-signup:hover {
-    background-color: #f0f0f0;
+    background-color: var(--primary-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* Night mode Sign Up Button */
 body.night-mode .btn-signup {
-    background-color: #343541 !important; 
-    border: 1px solid #565869;
-    color: white;
+    background-color: var(--secondary-color) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-color);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
 body.night-mode .btn-signup:hover {
-    background-color: #444654 !important;
+    background-color: var(--primary-color) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
 
 /* Social Login Buttons (light mode) */
 .register-social-btn {
-    background-color: #ffffff !important;
+    background-color: var(--secondary-color) !important;
     border-radius: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    color: #000 !important; /* 🔥 Force black text */
+    color: var(--text-color) !important;
     font-weight: 500;
 }
 

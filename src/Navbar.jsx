@@ -98,11 +98,12 @@ export default function Navbar() {
                 }}
               >
                 <li>
-                  <button
+                  <Link
+                    to="/settings"
                     className="btn bg-custom btn-outline-light text-white btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
                   >
                     <i className="bi bi-gear me-2"></i> Settings
-                  </button>
+                  </Link>
                   <button
                     className="btn bg-custom btn-outline-light text-white btn-sm w-100 d-flex align-items-center justify-content-start"
                     onClick={handleSignOut}

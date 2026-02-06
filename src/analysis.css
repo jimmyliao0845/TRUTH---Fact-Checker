@@ -1,21 +1,23 @@
 .white-box {
-  background: #fff;
+  background: var(--secondary-color);
   border-radius: 8px;
   width: 100%;
   min-height: 800px;
-  color: black;
+  color: var(--text-color);
   text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 /* Sidebar for analysis pages only */
 .analysis-sidebar {
   width: 220px;
-  background: #8c8c8c;
-  color: white;
+  background: var(--sidebar-color);
+  color: var(--text-color);
   height: auto; /* Let the container handle layout */
   min-height: 100vh; /* Full height but not fixed */
   position: relative; /* Don't pin it */
   padding-top: 20px;
   box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease;
 }
 
 /* Center the analysis content box */
@@ -32,8 +34,9 @@
 /* Sidebar text */
 .analysis-sidebar p {
   font-size: 14px;
-  color: #aaa;
+  color: var(--text-color);
   text-align: center;
+  opacity: 0.8;
 }
 
 /* Top links */
