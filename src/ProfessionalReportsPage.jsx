@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
 
 import {
   FaBars,
@@ -202,267 +203,96 @@ export default function ProfessionalReportsPage() {
   // --- JSX ---
   return (
     <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", paddingTop: "56px", minHeight: "100vh" }}>
-      {/* SIDEBAR */}
-      <div
-        className="d-flex flex-column p-3"
-        style={{
-          width: collapsed ? "80px" : "250px",
-          backgroundColor: "var(--secondary-color)",
-          borderRight: `2px solid var(--accent-color)`,
-          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
-          transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
-          position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
-          zIndex: 900
-        }}
-      >
+      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="d-flex align-items-center justify-content-between mb-3">
-          <button 
-             className="btn btn-sm"
-             onClick={() => setCollapsed(!collapsed)}
-             style={{
-               backgroundColor: "var(--accent-color)",
-               color: "var(--primary-color)",
-               border: "none",
-               borderRadius: "6px"
-             }}
+          <button
+            className="app-sidebar-toggle"
+            onClick={() => setCollapsed(!collapsed)}
           >
             <FaBars />
           </button>
         </div>
-{/* Sidebar Menu */}
-                <ul className="nav flex-column">
-                  <li>
-                    <button
-                      className={`btn sidebar-btn text-start`}
-                      onClick={() => location.pathname !== "/factcheckerdashboard" && navigate("/factcheckerdashboard")}
-                      disabled={location.pathname === "/factcheckerdashboard"}
-                      style={{
-                        color: location.pathname === "/factcheckerdashboard" ? "var(--primary-color)" : "var(--text-color)",
-                        backgroundColor: location.pathname === "/factcheckerdashboard" ? "var(--accent-color)" : "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        if (location.pathname !== "/factcheckerdashboard") {
-                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                          e.currentTarget.style.color = "var(--primary-color)";
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (location.pathname !== "/factcheckerdashboard") {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                          e.currentTarget.style.color = "var(--text-color)";
-                        }
-                      }}
-                    >
-                      <FaTachometerAlt className="me-2" />
-                      {!collapsed && "Dashboard"}
-                    </button>
-                  </li>
         
-                  <li>
-                    <button 
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/create-tutorial")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaPlusCircle className="me-2" />
-                      {!collapsed && "Create Tutorial"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/manage-tutorial")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaEdit className="me-2" />
-                      {!collapsed && "Manage Tutorial"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className={`btn sidebar-btn text-start`}
-                      onClick={() => location.pathname !== "/professional/reports" && navigate("/professional/reports")}
-                      disabled={location.pathname === "/professional/reports"}
-                      style={{
-                        color: location.pathname === "/professional/reports" ? "var(--primary-color)" : "var(--text-color)",
-                        backgroundColor: location.pathname === "/professional/reports" ? "var(--accent-color)" : "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        if (location.pathname !== "/professional/reports") {
-                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                          e.currentTarget.style.color = "var(--primary-color)";
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (location.pathname !== "/professional/reports") {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                          e.currentTarget.style.color = "var(--text-color)";
-                        }
-                      }}
-                    >
-                      <FaChartBar className="me-2" />
-                      {!collapsed && "Organized Reports"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/linked-users")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaUsers className="me-2" />
-                      {!collapsed && "Linked Users"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/user-feedback")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaCommentDots className="me-2" />
-                      {!collapsed && "User Feedback"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/verification-logs")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaClipboardList className="me-2" />
-                      {!collapsed && "Verification Logs"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/profile")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaUserCog className="me-2" />
-                      {!collapsed && "Profile"}
-                    </button>
-                  </li>
-        
-                  {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
-                  <li className="mt-4 border-top pt-2">
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/analysis")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaArrowLeft className="me-2" />
-                      {!collapsed && "Go Back to Analysis Page"}
-                    </button>
-                  </li>
-                </ul>
+        {/* Sidebar Menu */}
+        <div className="d-flex flex-column gap-1">
+          <button
+            className={`app-sidebar-item ${location.pathname === "/factcheckerdashboard" ? 'active' : ''}`}
+            onClick={() => location.pathname !== "/factcheckerdashboard" && navigate("/factcheckerdashboard")}
+            disabled={location.pathname === "/factcheckerdashboard"}
+          >
+            <FaTachometerAlt size={20} />
+            <span className="app-sidebar-label">Dashboard</span>
+          </button>
+
+          <button 
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/create-tutorial")}
+          >
+            <FaPlusCircle size={20} />
+            <span className="app-sidebar-label">Create Tutorial</span>
+          </button>
+
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/manage-tutorial")}
+          >
+            <FaEdit size={20} />
+            <span className="app-sidebar-label">Manage Tutorial</span>
+          </button>
+
+          <button 
+            className={`app-sidebar-item ${location.pathname === "/professional/reports" ? 'active' : ''}`}
+            onClick={() => location.pathname !== "/professional/reports" && navigate("/professional/reports")}
+            disabled={location.pathname === "/professional/reports"}
+          >
+            <FaChartBar size={20} />
+            <span className="app-sidebar-label">Organized Reports</span>
+          </button>
+
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/linked-users")}
+          >
+            <FaUsers size={20} />
+            <span className="app-sidebar-label">Linked Users</span>
+          </button>
+
+          <button 
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/user-feedback")}
+          >
+            <FaCommentDots size={20} />
+            <span className="app-sidebar-label">User Feedback</span>
+          </button>
+
+          <button 
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/verification-logs")}
+          >
+            <FaClipboardList size={20} />
+            <span className="app-sidebar-label">Verification Logs</span>
+          </button>
+
+          <div style={{ borderTop: "1px solid var(--accent-color)", marginTop: "1rem", paddingTop: "1rem" }}>
+            <button
+              className="app-sidebar-item"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft size={20} />
+              <span className="app-sidebar-label">Go Back</span>
+            </button>
+          </div>
+        </div>
 
         {!collapsed && (
-          <div className="mt-auto small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
-            Verified professionals workspace
+          <div className="mt-auto small" style={{ opacity: 0.7, color: "var(--text-color)" }}>
+            Professional workspace
           </div>
         )}
       </div>
 
       {/* MAIN CONTENT */}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: collapsed ? "80px" : "250px",
-          transition: "margin-left 0.3s ease",
-          minHeight: "100vh",
-          backgroundColor: "var(--primary-color)",
-          color: "var(--text-color)"
-        }}
-      >
+      <div className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
         {/* NAVBAR */}
         <nav
           className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"

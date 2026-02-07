@@ -20,15 +20,9 @@ import {
 } from "react-icons/fa";
 
 /**
- * CreateTutorial.jsx (Game & Tutorial Creator)
- * Full Create Game/Tutorial page with:
- * - Game info header with category selection
- * - Multiple choice question builder
- * - Content upload (text or image-based)
- * - Preview box
- * - Save draft / Publish buttons
- *
- * NOTE: Games created here will appear in GameFinder and GamesList
+ * CreateTutorial.jsx (Game Creator for GamePage)
+ * Professionals create fact-checking/learning games that appear in GameFinder
+ * Games are published to localStorage "published_games_v1"
  */
 
 export default function CreateTutorialFull() {
@@ -36,7 +30,7 @@ export default function CreateTutorialFull() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
-  // Game categories available
+  // Game categories
   const GAME_CATEGORIES = [
     { id: "image", name: "Image Games", icon: "🖼️" },
     { id: "text", name: "Text Games", icon: "📰" },
@@ -48,10 +42,18 @@ export default function CreateTutorialFull() {
 
   const DIFFICULTY_LEVELS = ["beginner", "intermediate", "advanced"];
 
-  // Auth guard
+  // Auth guard and get user info
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) navigate("/login");
+      if (!user) {
+        navigate("/login");
+      } else {
+        // Auto-populate maker field with user's display name or email
+        setGame(prev => ({
+          ...prev,
+          maker: user.displayName || user.email || "Anonymous Creator"
+        }));
+      }
     });
     return () => unsubscribe();
   }, [navigate]);
@@ -67,10 +69,10 @@ export default function CreateTutorialFull() {
     thumbnail: "📚",
     maker: "",
     questions: Array.from({ length: 10 }).map(() => ({
-      contentType: "text", // 'text' or 'image'
+      contentType: "text",
       text: "",
       image: null,
-      imageUrl: "", // object URL for preview
+      imageUrl: "",
       options: ["", "", "", ""],
       correct: 0,
       explanation: "",
@@ -78,9 +80,6 @@ export default function CreateTutorialFull() {
     status: "draft",
     createdAt: new Date().toISOString(),
   });
-
-  // modal control
-  const [modalOpenIndex, setModalOpenIndex] = useState(null);
 
   // Load draft if exists
   useEffect(() => {
@@ -113,61 +112,6 @@ export default function CreateTutorialFull() {
   const saveDraft = () => {
     localStorage.setItem("game_draft_v1", JSON.stringify(game));
     alert("Game draft saved locally.");
-  };
-
-  // Publish game
-  const publishGame = () => {
-    const publishPayload = {
-      ...game,
-      id: `game-${Date.now()}`,
-      status: "published",
-      createdAt: new Date().toISOString(),
-      rating: 4.5,
-      players: 0,
-      views: 0,
-      questions: game.questions.map((q) => ({
-        text: q.text,
-        image: q.image,
-        imageUrl: q.imageUrl,
-        contentType: q.contentType,
-        options: q.options,
-        correct: q.correct,
-        explanation: q.explanation,
-      })),
-    };
-
-    // Save to published games in localStorage
-    const existing = JSON.parse(localStorage.getItem("published_games_v1" || "[]"));
-    existing.unshift(publishPayload);
-    localStorage.setItem("published_games_v1", JSON.stringify(existing));
-    
-    // Clear draft
-    localStorage.removeItem("game_draft_v1");
-    
-    alert(`✅ Game "${game.title}" published successfully!\nIt will appear in the ${game.category} category on GameFinder.`);
-    
-    // Reset form
-    setGame({
-      id: null,
-      title: "",
-      description: "",
-      category: "text",
-      difficulty: "beginner",
-      duration: "15 mins",
-      thumbnail: "📚",
-      maker: "",
-      questions: Array.from({ length: 10 }).map(() => ({
-        contentType: "text",
-        text: "",
-        image: null,
-        imageUrl: "",
-        options: ["", "", "", ""],
-        correct: 0,
-        explanation: "",
-      })),
-      status: "draft",
-      createdAt: new Date().toISOString(),
-    });
   };
 
   // Validation before publish
@@ -205,394 +149,227 @@ export default function CreateTutorialFull() {
     return true;
   };
 
+  // Publish game
+  const publishGame = () => {
+    if (!validateBeforePublish()) {
+      return;
+    }
+
+    const createdDateTime = new Date();
+    const publishPayload = {
+      id: `game-${Date.now()}`,
+      title: game.title,
+      description: game.description,
+      category: game.category,
+      difficulty: game.difficulty,
+      duration: game.duration,
+      thumbnail: game.thumbnail,
+      maker: game.maker,
+      questions: game.questions.map((q) => ({
+        text: q.text,
+        image: q.image,
+        imageUrl: q.imageUrl,
+        contentType: q.contentType,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation,
+      })),
+      status: "published",
+      createdAt: createdDateTime.toISOString(),
+      createdDate: createdDateTime,
+      rating: 4.5,
+      players: 0,
+      views: 0,
+    };
+
+    // Save to published games in localStorage
+    const existing = JSON.parse(localStorage.getItem("published_games_v1") || "[]");
+    existing.unshift(publishPayload);
+    localStorage.setItem("published_games_v1", JSON.stringify(existing));
+    
+    // Clear draft
+    localStorage.removeItem("game_draft_v1");
+    
+    alert(`✅ Game "${game.title}" published successfully!\nIt will appear in the ${game.category} category on GameFinder.`);
+    
+    // Reset form
+    onAuthStateChanged(auth, (user) => {
+      setGame({
+        id: null,
+        title: "",
+        description: "",
+        category: "text",
+        difficulty: "beginner",
+        duration: "15 mins",
+        thumbnail: "📚",
+        maker: user?.displayName || user?.email || "Anonymous Creator",
+        questions: Array.from({ length: 10 }).map(() => ({
+          contentType: "text",
+          text: "",
+          image: null,
+          imageUrl: "",
+          options: ["", "", "", ""],
+          correct: 0,
+          explanation: "",
+        })),
+        status: "draft",
+        createdAt: new Date().toISOString(),
+      });
+    });
+  };
+
   // Render
   return (
     <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", paddingTop: "56px", minHeight: "100vh" }}>
       {/* Sidebar */}
-      <div
-        className="d-flex flex-column p-3"
-        style={{
-          width: collapsed ? "80px" : "250px",
-          backgroundColor: "var(--secondary-color)",
-          borderRight: `2px solid var(--accent-color)`,
-          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
-          transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
-          position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
-          zIndex: 900
-        }}
-      >
+      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button 
-            className="btn btn-sm"
+            className="app-sidebar-toggle"
             onClick={() => setCollapsed(!collapsed)}
-            style={{
-              backgroundColor: "var(--accent-color)",
-              color: "var(--primary-color)",
-              border: "none",
-              borderRadius: "6px"
-            }}
           >
             <FaBars />
           </button>
         </div>
 
         {/* Sidebar Menu */}
-        <ul className="nav flex-column">
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/factcheckerdashboard")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaTachometerAlt className="me-2" />
-                      {!collapsed && "Dashboard"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button 
-                      className={`btn sidebar-btn text-start`}
-                      onClick={() => location.pathname !== "/professional/create-tutorial" && navigate("/professional/create-tutorial")}
-                      disabled={location.pathname === "/professional/create-tutorial"}
-                      style={{
-                        backgroundColor: location.pathname === "/professional/create-tutorial" ? "var(--accent-color)" : "transparent",
-                        color: location.pathname === "/professional/create-tutorial" ? "var(--primary-color)" : "var(--text-color)"
-                      }}
-                      onMouseOver={(e) => {
-                        if (location.pathname !== "/professional/create-tutorial") {
-                          e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                          e.currentTarget.style.color = "var(--primary-color)";
-                        }
-                      }}
-                      onMouseOut={(e) => {
-                        if (location.pathname !== "/professional/create-tutorial") {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                          e.currentTarget.style.color = "var(--text-color)";
-                        }
-                      }}
-                    >
-                      <FaPlusCircle className="me-2" />
-                      {!collapsed && "Create Tutorial"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/manage-tutorial")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaEdit className="me-2" />
-                      {!collapsed && "Manage Tutorial"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/reports")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaChartBar className="me-2" />
-                      {!collapsed && "Organized Reports"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/linked-users")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaUsers className="me-2" />
-                      {!collapsed && "Linked Users"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/user-feedback")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaCommentDots className="me-2" />
-                      {!collapsed && "User Feedback"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/verification-logs")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaClipboardList className="me-2" />
-                      {!collapsed && "Verification Logs"}
-                    </button>
-                  </li>
-        
-                  <li>
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/professional/profile")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaUserCog className="me-2" />
-                      {!collapsed && "Profile"}
-                    </button>
-                  </li>
-        
-                  {/* 🚀 NEW BUTTON: Go Back to Analysis Page */}
-                  <li className="mt-4 border-top pt-2">
-                    <button
-                      className="btn sidebar-btn text-start"
-                      onClick={() => navigate("/analysis")}
-                      style={{
-                        color: "var(--text-color)",
-                        backgroundColor: "transparent"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--text-color)";
-                      }}
-                    >
-                      <FaArrowLeft className="me-2" />
-                      {!collapsed && "Go Back to Analysis Page"}
-                    </button>
-                  </li>
-                </ul>
+        <div className="d-flex flex-column gap-1">
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/factcheckerdashboard")}
+          >
+            <FaTachometerAlt size={20} />
+            <span className="app-sidebar-label">Dashboard</span>
+          </button>
 
-        {!collapsed && <div className="mt-auto small" style={{ color: "var(--text-color)", opacity: 0.7 }}>Verified professionals workspace</div>}
+          <button 
+            className={`app-sidebar-item ${location.pathname === "/professional/create-tutorial" ? 'active' : ''}`}
+            onClick={() => location.pathname !== "/professional/create-tutorial" && navigate("/professional/create-tutorial")}
+            disabled={location.pathname === "/professional/create-tutorial"}
+          >
+            <FaPlusCircle size={20} />
+            <span className="app-sidebar-label">Create Tutorial</span>
+          </button>
+
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/manage-tutorial")}
+          >
+            <FaEdit size={20} />
+            <span className="app-sidebar-label">Manage Tutorial</span>
+          </button>
+
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/reports")}
+          >
+            <FaChartBar size={20} />
+            <span className="app-sidebar-label">Organized Reports</span>
+          </button>
+
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/linked-users")}
+          >
+            <FaUsers size={20} />
+            <span className="app-sidebar-label">Linked Users</span>
+          </button>
+
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/user-feedback")}
+          >
+            <FaCommentDots size={20} />
+            <span className="app-sidebar-label">User Feedback</span>
+          </button>
+
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/verification-logs")}
+          >
+            <FaClipboardList size={20} />
+            <span className="app-sidebar-label">Verification Logs</span>
+          </button>
+
+          {/* Go Back to Analysis Page */}
+          <div style={{ borderTop: "1px solid var(--accent-color)", marginTop: "1rem", paddingTop: "1rem" }}>
+            <button
+              className="app-sidebar-item"
+              onClick={() => navigate("/analysis")}
+            >
+              <FaArrowLeft size={20} />
+              <span className="app-sidebar-label">Go Back to Analysis</span>
+            </button>
+          </div>
+        </div>
+
+        {!collapsed && (
+          <div className="mt-4 small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
+            Verified professionals workspace
+          </div>
+        )}
       </div>
 
-      {/* Main content */}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: collapsed ? "80px" : "250px",
-          transition: "margin-left 0.3s ease",
-          minHeight: "100vh",
-          backgroundColor: "var(--primary-color)",
-          color: "var(--text-color)"
-        }}
-      >
-        {/* Notification Navbar */}
-        <nav
-          className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 1000,
-            backgroundColor: "var(--primary-color)",
-            borderBottom: `1px solid var(--accent-color)`,
-          }}
-        >
-          <div className="dropdown">
-            <i className="bi bi-bell fs-5 text-dark" style={{ cursor: "pointer" }}></i>
-            <ul
-              className="dropdown-menu dropdown-menu-end p-2 shadow-lg"
-              style={{
-                backgroundColor: "#fff",
-                borderRadius: "10px",
-                border: "1px solid #ddd",
-                minWidth: "250px",
-              }}
-            >
-              <li className="fw-bold text-dark px-2">Notifications</li>
-              <li>
-                <hr className="dropdown-divider" />
-              </li>
-              <li>
-                <span className="dropdown-item text-muted">No new notifications</span>
-              </li>
-            </ul>
-          </div>
-        </nav>
-
-        {/* Page Content */}
-<<<<<<< HEAD
-        <div className="container-fluid py-4 px-5" id="create-tutorial" style={{ backgroundColor: "var(--primary-color)" }}>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2 className="fw-bold mb-0" style={{ color: "var(--text-color)" }}>Create Tutorial</h2>
-=======
-        <div className="container-fluid py-4 px-5" id="create-game">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h2 className="fw-bold mb-0">Create Game</h2>
->>>>>>> mywork
+      {/* Main Content */}
+      <div className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
+        <div className="container-fluid">
+          {/* Header */}
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h2 className="fw-bold mb-0" style={{ color: "var(--text-color)" }}>Create Game</h2>
+              <small style={{ color: "var(--text-color)", opacity: 0.7 }}>Build and publish games that will appear in GameFinder</small>
+            </div>
             <div className="d-flex gap-2">
               <button 
                 className="btn"
                 onClick={saveDraft}
                 style={{
-                  backgroundColor: "transparent",
-                  border: `1px solid var(--accent-color)`,
-                  color: "var(--accent-color)"
+                  backgroundColor: "var(--secondary-color)",
+                  color: "var(--accent-color)",
+                  border: `2px solid var(--accent-color)`,
+                  borderRadius: "8px",
+                  fontWeight: "600"
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                  e.currentTarget.style.color = "var(--primary-color)";
+                  e.currentTarget.style.color = "var(--secondary-color)";
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.backgroundColor = "var(--secondary-color)";
                   e.currentTarget.style.color = "var(--accent-color)";
                 }}
               >
                 <FaSave className="me-2" /> Save Draft
               </button>
-              <button
+              <button 
                 className="btn"
-                onClick={() => {
-                  if (validateBeforePublish()) publishGame();
-                }}
+                onClick={publishGame}
                 style={{
                   backgroundColor: "var(--accent-color)",
-                  color: "var(--primary-color)",
-                  border: `1px solid var(--accent-color)`
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontWeight: "600"
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.backgroundColor = "var(--primary-color)";
                   e.currentTarget.style.color = "var(--accent-color)";
+                  e.currentTarget.style.border = `2px solid var(--accent-color)`;
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                  e.currentTarget.style.color = "var(--primary-color)";
+                  e.currentTarget.style.color = "white";
+                  e.currentTarget.style.border = "none";
                 }}
               >
-                Publish Game
+                <FaCloudUploadAlt className="me-2" /> Publish Game
               </button>
             </div>
           </div>
 
-<<<<<<< HEAD
-          {/* Tutorial info card */}
-          <div 
-            className="card shadow-sm p-4 mb-4"
-            style={{
-              backgroundColor: "var(--secondary-color)",
-              border: `2px solid var(--accent-color)`,
-              color: "var(--text-color)"
-            }}
-          >
-            <h5 className="fw-semibold mb-3">Tutorial Information</h5>
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label">Title</label>
-                <input 
-                  className="form-control" 
-                  value={tutorial.title} 
-                  onChange={(e) => setTutorial({ ...tutorial, title: e.target.value })}
-                  style={{
-                    backgroundColor: "var(--primary-color)",
-                    borderColor: "var(--accent-color)",
-                    color: "var(--text-color)"
-                  }}
-                />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">Category</label>
-                <select 
-                  className="form-select" 
-                  value={tutorial.category} 
-                  onChange={(e) => setTutorial({ ...tutorial, category: e.target.value })}
-                  style={{
-                    backgroundColor: "var(--primary-color)",
-                    borderColor: "var(--accent-color)",
-                    color: "var(--text-color)"
-                  }}
-                >
-                  <option value="text">Text Classification</option>
-                  <option value="image">Image Classification</option>
-                  <option value="mixed">Mixed</option>
-=======
           {/* Game info card */}
-          <div className="card shadow-sm p-4 mb-4" style={{ borderLeft: "4px solid var(--primary-color)" }}>
-            <h5 className="fw-semibold mb-3">Game Information</h5>
+          <div className="app-card">
+            <h5 className="fw-semibold mb-3" style={{ color: "var(--accent-color)" }}>Game Information</h5>
             <div className="row g-3">
               <div className="col-md-6">
                 <label className="form-label fw-semibold">Game Title</label>
@@ -601,6 +378,11 @@ export default function CreateTutorialFull() {
                   value={game.title} 
                   onChange={(e) => setGame({ ...game, title: e.target.value })}
                   placeholder="e.g., Real vs Fake Images Challenge"
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 />
               </div>
 
@@ -610,6 +392,11 @@ export default function CreateTutorialFull() {
                   className="form-select" 
                   value={game.category} 
                   onChange={(e) => setGame({ ...game, category: e.target.value })}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 >
                   {GAME_CATEGORIES.map((cat) => (
                     <option key={cat.id} value={cat.id}>
@@ -625,30 +412,21 @@ export default function CreateTutorialFull() {
                   className="form-select" 
                   value={game.difficulty} 
                   onChange={(e) => setGame({ ...game, difficulty: e.target.value })}
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 >
                   {DIFFICULTY_LEVELS.map((level) => (
                     <option key={level} value={level}>
                       {level.charAt(0).toUpperCase() + level.slice(1)}
                     </option>
                   ))}
->>>>>>> mywork
                 </select>
               </div>
 
               <div className="col-12">
-<<<<<<< HEAD
-                <label className="form-label">Description</label>
-                <textarea 
-                  className="form-control" 
-                  rows={3} 
-                  value={tutorial.description} 
-                  onChange={(e) => setTutorial({ ...tutorial, description: e.target.value })}
-                  style={{
-                    backgroundColor: "var(--primary-color)",
-                    borderColor: "var(--accent-color)",
-                    color: "var(--text-color)"
-                  }}
-=======
                 <label className="form-label fw-semibold">Game Description</label>
                 <textarea 
                   className="form-control" 
@@ -656,6 +434,11 @@ export default function CreateTutorialFull() {
                   value={game.description} 
                   onChange={(e) => setGame({ ...game, description: e.target.value })}
                   placeholder="Describe the educational objective and gameplay..."
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 />
               </div>
 
@@ -667,47 +450,25 @@ export default function CreateTutorialFull() {
                   min="1"
                   value={game.duration.replace(' mins', '') || "15"} 
                   onChange={(e) => setGame({ ...game, duration: `${e.target.value} mins` })}
->>>>>>> mywork
+                  style={{
+                    backgroundColor: "var(--primary-color)",
+                    borderColor: "var(--accent-color)",
+                    color: "var(--text-color)"
+                  }}
                 />
               </div>
             </div>
           </div>
 
           {/* Questions */}
-<<<<<<< HEAD
-          <div 
-            className="card shadow-sm p-4 mb-4"
-            style={{
-              backgroundColor: "var(--secondary-color)",
-              border: `2px solid var(--accent-color)`,
-              color: "var(--text-color)"
-            }}
-          >
-            <h5 className="fw-semibold mb-3">Questions (10)</h5>
-
-            {tutorial.questions.map((q, i) => (
-              <div 
-                key={i} 
-                className="mb-4 p-3 rounded"
-                style={{
-                  backgroundColor: "var(--primary-color)",
-                  border: `1px solid var(--accent-color)`,
-                  borderRadius: "6px"
-                }}
-              >
-                <div className="d-flex justify-content-between align-items-start">
-                  <div>
-                    <h6 className="mb-0">Item {i + 1}</h6>
-                    <small style={{ opacity: 0.7 }}>Select content below or paste/upload</small>
-=======
-          <div className="card shadow-sm p-4 mb-4">
-            <h5 className="fw-semibold mb-3">Questions ({game.questions.length})</h5>
+          <div className="app-card">
+            <h5 className="fw-semibold mb-3" style={{ color: "var(--accent-color)" }}>Questions ({game.questions.length})</h5>
             <p className="text-muted mb-4">Create multiple-choice questions for your game. Each question needs 4 options with one correct answer.</p>
 
             {game.questions.map((q, i) => (
-              <div key={i} className="mb-4 p-3 border rounded" style={{ backgroundColor: "var(--secondary-color)", borderLeft: "4px solid var(--accent-color)" }}>
+              <div key={i} className="mb-4 p-3 border rounded" style={{ backgroundColor: "var(--primary-color)", borderLeft: "4px solid var(--accent-color)" }}>
                 <div className="d-flex justify-content-between align-items-start mb-3">
-                  <h6 className="mb-0">Question {i + 1}</h6>
+                  <h6 className="mb-0" style={{ color: "var(--text-color)" }}>Question {i + 1}</h6>
                   {q.text && <span className="badge bg-success">Complete</span>}
                 </div>
 
@@ -724,6 +485,11 @@ export default function CreateTutorialFull() {
                       setGame({ ...game, questions: newQs });
                     }}
                     placeholder="Write your question here..."
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      borderColor: "var(--accent-color)",
+                      color: "var(--text-color)"
+                    }}
                   />
                 </div>
 
@@ -760,44 +526,9 @@ export default function CreateTutorialFull() {
                       }}
                     />
                     <label className="btn btn-outline-primary" htmlFor={`image-${i}`}>With Image</label>
->>>>>>> mywork
                   </div>
                 </div>
 
-<<<<<<< HEAD
-                  <div className="d-flex gap-2">
-                    <button 
-                      className="btn btn-sm"
-                      onClick={() => setModalOpenIndex(i)}
-                      style={{
-                        backgroundColor: "transparent",
-                        border: `1px solid var(--accent-color)`,
-                        color: "var(--accent-color)"
-                      }}
-                      onMouseOver={(e) => {
-                        e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                        e.currentTarget.style.color = "var(--primary-color)";
-                      }}
-                      onMouseOut={(e) => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = "var(--accent-color)";
-                      }}
-                    >
-                      <FaCloudUploadAlt className="me-1" /> Select Content
-                    </button>
-                    {q.imageUrl && (
-                      <button 
-                        className="btn btn-sm"
-                        onClick={() => clearImageUrlObject(i)}
-                        style={{
-                          backgroundColor: "#dc3545",
-                          color: "white",
-                          border: "1px solid #dc3545"
-                        }}
-                      >
-                        Remove Image
-                      </button>
-=======
                 {/* Image upload for image-based questions */}
                 {q.contentType === "image" && (
                   <div className="mb-3">
@@ -807,6 +538,11 @@ export default function CreateTutorialFull() {
                       className="form-control"
                       accept="image/*"
                       onChange={(e) => handleImageUpload(i, e)}
+                      style={{
+                        backgroundColor: "var(--secondary-color)",
+                        borderColor: "var(--accent-color)",
+                        color: "var(--text-color)"
+                      }}
                     />
                     {q.imageUrl && (
                       <div className="mt-2">
@@ -822,7 +558,6 @@ export default function CreateTutorialFull() {
                           Remove
                         </button>
                       </div>
->>>>>>> mywork
                     )}
                   </div>
                 )}
@@ -863,6 +598,11 @@ export default function CreateTutorialFull() {
                               setGame({ ...game, questions: newQs });
                             }}
                             placeholder={`Enter option ${optIdx + 1}`}
+                            style={{
+                              backgroundColor: "var(--secondary-color)",
+                              borderColor: "var(--accent-color)",
+                              color: "var(--text-color)"
+                            }}
                           />
                         </div>
                       </div>
@@ -870,42 +610,6 @@ export default function CreateTutorialFull() {
                   </div>
                 </div>
 
-<<<<<<< HEAD
-                {/* Preview */}
-                <div 
-                  className="mt-3 border p-3 rounded"
-                  style={{
-                    backgroundColor: "var(--secondary-color)",
-                    borderColor: "var(--accent-color)"
-                  }}
-                >
-                  <p className="small text-muted mb-2">Preview</p>
-
-                  {/* text preview */}
-                  {q.contentType === "text" && q.text && <div className="text-dark">{q.text}</div>}
-                  {/* image preview */}
-                  {q.imageUrl && (
-                    <img src={q.imageUrl} alt={`preview-${i}`} style={{ maxWidth: "100%", borderRadius: 8 }} />
-                  )}
-
-                  {!q.text && !q.imageUrl && <div className="text-muted">No content selected yet.</div>}
-                </div>
-
-                {/* Correct answer */}
-                <div className="row mt-3 g-3">
-                  <div className="col-md-4">
-                    <label className="form-label">Correct Answer</label>
-                    <select className="form-select" value={q.answer} onChange={(e) => updateQuestionField(i, "answer", e.target.value)}>
-                      <option value="human">Human-made</option>
-                      <option value="ai">AI-generated</option>
-                    </select>
-                  </div>
-
-                  <div className="col-md-8">
-                    <label className="form-label">Explanation (shown after answering)</label>
-                    <input className="form-control" value={q.explanation} onChange={(e) => updateQuestionField(i, "explanation", e.target.value)} placeholder="Short explanation to teach users" />
-                  </div>
-=======
                 {/* Explanation */}
                 <div>
                   <label className="form-label fw-semibold">Explanation (shown after answer)</label>
@@ -919,8 +623,12 @@ export default function CreateTutorialFull() {
                       setGame({ ...game, questions: newQs });
                     }}
                     placeholder="Explain the correct answer to help players learn..."
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      borderColor: "var(--accent-color)",
+                      color: "var(--text-color)"
+                    }}
                   />
->>>>>>> mywork
                 </div>
               </div>
             ))}
@@ -930,39 +638,30 @@ export default function CreateTutorialFull() {
           <div className="d-flex justify-content-between align-items-center">
             <div className="text-muted small">💡 Tip: Create clear questions with 4 distinct options for the best player experience.</div>
             <div className="d-flex gap-2">
-              <button className="btn btn-outline-secondary" onClick={saveDraft}>
-                <FaSave className="me-1" /> Save Draft
-              </button>
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  if (validateBeforePublish()) publishGame();
+              <button 
+                className="btn btn-outline-secondary"
+                onClick={saveDraft}
+                style={{
+                  borderColor: "var(--accent-color)",
+                  color: "var(--accent-color)"
                 }}
               >
-                Publish Game
+                <FaSave className="me-2" /> Save Draft
+              </button>
+              <button 
+                className="btn"
+                onClick={publishGame}
+                style={{
+                  backgroundColor: "var(--accent-color)",
+                  color: "white"
+                }}
+              >
+                <FaCloudUploadAlt className="me-2" /> Publish
               </button>
             </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        .sidebar-btn {
-          background: none;
-          border: none;
-          color: #000;
-          padding: 10px 12px;
-          border-radius: 5px;
-          width: 100%;
-          text-align: left;
-          transition: all 0.2s ease-in-out;
-          font-weight: 500;
-        }
-        .sidebar-btn:hover {
-          background-color: #000;
-          color: #fff;
-        }
-      `}</style>
     </div>
   );
 }

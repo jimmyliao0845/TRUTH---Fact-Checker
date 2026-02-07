@@ -18,7 +18,7 @@ import ManageTutorial from "./ManageTutorial";
 import VerificationLogsPage from "./VerificationLogsPage";
 import UserFeedbackPage from "./UserFeedbackpage(Professional)";
 import ProfessionalReportsPage from "./ProfessionalReportsPage";
-import ProfessionalProfile from "./ProfessionalProfile";
+import UserProfile from "./UserProfile";
 import LinkedUser from "./LinkedUser";
 
 // ✅ Admin Pages
@@ -32,7 +32,7 @@ import Marketplace from "./ColorManager/Marketplace";
 import { ColorThemeManager } from "./ColorManager/Marketplace";
 
 // ✅ General User Pages
-import GeneralUserProfile from "./GeneralUserProfile";
+
 import GamePage from "./GamePage";
 import FeedbackPage from "./FeedbackPage";
 
@@ -106,8 +106,10 @@ function AppContent() {
         <Route path="/professional/verification-logs" element={<VerificationLogsPage />} />
         <Route path="/professional/user-feedback" element={<UserFeedbackPage />} />
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
-        <Route path="/professional/profile" element={<ProfessionalProfile />} />
-        <Route path="/professional/linked-users" element={<LinkedUser />} />  
+        <Route path="/professional/profile" element={<UserProfile />} />
+        <Route path="/professional/linked-users" element={<LinkedUser />} />
+        <Route path="/general-user-profile" element={<UserProfile />} />
+        <Route path="/user/profile" element={<UserProfile />} />
 
         {/* Settings - Marketplace & Theme Manager */}
         <Route
@@ -126,7 +128,6 @@ function AppContent() {
         <Route path="/admin/reviews" element={<AdminReviewsPage />} />
 
         {/* ✅ General User Pages */}
-        <Route path="/general-user-profile" element={<GeneralUserProfile />} />
         <Route path="/game" element={<GamePage />} />
         <Route path="/general/feedback" element={<FeedbackPage />} />
       </Routes>

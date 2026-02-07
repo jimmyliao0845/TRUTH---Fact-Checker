@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import "./styles.css";
 
 export default function AdminReviewsPage() {
   const [filter, setFilter] = useState("MP");

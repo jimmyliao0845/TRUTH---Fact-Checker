@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
 import {
   FaBars,
   FaTachometerAlt,
@@ -226,133 +227,85 @@ export default function FactCheckerDashboard() {
       }}
     >
       {/* SIDEBAR */}
-      <div
-        className="d-flex flex-column p-3 border-end"
-        style={{
-          width: collapsed ? "80px" : "250px",
-          backgroundColor: "var(--secondary-color)",
-          transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
-          position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
-          zIndex: 900,
-          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
-          borderRight: `2px solid var(--accent-color)`
-        }}
-      >
+      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''}`}>
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
-            className="btn btn-sm"
+            className="app-sidebar-toggle"
             onClick={() => setCollapsed(!collapsed)}
-            style={{ 
-              border: "none",
-              backgroundColor: "var(--accent-color)",
-              color: "var(--primary-color)",
-              padding: "6px 10px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
           >
             <FaBars />
           </button>
         </div>
 
         {/* Sidebar Menu */}
-        <ul className="nav flex-column">
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${location.pathname === "/factcheckerdashboard" ? "active" : ""}`}
-              onClick={() => location.pathname !== "/factcheckerdashboard" && scrollToSection("dashboard")}
-              disabled={location.pathname === "/factcheckerdashboard"}
-            >
-              <FaTachometerAlt className="me-2" />
-              {!collapsed && "Dashboard"}
-            </button>
-          </li>
+        <div className="d-flex flex-column gap-1">
+          <button
+            className={`app-sidebar-item ${location.pathname === "/factcheckerdashboard" ? 'active' : ''}`}
+            onClick={() => location.pathname !== "/factcheckerdashboard" && scrollToSection("dashboard")}
+            disabled={location.pathname === "/factcheckerdashboard"}
+          >
+            <FaTachometerAlt size={20} />
+            <span className="app-sidebar-label">Dashboard</span>
+          </button>
 
-          <li>
-            <button 
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/create-tutorial")}
-            >
-              <FaPlusCircle className="me-2" />
-              {!collapsed && "Create Tutorial"}
-            </button>
-          </li>
+          <button 
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/create-tutorial")}
+          >
+            <FaPlusCircle size={20} />
+            <span className="app-sidebar-label">Create Tutorial</span>
+          </button>
 
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("manage-tutorial")} 
-            >
-              <FaEdit className="me-2" />
-              {!collapsed && "Manage Tutorial"}
-            </button>
-          </li>
+          <button
+            className="app-sidebar-item"
+            onClick={() => scrollToSection("manage-tutorial")} 
+          >
+            <FaEdit size={20} />
+            <span className="app-sidebar-label">Manage Tutorial</span>
+          </button>
 
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/reports")}
-            >
-              <FaChartBar className="me-2" />
-              {!collapsed && "Organized Reports"}
-            </button>
-          </li>
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/reports")}
+          >
+            <FaChartBar size={20} />
+            <span className="app-sidebar-label">Organized Reports</span>
+          </button>
 
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => scrollToSection("linked-users")}
-            >
-              <FaUsers className="me-2" />
-              {!collapsed && "Linked Users"}
-            </button>
-          </li>
+          <button
+            className="app-sidebar-item"
+            onClick={() => scrollToSection("linked-users")}
+          >
+            <FaUsers size={20} />
+            <span className="app-sidebar-label">Linked Users</span>
+          </button>
 
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/user-feedback")}
-            >
-              <FaCommentDots className="me-2" />
-              {!collapsed && "User Feedback"}
-            </button>
-          </li>
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/user-feedback")}
+          >
+            <FaCommentDots size={20} />
+            <span className="app-sidebar-label">User Feedback</span>
+          </button>
 
-          <li>
-            <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/verification-logs")}
-            >
-              <FaClipboardList className="me-2" />
-              {!collapsed && "Verification Logs"}
-            </button>
-          </li>
+          <button
+            className="app-sidebar-item"
+            onClick={() => navigate("/professional/verification-logs")}
+          >
+            <FaClipboardList size={20} />
+            <span className="app-sidebar-label">Verification Logs</span>
+          </button>
 
-          <li>
+          <div style={{ borderTop: "1px solid var(--accent-color)", marginTop: "1rem", paddingTop: "1rem" }}>
             <button
-              className="btn sidebar-btn text-start"
-              onClick={() => navigate("/professional/profile")}
-            >
-              <FaUserCog className="me-2" />
-              {!collapsed && "Profile"}
-            </button>
-          </li>
-
-          {/* 🚀 NEW BUTTON: Go Back to Analysis Page (Updated: Removed text-danger) */}
-          <li className="mt-4 border-top pt-2">
-            <button
-              className="btn sidebar-btn text-start"
+              className="app-sidebar-item"
               onClick={() => navigate("/analysis")}
             >
-              <FaArrowLeft className="me-2" />
-              {!collapsed && "Go Back to Analysis Page"}
+              <FaArrowLeft size={20} />
+              <span className="app-sidebar-label">Go Back to Analysis</span>
             </button>
-          </li>
-        </ul>
+          </div>
+        </div>
 
         {!collapsed && (
           <div className="mt-auto small" style={{ opacity: 0.7, color: "var(--text-color)" }}>
@@ -362,15 +315,7 @@ export default function FactCheckerDashboard() {
       </div>
 
       {/* Main Content */}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: collapsed ? "80px" : "250px",
-          transition: "margin-left 0.3s ease",
-          minHeight: "100vh",
-          backgroundColor: "var(--primary-color)"
-        }}
-      >
+      <div className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
         {/* Navbar - THEME AWARE */}
         <nav
           className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"

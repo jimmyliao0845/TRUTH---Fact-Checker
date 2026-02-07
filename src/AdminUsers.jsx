@@ -3,6 +3,7 @@ import { auth, db } from "./firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import "./styles.css";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);

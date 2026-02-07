@@ -13,15 +13,11 @@ import {
   FaStar,
   FaBriefcase,
 } from "react-icons/fa";
-<<<<<<< HEAD
-=======
 import "./styles.css";
-import "./analysis.css";
 import GameFinder from "./GameFinder";
 import GameScreen from "./GameScreen";
 import GameResult from "./GameResult";
 import GamesList from "./GamesList";
->>>>>>> mywork
 
 export default function GamePage() {
   const navigate = useNavigate();

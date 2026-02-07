@@ -132,6 +132,26 @@ export default function Navbar() {
               >
                 <li>
                   <Link
+                    to="/user/profile"
+                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      transition: "all 0.3s ease"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "#ffffff";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
+                      e.currentTarget.style.color = "var(--text-color)";
+                    }}
+                  >
+                    <i className="bi bi-person me-2"></i> Profile
+                  </Link>
+                  <Link
                     to="/settings"
                     className="btn btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
                     style={{

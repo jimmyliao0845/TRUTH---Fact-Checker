@@ -12,6 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { auth, db } from "./firebase";
 import { collection, getDocs, getDoc, updateDoc, doc, query, orderBy } from "firebase/firestore";
