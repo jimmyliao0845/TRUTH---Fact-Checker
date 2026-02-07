@@ -127,7 +127,7 @@ function AppContent() {
 
         {/* ✅ General User Pages */}
         <Route path="/general-user-profile" element={<GeneralUserProfile />} />
-        <Route path="/game-page" element={<GamePage />} />
+        <Route path="/game" element={<GamePage />} />
         <Route path="/general/feedback" element={<FeedbackPage />} />
       </Routes>
     </>

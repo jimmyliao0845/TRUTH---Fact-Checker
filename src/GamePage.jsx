@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -7,23 +7,32 @@ import {
   FaBars,
   FaPlay,
   FaTrophy,
-  FaStar,
   FaArrowLeft,
   FaSearch,
   FaClock,
+  FaStar,
+  FaBriefcase,
 } from "react-icons/fa";
-import "./FactCheckerDashboard.css";
+import "./styles.css";
+import "./analysis.css";
+import GameFinder from "./GameFinder";
+import GameScreen from "./GameScreen";
+import GameResult from "./GameResult";
+import GamesList from "./GamesList";
 
 export default function GamePage() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
   const [gameInProgress, setGameInProgress] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterLevel, setFilterLevel] = useState("all");
+  const [showGameFinder, setShowGameFinder] = useState(false);
+  const [gameCompleted, setGameCompleted] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [pointsEarned, setPointsEarned] = useState(0);
+  const [gamesPlayedToday, setGamesPlayedToday] = useState(0);
+  const [timingData, setTimingData] = useState(null);
 
   // Auth check
   useEffect(() => {
@@ -33,498 +42,395 @@ export default function GamePage() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Available games
-  const [games] = useState([
-    {
-      id: 1,
-      title: "Real vs Fake Images",
-      description: "Identify AI-generated images from real photographs",
-      difficulty: "beginner",
-      duration: "10 mins",
-      questions: 10,
-      rating: 4.8,
-      players: 1250,
-      thumbnail: "🖼️",
-      questions: [
-        {
-          id: 1,
-          image: "https://via.placeholder.com/400x300?text=Image+1",
-          options: ["AI-Generated", "Real Photo"],
-          correct: 0,
-        },
-        {
-          id: 2,
-          image: "https://via.placeholder.com/400x300?text=Image+2",
-          options: ["AI-Generated", "Real Photo"],
-          correct: 1,
-        },
-      ],
-    },
-    {
-      id: 2,
-      title: "Truth or Misinformation",
-      description: "Identify misleading or false information in text",
-      difficulty: "intermediate",
-      duration: "15 mins",
-      questions: 15,
-      rating: 4.6,
-      players: 890,
-      thumbnail: "📰",
-      questions: [
-        {
-          id: 1,
-          text: "The Earth is flat.",
-          options: ["True", "False"],
-          correct: 1,
-        },
-        {
-          id: 2,
-          text: "Vaccines are safe and effective.",
-          options: ["True", "False"],
-          correct: 0,
-        },
-      ],
-    },
-    {
-      id: 3,
-      title: "Media Forensics 101",
-      description: "Learn techniques for identifying manipulated media",
-      difficulty: "advanced",
-      duration: "20 mins",
-      questions: 20,
-      rating: 4.9,
-      players: 650,
-      thumbnail: "🔍",
-      questions: [
-        {
-          id: 1,
-          text: "What is digital watermarking?",
-          options: [
-            "A visible logo on images",
-            "Hidden information embedded in digital media",
-            "A physical mark on paper",
-            "None of the above",
-          ],
-          correct: 1,
-        },
-      ],
-    },
-    {
-      id: 4,
-      title: "Deepfake Detection",
-      description: "Spot deepfakes and manipulated videos",
-      difficulty: "advanced",
-      duration: "25 mins",
-      questions: 12,
-      rating: 4.7,
-      players: 520,
-      thumbnail: "🎬",
-      questions: [
-        {
-          id: 1,
-          text: "Deepfakes are typically identified by examining eye movements. True or False?",
-          options: ["True", "False"],
-          correct: 0,
-        },
-      ],
-    },
-  ]);
+  // Load daily games count from localStorage
+  useEffect(() => {
+    const today = new Date().toDateString();
+    const lastDate = localStorage.getItem("lastGamePlayDate");
+    const count = localStorage.getItem("gamesPlayedToday");
 
-  // Filter games
-  const filteredGames = games.filter((game) => {
-    const matchesSearch = game.title
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesFilter =
-      filterLevel === "all" || game.difficulty === filterLevel;
-    return matchesSearch && matchesFilter;
-  });
+    // Reset if it's a new day
+    if (lastDate !== today) {
+      localStorage.setItem("lastGamePlayDate", today);
+      localStorage.setItem("gamesPlayedToday", "0");
+      setGamesPlayedToday(0);
+    } else {
+      setGamesPlayedToday(parseInt(count || "0"));
+    }
+  }, []);
 
   // Start game
   const handleStartGame = (game) => {
+    // Check daily limit
+    if (gamesPlayedToday >= 5) {
+      alert("❌ You've reached your 5-game daily limit! Come back tomorrow to play more.");
+      return;
+    }
+
     setSelectedGame(game);
     setCurrentQuestion(0);
     setScore(0);
     setGameInProgress(true);
+    setGameCompleted(false);
+    setPointsEarned(0);
+    setTimingData(null);
   };
 
-  // Answer question
-  const handleAnswerQuestion = (selectedOption) => {
+  // Answer question with timing data
+  const handleAnswerQuestion = (selectedOption, timing) => {
     const question = selectedGame.questions[currentQuestion];
-    if (selectedOption === question.correct) {
+    const isCorrect = selectedOption === question.correct;
+    
+    if (isCorrect) {
       setScore(score + 1);
+    }
+
+    // Store timing data for final points calculation
+    if (timing) {
+      setTimingData(timing);
     }
 
     if (currentQuestion < selectedGame.questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
-      // Game finished
-      handleGameFinish();
+      // Game finished - calculate total points
+      calculateGamePoints(score + (isCorrect ? 1 : 0), timing);
+      setGameInProgress(false);
+      setGameCompleted(true);
     }
   };
 
-  // Finish game
-  const handleGameFinish = () => {
-    setGameInProgress(false);
+  // Calculate game points based on difficulty, correct answers, and time
+  const calculateGamePoints = (finalScore, finalTiming) => {
+    const difficulty = selectedGame.difficulty;
+    const totalQuestions = selectedGame.questions.length;
+    
+    // Difficulty multiplier: easy=1, medium=3, hard=5
+    const difficultyMultiplier = difficulty === "beginner" ? 1 : difficulty === "intermediate" ? 3 : 5;
+    
+    // Correct answers ratio (0-1)
+    const correctRatio = finalScore / totalQuestions;
+    
+    // Time bonus (0-1, based on if they finished before time ran out)
+    const timeBonus = finalTiming?.timeBonus || 0.5;
+    
+    // Points formula: (100 to 1000 based on difficulty and performance)
+    // Min = 200, Max = 1000
+    const basePoints = 200 + (correctRatio * 600) + (timeBonus * 200) + (difficultyMultiplier * 100);
+    const finalPoints = Math.min(Math.max(Math.round(basePoints), 200), 1000);
+    
+    setPointsEarned(finalPoints);
+    
+    // Update daily games count and total points
+    const newCount = gamesPlayedToday + 1;
+    localStorage.setItem("gamesPlayedToday", newCount.toString());
+    setGamesPlayedToday(newCount);
   };
 
-  // Calculate accuracy
-  const accuracy = selectedGame
-    ? ((score / selectedGame.questions.length) * 100).toFixed(1)
-    : 0;
+  // Play again
+  const handlePlayAgain = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setGameInProgress(true);
+    setGameCompleted(false);
+  };
 
+  // If showing game finder with category, show without sidebar
+  if (showGameFinder && selectedCategory) {
+    return (
+      <GameFinder
+        category={selectedCategory}
+        onSelectGame={handleStartGame}
+        onBack={() => {
+          setShowGameFinder(false);
+          setSelectedCategory(null);
+        }}
+      />
+    );
+  }
+
+  // If game is in progress or completed, show without sidebar
+  if (gameInProgress || gameCompleted) {
+    return (
+      <div style={{ paddingTop: "56px", backgroundColor: "var(--primary-color)", minHeight: "100vh", color: "var(--text-color)" }}>
+        <div
+          className="flex-grow-1 d-flex flex-column"
+          style={{
+            minHeight: "calc(100vh - 56px)",
+            padding: "2rem",
+            backgroundColor: "var(--primary-color)",
+            color: "var(--text-color)"
+          }}
+        >
+          {gameInProgress && (
+            <GameScreen
+              selectedGame={selectedGame}
+              currentQuestion={currentQuestion}
+              onAnswerQuestion={handleAnswerQuestion}
+            />
+          )}
+
+          {gameCompleted && (
+            <GameResult
+              selectedGame={selectedGame}
+              score={score}
+              pointsEarned={pointsEarned}
+              totalQuestions={selectedGame.questions.length}
+              gamesPlayedToday={gamesPlayedToday}
+              onPlayAgain={handlePlayAgain}
+              onReturnHome={() => {
+                setGameCompleted(false);
+                setSelectedGame(null);
+                setShowGameFinder(false);
+                setSelectedCategory(null);
+              }}
+            />
+          )}
+        </div>
+
+        <style>
+          {`
+            @keyframes fadeIn {
+              from {
+                opacity: 0;
+              }
+              to {
+                opacity: 1;
+              }
+            }
+          `}
+        </style>
+      </div>
+    );
+  }
+
+  // If showing game finder, show without sidebar
+  if (showGameFinder) {
+    return (
+      <GameFinder
+        onSelectGame={handleStartGame}
+        onBack={() => setShowGameFinder(false)}
+      />
+    );
+  }
+
+  // Main game selection page with sidebar
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
-      {/* SIDEBAR */}
-      <div
+    <div className="d-flex" style={{ paddingTop: "56px", backgroundColor: "var(--primary-color)", minHeight: "100vh", color: "var(--text-color)" }}>
+      {/* Sidebar */}
+      <div 
         className="d-flex flex-column p-3 border-end"
         style={{
-          width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          width: collapsed ? "80px" : "200px",
+          backgroundColor: "var(--secondary-color)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",
           top: "56px",
           left: 0,
           overflowY: "auto",
-          zIndex: 900,
+          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+          borderRight: `2px solid var(--accent-color)`
         }}
       >
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
-            className="btn btn-outline-dark btn-sm"
+            className="btn btn-sm"
             onClick={() => setCollapsed(!collapsed)}
-            style={{ border: "none" }}
+            style={{ 
+              border: "none",
+              backgroundColor: "var(--accent-color)",
+              color: "var(--primary-color)",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}
           >
             <FaBars />
           </button>
         </div>
-
-        <ul className="nav flex-column">
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${location.pathname === "/game-page" ? "active" : ""}`}
-              onClick={() => location.pathname !== "/game-page" && setSelectedGame(null)}
-              disabled={location.pathname === "/game-page"}
-            >
-              <FaPlay className="me-2" />
-              {!collapsed && "Games"}
-            </button>
-          </li>
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${location.pathname === "/general-user-profile" ? "active" : ""}`}
-              onClick={() => navigate("/general-user-profile")}
-              disabled={location.pathname === "/general-user-profile"}
-            >
-              <FaTrophy className="me-2" />
-              {!collapsed && "My Stats"}
-            </button>
-          </li>
-          <li className="mt-4 border-top pt-2">
-            <button
-              className={`btn sidebar-btn text-start ${location.pathname === "/analysis-logged" ? "active" : ""}`}
-              onClick={() => navigate("/analysis-logged")}
-              disabled={location.pathname === "/analysis-logged"}
-            >
-              <FaArrowLeft className="me-2" />
-              {!collapsed && "Back to Analysis"}
-            </button>
-          </li>
-        </ul>
-
+        
         {!collapsed && (
-          <div className="mt-auto small text-muted">
-            Learning Games Portal
+          <div className="white-box p-3 mt-3">
+            <div style={{ fontSize: "0.85rem", opacity: 0.8 }}>🎮 Games Hub</div>
+            <div style={{ fontSize: "0.75rem", marginTop: "8px", opacity: 0.6 }}>Learn by playing interactive games</div>
           </div>
         )}
-      </div>
+        
+        {/* Action Buttons */}
+        <div className="d-flex flex-column gap-3 mt-4">
+          <button 
+            className="btn btn-link text-decoration-none d-flex align-items-center p-2"
+            onClick={() => navigate("/analysis-logged")}
+            style={{ 
+              transition: "all 0.2s",
+              color: "var(--text-color)",
+              borderRadius: "6px",
+              fontSize: "0.95rem",
+              fontWeight: "500"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+              e.currentTarget.style.color = "var(--primary-color)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--text-color)";
+            }}
+          >
+            <FaArrowLeft size={18} />
+            {!collapsed && <span className="ms-3">Back to Analysis</span>}
+          </button>
 
-      {/* MAIN CONTENT */}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: collapsed ? "80px" : "250px",
-          transition: "margin-left 0.3s ease",
-          minHeight: "100vh",
-        }}
-      >
-        {/* NAVBAR */}
-        <nav
-          className="navbar navbar-light bg-light d-flex justify-content-between align-items-center px-4 py-2 shadow-sm"
-          style={{
-            position: "sticky",
-            top: 0,
-            zIndex: 1000,
-            borderBottom: "1px solid #ddd",
-          }}
-        >
-          <h5 className="mb-0">
-            {gameInProgress ? "Game in Progress" : "Learning Games"}
-          </h5>
-          {!gameInProgress && (
-            <div style={{ width: 300 }}>
-              <div className="input-group">
-                <span className="input-group-text bg-white">
-                  <FaSearch />
-                </span>
-                <input
-                  className="form-control"
-                  placeholder="Search games..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
-          )}
-        </nav>
+          <button 
+            className="btn btn-link text-decoration-none d-flex align-items-center p-2"
+            onClick={() => navigate("/general-user-profile")}
+            style={{ 
+              color: "var(--text-color)",
+              borderRadius: "6px",
+              fontSize: "0.95rem",
+              fontWeight: "500"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+              e.currentTarget.style.color = "var(--primary-color)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--text-color)";
+            }}
+          >
+            <FaTrophy size={18} />
+            {!collapsed && <span className="ms-3">My Stats</span>}
+          </button>
 
-        {/* CONTENT */}
-        <div className="p-4">
-          {!gameInProgress ? (
-            <div className="container-fluid">
-              {/* Filters */}
-              <div className="mb-4">
-                <div className="btn-group" role="group">
-                  <button
-                    type="button"
-                    className={`btn ${
-                      filterLevel === "all"
-                        ? "btn-primary"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => setFilterLevel("all")}
-                  >
-                    All Levels
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn ${
-                      filterLevel === "beginner"
-                        ? "btn-primary"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => setFilterLevel("beginner")}
-                  >
-                    Beginner
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn ${
-                      filterLevel === "intermediate"
-                        ? "btn-primary"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => setFilterLevel("intermediate")}
-                  >
-                    Intermediate
-                  </button>
-                  <button
-                    type="button"
-                    className={`btn ${
-                      filterLevel === "advanced"
-                        ? "btn-primary"
-                        : "btn-outline-primary"
-                    }`}
-                    onClick={() => setFilterLevel("advanced")}
-                  >
-                    Advanced
-                  </button>
-                </div>
-              </div>
-
-              {/* Games Grid */}
-              <div className="row">
-                {filteredGames.map((game) => (
-                  <div key={game.id} className="col-md-6 col-lg-4 mb-4">
-                    <div className="card shadow-sm h-100">
-                      <div
-                        className="card-body d-flex flex-column"
-                        style={{
-                          backgroundColor:
-                            game.difficulty === "beginner"
-                              ? "#e7f3ff"
-                              : game.difficulty === "intermediate"
-                              ? "#fff3cd"
-                              : "#f8d7da",
-                        }}
-                      >
-                        <div style={{ fontSize: "48px" }} className="mb-3">
-                          {game.thumbnail}
-                        </div>
-                        <h5 className="card-title">{game.title}</h5>
-                        <p className="card-text text-muted small">
-                          {game.description}
-                        </p>
-
-                        <div className="mb-3">
-                          <div className="d-flex gap-2 mb-2">
-                            <span className="badge bg-info">
-                              {game.difficulty}
-                            </span>
-                            <span className="badge bg-secondary">
-                              <FaClock className="me-1" />
-                              {game.duration}
-                            </span>
-                          </div>
-
-                          <div className="d-flex justify-content-between small text-muted">
-                            <span>
-                              <FaStar className="me-1 text-warning" />
-                              {game.rating}
-                            </span>
-                            <span>{game.players} players</span>
-                          </div>
-                        </div>
-
-                        <button
-                          className="btn btn-primary mt-auto"
-                          onClick={() => handleStartGame(game)}
-                        >
-                          <FaPlay className="me-2" />
-                          Play Now
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {filteredGames.length === 0 && (
-                <div className="alert alert-info">
-                  No games found matching your filters.
-                </div>
-              )}
-            </div>
-          ) : (
-            // Game Screen
-            <div className="container">
-              <div className="row">
-                <div className="col-lg-8 offset-lg-2">
-                  <div className="card shadow-sm">
-                    <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                      <h5 className="mb-0">{selectedGame.title}</h5>
-                      <div>
-                        <span className="badge bg-light text-dark">
-                          Question {currentQuestion + 1} of{" "}
-                          {selectedGame.questions.length}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="card-body">
-                      {/* Progress Bar */}
-                      <div className="progress mb-4" style={{ height: "25px" }}>
-                        <div
-                          className="progress-bar"
-                          style={{
-                            width: `${
-                              ((currentQuestion + 1) /
-                                selectedGame.questions.length) *
-                              100
-                            }%`,
-                          }}
-                        >
-                          {Math.round(
-                            ((currentQuestion + 1) /
-                              selectedGame.questions.length) *
-                              100
-                          )}
-                          %
-                        </div>
-                      </div>
-
-                      {/* Question */}
-                      <div className="mb-4">
-                        {selectedGame.questions[currentQuestion].image && (
-                          <img
-                            src={
-                              selectedGame.questions[currentQuestion].image
-                            }
-                            alt="Question"
-                            className="img-fluid mb-3 rounded"
-                          />
-                        )}
-                        {selectedGame.questions[currentQuestion].text && (
-                          <h6 className="mb-3">
-                            {selectedGame.questions[currentQuestion].text}
-                          </h6>
-                        )}
-                      </div>
-
-                      {/* Options */}
-                      <div className="gap-3">
-                        {selectedGame.questions[currentQuestion].options.map(
-                          (option, idx) => (
-                            <button
-                              key={idx}
-                              className="btn btn-outline-primary w-100 mb-2"
-                              onClick={() => handleAnswerQuestion(idx)}
-                              style={{ padding: "12px" }}
-                            >
-                              {option}
-                            </button>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Game Complete Screen */}
-          {!gameInProgress && selectedGame && currentQuestion > 0 && (
-            <div className="container mt-5">
-              <div className="row">
-                <div className="col-lg-6 offset-lg-3">
-                  <div className="card shadow-lg text-center">
-                    <div
-                      className="card-body"
-                      style={{ padding: "40px" }}
-                    >
-                      <div style={{ fontSize: "64px" }} className="mb-3">
-                        🎉
-                      </div>
-                      <h4>Game Complete!</h4>
-                      <div className="my-4">
-                        <p style={{ fontSize: "24px" }}>
-                          <strong>Score: {score}/{selectedGame.questions.length}</strong>
-                        </p>
-                        <p style={{ fontSize: "20px" }} className="text-muted">
-                          Accuracy: <strong>{accuracy}%</strong>
-                        </p>
-                      </div>
-
-                      <div className="d-flex gap-2">
-                        <button
-                          className="btn btn-primary flex-grow-1"
-                          onClick={() => {
-                            setSelectedGame(null);
-                            setCurrentQuestion(0);
-                            setScore(0);
-                          }}
-                        >
-                          Play Again
-                        </button>
-                        <button
-                          className="btn btn-outline-primary flex-grow-1"
-                          onClick={() =>
-                            navigate("/general-user-profile")
-                          }
-                        >
-                          View Stats
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          <button 
+            className="btn btn-link text-decoration-none d-flex align-items-center p-2"
+            onClick={() => navigate("/factcheckerdashboard")}
+            style={{ 
+              color: "var(--text-color)",
+              borderRadius: "6px",
+              fontSize: "0.95rem",
+              fontWeight: "500"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "var(--accent-color)";
+              e.currentTarget.style.color = "var(--primary-color)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.color = "var(--text-color)";
+            }}
+          >
+            <FaBriefcase size={18} />
+            {!collapsed && <span className="ms-3">Professional Dashboard</span>}
+          </button>
         </div>
       </div>
+
+      {/* Main Content */}
+      <div
+        className="flex-grow-1 d-flex flex-column"
+        style={{
+          marginLeft: collapsed ? "80px" : "200px",
+          transition: "margin-left 0.3s ease",
+          minHeight: "calc(100vh - 56px)",
+          padding: "2rem",
+          backgroundColor: "var(--primary-color)",
+          color: "var(--text-color)"
+        }}
+      >
+        {/* Header Section */}
+        <div className="text-center mb-5" style={{ animation: "fadeIn 0.6s ease-in" }}>
+          <h1 className="fw-bold" style={{ fontSize: "2.5rem", color: "var(--text-color)" }}>
+            🎮 Learning Games
+          </h1>
+          <p style={{ color: "var(--text-color)", fontSize: "1.1rem", fontWeight: "500", marginTop: "12px" }}>
+            Master fact-checking through interactive challenges
+          </p>
+        </div>
+
+        {/* Game Categories */}
+        <div 
+          className="rounded-4 p-5 mb-5 shadow-lg"
+          style={{
+            maxWidth: "800px",
+            width: "100%",
+            margin: "0 auto 2rem",
+            backgroundColor: "var(--secondary-color)",
+            border: "2px solid var(--accent-color)",
+            boxShadow: "0 8px 30px rgba(255, 107, 107, 0.2)"
+          }}
+        >
+          <h4 style={{ color: "var(--text-color)", marginBottom: "32px", textAlign: "center", fontWeight: "700" }}>
+            Explore Game Categories
+          </h4>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px" }}>
+            {[
+              { id: "image", name: "Image Games", icon: "🖼️", description: "Identify AI & fake images" },
+              { id: "text", name: "Text Games", icon: "📰", description: "Detect misinformation" },
+              { id: "video", name: "Video Games", icon: "🎬", description: "Spot deepfakes" },
+              { id: "audio", name: "Audio Games", icon: "🎙️", description: "Verify audio content" },
+              { id: "media", name: "Media Forensics", icon: "🔍", description: "Advanced analysis" },
+              { id: "mixed", name: "Mixed Challenge", icon: "🎯", description: "All types combined" },
+            ].map((category) => (
+              <button
+                key={category.id}
+                onClick={() => {
+                  setSelectedCategory(category.id);
+                  setShowGameFinder(true);
+                }}
+                style={{
+                  padding: "24px",
+                  backgroundColor: "var(--primary-color)",
+                  color: "var(--text-color)",
+                  border: `2px solid var(--accent-color)`,
+                  borderRadius: "12px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.3s",
+                  textAlign: "center"
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                  e.currentTarget.style.color = "white";
+                  e.currentTarget.style.transform = "translateY(-4px)";
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(255, 107, 107, 0.3)";
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--primary-color)";
+                  e.currentTarget.style.color = "var(--text-color)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                <div style={{ fontSize: "48px", marginBottom: "12px" }}>{category.icon}</div>
+                <h6 style={{ marginBottom: "8px", fontWeight: "700" }}>{category.name}</h6>
+                <p style={{ fontSize: "0.85rem", opacity: 0.8, marginBottom: 0 }}>{category.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* CSS for animations */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
+
+          .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        `}
+      </style>
     </div>
   );
 }
