@@ -132,7 +132,7 @@ const handleFileUpload = (event) => {
     ];
   
     if (!allowedTypes.includes(file.type)) {
-      alert("Only DOCX, PDF, TXT, images (JPG, PNG, GIF), and videos (MP4, MOV, MKV, WEBM) are allowed!");
+      alert("Only DOCX, PDF, TXT, images (JPG, PNG), and videos (MP4, MOV, MKV, WEBM) are allowed!");
       return;
     }
   
