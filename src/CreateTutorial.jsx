@@ -20,26 +20,33 @@ import {
 } from "react-icons/fa";
 
 /**
- * CreateTutorialFull.jsx
- * Full Create Tutorial page with:
- * - Tutorial info header
- * - 10-question builder
- * - Content selector modal (Organized Reports or Upload)
+ * CreateTutorial.jsx (Game & Tutorial Creator)
+ * Full Create Game/Tutorial page with:
+ * - Game info header with category selection
+ * - Multiple choice question builder
+ * - Content upload (text or image-based)
  * - Preview box
  * - Save draft / Publish buttons
  *
- * Backend placeholders:
- * - saveDraftToServer(tutorial)
- * - publishTutorialToServer(tutorial)
- * - fetchOrganizedReports() -> load from server (here: localStorage)
- *
- * NOTE: Replace localStorage usage with real API / DB when integrating backend.
+ * NOTE: Games created here will appear in GameFinder and GamesList
  */
 
 export default function CreateTutorialFull() {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+
+  // Game categories available
+  const GAME_CATEGORIES = [
+    { id: "image", name: "Image Games", icon: "🖼️" },
+    { id: "text", name: "Text Games", icon: "📰" },
+    { id: "video", name: "Video Games", icon: "🎬" },
+    { id: "audio", name: "Audio Games", icon: "🎙️" },
+    { id: "media", name: "Media Forensics", icon: "🔍" },
+    { id: "mixed", name: "Mixed Challenge", icon: "🎯" },
+  ];
+
+  const DIFFICULTY_LEVELS = ["beginner", "intermediate", "advanced"];
 
   // Auth guard
   useEffect(() => {
@@ -49,31 +56,23 @@ export default function CreateTutorialFull() {
     return () => unsubscribe();
   }, [navigate]);
 
-  // Sample organized reports (mock) - replace with API call
-  const fetchOrganizedReports = () => {
-    // Try to get stored organized reports or verification logs
-    const fromStorage = JSON.parse(localStorage.getItem("organized_reports") || "[]");
-    if (fromStorage.length) return fromStorage;
-    // Provide fallback samples
-    return [
-      { id: "R-20250701-1", title: "Election image verification", type: "image", summary: "photo from social", previewText: "", previewImage: "" },
-      { id: "R-20250702-2", title: "Article excerpt (text)", type: "text", summary: "suspicious claims", previewText: "Sample suspicious sentence", previewImage: "" },
-    ];
-  };
-
-  // Tutorial state
-  const [tutorial, setTutorial] = useState({
+  // Game state
+  const [game, setGame] = useState({
     id: null,
     title: "",
     description: "",
-    category: "text", // 'text' or 'image' or 'mixed'
+    category: "text",
+    difficulty: "beginner",
+    duration: "15 mins",
+    thumbnail: "📚",
+    maker: "",
     questions: Array.from({ length: 10 }).map(() => ({
       contentType: "text", // 'text' or 'image'
       text: "",
-      imageFile: null,
+      image: null,
       imageUrl: "", // object URL for preview
-      sourceReportId: null, // if selected from Organized Reports
-      answer: "human", // 'human' or 'ai'
+      options: ["", "", "", ""],
+      correct: 0,
       explanation: "",
     })),
     status: "draft",
@@ -82,109 +81,127 @@ export default function CreateTutorialFull() {
 
   // modal control
   const [modalOpenIndex, setModalOpenIndex] = useState(null);
-  const [reportsList, setReportsList] = useState([]);
-
-  useEffect(() => {
-    setReportsList(fetchOrganizedReports());
-  }, []);
 
   // Load draft if exists
   useEffect(() => {
-    const draft = JSON.parse(localStorage.getItem("tutorial_draft_v2") || "null");
-    if (draft) setTutorial(draft);
+    const draft = JSON.parse(localStorage.getItem("game_draft_v1" || "null"));
+    if (draft) setGame(draft);
   }, []);
 
-  // Helpers
-  const updateQuestionField = (idx, field, value) => {
-    setTutorial((t) => {
-      const q = [...t.questions];
-      q[idx] = { ...q[idx], [field]: value };
-      return { ...t, questions: q };
-    });
-  };
-
-  const handleImageSelect = (idx, file) => {
+  // Image upload handler
+  const handleImageUpload = (idx, event) => {
+    const file = event.target.files?.[0];
     if (!file) return;
+    
     const url = URL.createObjectURL(file);
-    setTutorial((t) => {
-      const q = [...t.questions];
-      q[idx] = { ...q[idx], imageFile: file, imageUrl: url, contentType: "image", text: "", sourceReportId: null };
-      return { ...t, questions: q };
-    });
+    const newQs = [...game.questions];
+    newQs[idx] = { ...newQs[idx], image: file, imageUrl: url };
+    setGame({ ...game, questions: newQs });
   };
 
-  const handleTextSelect = (idx, text) => {
-    setTutorial((t) => {
-      const q = [...t.questions];
-      q[idx] = { ...q[idx], text, contentType: "text", imageFile: null, imageUrl: "", sourceReportId: null };
-      return { ...t, questions: q };
-    });
-  };
-
-  const handleSelectFromReport = (idx, report) => {
-    // Reports may contain previewText or previewImage; adapt accordingly
-    setTutorial((t) => {
-      const q = [...t.questions];
-      q[idx] = {
-        ...q[idx],
-        sourceReportId: report.id,
-        text: report.previewText || "",
-        imageUrl: report.previewImage || "",
-        contentType: report.type === "image" ? "image" : "text",
-        imageFile: null,
-      };
-      return { ...t, questions: q };
-    });
-    setModalOpenIndex(null);
-  };
-
-  // Save draft (local + placeholder for server)
-  const saveDraft = () => {
-    localStorage.setItem("tutorial_draft_v2", JSON.stringify(tutorial));
-    // TODO: call saveDraftToServer(tutorial) when backend ready
-    // saveDraftToServer(tutorial).then(...).catch(...)
-    alert("Draft saved locally.");
-  };
-
-  // Publish (local + placeholder for server)
-  const publishTutorial = () => {
-    const publishPayload = { ...tutorial, status: "published", publishedAt: new Date().toISOString() };
-    // TODO: integrate with backend: publishTutorialToServer(publishPayload)
-    // Example:
-    // publishTutorialToServer(publishPayload).then(resp => { ... })
-    // For now store in published_tutorials localStorage (demo)
-    const existing = JSON.parse(localStorage.getItem("published_tutorials_v2") || "[]");
-    existing.unshift(publishPayload);
-    localStorage.setItem("published_tutorials_v2", JSON.stringify(existing));
-    localStorage.removeItem("tutorial_draft_v2");
-    setTutorial(publishPayload);
-    alert("Tutorial published (local demo).");
-  };
-
+  // Clear image for a question
   const clearImageUrlObject = (idx) => {
-    setTutorial((t) => {
-      const q = [...t.questions];
-      if (q[idx].imageUrl) {
-        URL.revokeObjectURL(q[idx].imageUrl);
-      }
-      q[idx] = { ...q[idx], imageFile: null, imageUrl: "" };
-      return { ...t, questions: q };
+    const newQs = [...game.questions];
+    if (newQs[idx].imageUrl) {
+      URL.revokeObjectURL(newQs[idx].imageUrl);
+    }
+    newQs[idx] = { ...newQs[idx], image: null, imageUrl: "" };
+    setGame({ ...game, questions: newQs });
+  };
+
+  // Save draft locally
+  const saveDraft = () => {
+    localStorage.setItem("game_draft_v1", JSON.stringify(game));
+    alert("Game draft saved locally.");
+  };
+
+  // Publish game
+  const publishGame = () => {
+    const publishPayload = {
+      ...game,
+      id: `game-${Date.now()}`,
+      status: "published",
+      createdAt: new Date().toISOString(),
+      rating: 4.5,
+      players: 0,
+      views: 0,
+      questions: game.questions.map((q) => ({
+        text: q.text,
+        image: q.image,
+        imageUrl: q.imageUrl,
+        contentType: q.contentType,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation,
+      })),
+    };
+
+    // Save to published games in localStorage
+    const existing = JSON.parse(localStorage.getItem("published_games_v1" || "[]"));
+    existing.unshift(publishPayload);
+    localStorage.setItem("published_games_v1", JSON.stringify(existing));
+    
+    // Clear draft
+    localStorage.removeItem("game_draft_v1");
+    
+    alert(`✅ Game "${game.title}" published successfully!\nIt will appear in the ${game.category} category on GameFinder.`);
+    
+    // Reset form
+    setGame({
+      id: null,
+      title: "",
+      description: "",
+      category: "text",
+      difficulty: "beginner",
+      duration: "15 mins",
+      thumbnail: "📚",
+      maker: "",
+      questions: Array.from({ length: 10 }).map(() => ({
+        contentType: "text",
+        text: "",
+        image: null,
+        imageUrl: "",
+        options: ["", "", "", ""],
+        correct: 0,
+        explanation: "",
+      })),
+      status: "draft",
+      createdAt: new Date().toISOString(),
     });
   };
 
-  // Minimal validation before publish
+  // Validation before publish
   const validateBeforePublish = () => {
-    if (!tutorial.title.trim()) {
-      alert("Please enter a tutorial title.");
+    if (!game.title.trim()) {
+      alert("Please enter a game title.");
       return false;
     }
-    // simple: ensure each question has either text or image or report source
-    for (let i = 0; i < tutorial.questions.length; i++) {
-      const q = tutorial.questions[i];
-      if (!q.text && !q.imageUrl && !q.sourceReportId) {
-        if (!window.confirm(`Item ${i + 1} is empty. Publish anyway?`)) return false;
+
+    if (!game.description.trim()) {
+      alert("Please enter a game description.");
+      return false;
+    }
+
+    // Check questions
+    for (let i = 0; i < game.questions.length; i++) {
+      const q = game.questions[i];
+      if (!q.text.trim()) {
+        alert(`Question ${i + 1}: Please enter question text.`);
+        return false;
+      }
+
+      // Check all options are filled
+      if (q.options.some((opt) => !opt.trim())) {
+        alert(`Question ${i + 1}: Please fill all answer options.`);
+        return false;
+      }
+
+      if (!q.explanation.trim()) {
+        alert(`Question ${i + 1}: Please enter an explanation.`);
+        return false;
       }
     }
+
     return true;
   };
 
@@ -478,9 +495,15 @@ export default function CreateTutorialFull() {
         </nav>
 
         {/* Page Content */}
+<<<<<<< HEAD
         <div className="container-fluid py-4 px-5" id="create-tutorial" style={{ backgroundColor: "var(--primary-color)" }}>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h2 className="fw-bold mb-0" style={{ color: "var(--text-color)" }}>Create Tutorial</h2>
+=======
+        <div className="container-fluid py-4 px-5" id="create-game">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h2 className="fw-bold mb-0">Create Game</h2>
+>>>>>>> mywork
             <div className="d-flex gap-2">
               <button 
                 className="btn"
@@ -504,7 +527,7 @@ export default function CreateTutorialFull() {
               <button
                 className="btn"
                 onClick={() => {
-                  if (validateBeforePublish()) publishTutorial();
+                  if (validateBeforePublish()) publishGame();
                 }}
                 style={{
                   backgroundColor: "var(--accent-color)",
@@ -520,11 +543,12 @@ export default function CreateTutorialFull() {
                   e.currentTarget.style.color = "var(--primary-color)";
                 }}
               >
-                Publish Tutorial
+                Publish Game
               </button>
             </div>
           </div>
 
+<<<<<<< HEAD
           {/* Tutorial info card */}
           <div 
             className="card shadow-sm p-4 mb-4"
@@ -565,10 +589,54 @@ export default function CreateTutorialFull() {
                   <option value="text">Text Classification</option>
                   <option value="image">Image Classification</option>
                   <option value="mixed">Mixed</option>
+=======
+          {/* Game info card */}
+          <div className="card shadow-sm p-4 mb-4" style={{ borderLeft: "4px solid var(--primary-color)" }}>
+            <h5 className="fw-semibold mb-3">Game Information</h5>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">Game Title</label>
+                <input 
+                  className="form-control" 
+                  value={game.title} 
+                  onChange={(e) => setGame({ ...game, title: e.target.value })}
+                  placeholder="e.g., Real vs Fake Images Challenge"
+                />
+              </div>
+
+              <div className="col-md-3">
+                <label className="form-label fw-semibold">Category</label>
+                <select 
+                  className="form-select" 
+                  value={game.category} 
+                  onChange={(e) => setGame({ ...game, category: e.target.value })}
+                >
+                  {GAME_CATEGORIES.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-3">
+                <label className="form-label fw-semibold">Difficulty</label>
+                <select 
+                  className="form-select" 
+                  value={game.difficulty} 
+                  onChange={(e) => setGame({ ...game, difficulty: e.target.value })}
+                >
+                  {DIFFICULTY_LEVELS.map((level) => (
+                    <option key={level} value={level}>
+                      {level.charAt(0).toUpperCase() + level.slice(1)}
+                    </option>
+                  ))}
+>>>>>>> mywork
                 </select>
               </div>
 
               <div className="col-12">
+<<<<<<< HEAD
                 <label className="form-label">Description</label>
                 <textarea 
                   className="form-control" 
@@ -580,12 +648,33 @@ export default function CreateTutorialFull() {
                     borderColor: "var(--accent-color)",
                     color: "var(--text-color)"
                   }}
+=======
+                <label className="form-label fw-semibold">Game Description</label>
+                <textarea 
+                  className="form-control" 
+                  rows={3} 
+                  value={game.description} 
+                  onChange={(e) => setGame({ ...game, description: e.target.value })}
+                  placeholder="Describe the educational objective and gameplay..."
+                />
+              </div>
+
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">Duration (minutes)</label>
+                <input 
+                  className="form-control" 
+                  type="number" 
+                  min="1"
+                  value={game.duration.replace(' mins', '') || "15"} 
+                  onChange={(e) => setGame({ ...game, duration: `${e.target.value} mins` })}
+>>>>>>> mywork
                 />
               </div>
             </div>
           </div>
 
           {/* Questions */}
+<<<<<<< HEAD
           <div 
             className="card shadow-sm p-4 mb-4"
             style={{
@@ -610,8 +699,72 @@ export default function CreateTutorialFull() {
                   <div>
                     <h6 className="mb-0">Item {i + 1}</h6>
                     <small style={{ opacity: 0.7 }}>Select content below or paste/upload</small>
-                  </div>
+=======
+          <div className="card shadow-sm p-4 mb-4">
+            <h5 className="fw-semibold mb-3">Questions ({game.questions.length})</h5>
+            <p className="text-muted mb-4">Create multiple-choice questions for your game. Each question needs 4 options with one correct answer.</p>
 
+            {game.questions.map((q, i) => (
+              <div key={i} className="mb-4 p-3 border rounded" style={{ backgroundColor: "var(--secondary-color)", borderLeft: "4px solid var(--accent-color)" }}>
+                <div className="d-flex justify-content-between align-items-start mb-3">
+                  <h6 className="mb-0">Question {i + 1}</h6>
+                  {q.text && <span className="badge bg-success">Complete</span>}
+                </div>
+
+                {/* Question content */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Question Text</label>
+                  <textarea 
+                    className="form-control" 
+                    rows={2}
+                    value={q.text}
+                    onChange={(e) => {
+                      const newQs = [...game.questions];
+                      newQs[i] = { ...newQs[i], text: e.target.value };
+                      setGame({ ...game, questions: newQs });
+                    }}
+                    placeholder="Write your question here..."
+                  />
+                </div>
+
+                {/* Content type toggle */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Content Type</label>
+                  <div className="btn-group w-100" role="group">
+                    <input 
+                      type="radio" 
+                      className="btn-check" 
+                      name={`contentType-${i}`}
+                      id={`text-${i}`}
+                      value="text"
+                      checked={q.contentType === "text"}
+                      onChange={(e) => {
+                        const newQs = [...game.questions];
+                        newQs[i] = { ...newQs[i], contentType: "text", imageUrl: "" };
+                        setGame({ ...game, questions: newQs });
+                      }}
+                    />
+                    <label className="btn btn-outline-primary" htmlFor={`text-${i}`}>Text Only</label>
+
+                    <input 
+                      type="radio" 
+                      className="btn-check" 
+                      name={`contentType-${i}`}
+                      id={`image-${i}`}
+                      value="image"
+                      checked={q.contentType === "image"}
+                      onChange={(e) => {
+                        const newQs = [...game.questions];
+                        newQs[i] = { ...newQs[i], contentType: "image" };
+                        setGame({ ...game, questions: newQs });
+                      }}
+                    />
+                    <label className="btn btn-outline-primary" htmlFor={`image-${i}`}>With Image</label>
+>>>>>>> mywork
+                  </div>
+                </div>
+
+<<<<<<< HEAD
                   <div className="d-flex gap-2">
                     <button 
                       className="btn btn-sm"
@@ -644,10 +797,80 @@ export default function CreateTutorialFull() {
                       >
                         Remove Image
                       </button>
+=======
+                {/* Image upload for image-based questions */}
+                {q.contentType === "image" && (
+                  <div className="mb-3">
+                    <label className="form-label fw-semibold">Upload Image</label>
+                    <input 
+                      type="file" 
+                      className="form-control"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(i, e)}
+                    />
+                    {q.imageUrl && (
+                      <div className="mt-2">
+                        <img 
+                          src={q.imageUrl} 
+                          alt={`Q${i+1}`}
+                          style={{ maxWidth: "200px", borderRadius: "8px" }}
+                        />
+                        <button 
+                          className="btn btn-sm btn-outline-danger ms-2"
+                          onClick={() => clearImageUrlObject(i)}
+                        >
+                          Remove
+                        </button>
+                      </div>
+>>>>>>> mywork
                     )}
+                  </div>
+                )}
+
+                {/* Answer options */}
+                <div className="mb-3">
+                  <label className="form-label fw-semibold mb-2">Answer Options</label>
+                  <div className="row g-2">
+                    {q.options.map((opt, optIdx) => (
+                      <div key={optIdx} className="col-12">
+                        <div className="input-group">
+                          <input 
+                            type="radio"
+                            className="btn-check"
+                            name={`correct-${i}`}
+                            id={`correct-${i}-${optIdx}`}
+                            checked={q.correct === optIdx}
+                            onChange={() => {
+                              const newQs = [...game.questions];
+                              newQs[i] = { ...newQs[i], correct: optIdx };
+                              setGame({ ...game, questions: newQs });
+                            }}
+                          />
+                          <label 
+                            className="btn btn-outline-secondary flex-shrink-0"
+                            htmlFor={`correct-${i}-${optIdx}`}
+                            style={{ minWidth: "50px" }}
+                          >
+                            {q.correct === optIdx ? "✓ Correct" : `Option ${optIdx + 1}`}
+                          </label>
+                          <input 
+                            type="text"
+                            className="form-control"
+                            value={opt}
+                            onChange={(e) => {
+                              const newQs = [...game.questions];
+                              newQs[i].options[optIdx] = e.target.value;
+                              setGame({ ...game, questions: newQs });
+                            }}
+                            placeholder={`Enter option ${optIdx + 1}`}
+                          />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
+<<<<<<< HEAD
                 {/* Preview */}
                 <div 
                   className="mt-3 border p-3 rounded"
@@ -682,6 +905,22 @@ export default function CreateTutorialFull() {
                     <label className="form-label">Explanation (shown after answering)</label>
                     <input className="form-control" value={q.explanation} onChange={(e) => updateQuestionField(i, "explanation", e.target.value)} placeholder="Short explanation to teach users" />
                   </div>
+=======
+                {/* Explanation */}
+                <div>
+                  <label className="form-label fw-semibold">Explanation (shown after answer)</label>
+                  <textarea 
+                    className="form-control"
+                    rows={2}
+                    value={q.explanation}
+                    onChange={(e) => {
+                      const newQs = [...game.questions];
+                      newQs[i] = { ...newQs[i], explanation: e.target.value };
+                      setGame({ ...game, questions: newQs });
+                    }}
+                    placeholder="Explain the correct answer to help players learn..."
+                  />
+>>>>>>> mywork
                 </div>
               </div>
             ))}
@@ -689,7 +928,7 @@ export default function CreateTutorialFull() {
 
           {/* Footer actions */}
           <div className="d-flex justify-content-between align-items-center">
-            <div className="text-muted small">Tip: Use organized reports to reuse previous verification content.</div>
+            <div className="text-muted small">💡 Tip: Create clear questions with 4 distinct options for the best player experience.</div>
             <div className="d-flex gap-2">
               <button className="btn btn-outline-secondary" onClick={saveDraft}>
                 <FaSave className="me-1" /> Save Draft
@@ -697,26 +936,14 @@ export default function CreateTutorialFull() {
               <button
                 className="btn btn-primary"
                 onClick={() => {
-                  if (validateBeforePublish()) publishTutorial();
+                  if (validateBeforePublish()) publishGame();
                 }}
               >
-                Publish Tutorial
+                Publish Game
               </button>
             </div>
           </div>
         </div>
-
-        {/* Modal: Content selector */}
-        {modalOpenIndex !== null && (
-          <ContentSelectorModal
-            index={modalOpenIndex}
-            onClose={() => setModalOpenIndex(null)}
-            reports={reportsList}
-            onSelectReport={(report) => handleSelectFromReport(modalOpenIndex, report)}
-            onUploadImage={(file) => handleImageSelect(modalOpenIndex, file)}
-            onPasteText={(text) => handleTextSelect(modalOpenIndex, text)}
-          />
-        )}
       </div>
 
       <style>{`
@@ -739,130 +966,3 @@ export default function CreateTutorialFull() {
     </div>
   );
 }
-
-/* ------------------------------
-   ContentSelectorModal Component
-   ------------------------------
-   - tabs: Reports / Upload
-   - onSelectReport(report) -> select report
-   - onUploadImage(file) -> select image file
-   - onPasteText(text) -> paste text
-*/
-function ContentSelectorModal({ index, onClose, reports, onSelectReport, onUploadImage, onPasteText }) {
-  const [activeTab, setActiveTab] = useState("reports");
-  const [uploadText, setUploadText] = useState("");
-  const [previewImageUrl, setPreviewImageUrl] = useState("");
-
-  const onFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreviewImageUrl(url);
-    onUploadImage(file);
-  };
-
-  const applyText = () => {
-    onPasteText(uploadText);
-    onClose();
-  };
-
-  return (
-    <div className="modal-backdrop" style={backdropStyle}>
-      <div className="modal-dialog modal-lg" role="document" style={modalDialogStyle}>
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">Select Content for Item {index + 1}</h5>
-            <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
-          </div>
-
-          <div className="modal-body">
-            <ul className="nav nav-tabs mb-3">
-              <li className="nav-item">
-                <button className={`nav-link ${activeTab === "reports" ? "active" : ""}`} onClick={() => setActiveTab("reports")}>
-                  From Organized Reports
-                </button>
-              </li>
-              <li className="nav-item">
-                <button className={`nav-link ${activeTab === "upload" ? "active" : ""}`} onClick={() => setActiveTab("upload")}>
-                  Upload from Device
-                </button>
-              </li>
-            </ul>
-
-            {activeTab === "reports" && (
-              <div>
-                <p className="small text-muted">Select an existing entry from organized reports:</p>
-                <div className="list-group">
-                  {reports.length === 0 && <div className="text-muted">No organized reports found.</div>}
-                  {reports.map((r) => (
-                    <button
-                      key={r.id}
-                      className="list-group-item list-group-item-action d-flex justify-content-between align-items-start"
-                      onClick={() => {
-                        onSelectReport(r);
-                        onClose();
-                      }}
-                    >
-                      <div>
-                        <div className="fw-semibold">{r.title}</div>
-                        <div className="small text-muted">{r.summary || r.previewText || "(no summary)"}</div>
-                      </div>
-                      <div className="small text-muted">{r.type}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeTab === "upload" && (
-              <div>
-                <p className="small text-muted">Paste text or upload an image from your device:</p>
-
-                <label className="form-label">Paste Text</label>
-                <textarea className="form-control mb-3" rows={3} value={uploadText} onChange={(e) => setUploadText(e.target.value)} placeholder="Paste text here..." />
-
-                <div className="mb-3">
-                  <label className="form-label">Upload Image</label>
-                  <input type="file" accept="image/*" className="form-control mb-2" onChange={onFileChange} />
-                  {previewImageUrl && <img src={previewImageUrl} alt="preview" style={{ maxWidth: "100%", borderRadius: 8 }} />}
-                </div>
-
-                <div className="d-flex justify-content-end gap-2">
-                  <button className="btn btn-outline-secondary" onClick={() => { setUploadText(""); setPreviewImageUrl(""); }}>
-                    Clear
-                  </button>
-                  <button className="btn btn-dark" onClick={() => { applyText(); }}>
-                    Use Pasted Text
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="modal-footer">
-            <small className="text-muted me-auto">Tip: choose content from organized reports to avoid re-uploading the same sources.</small>
-            <button className="btn btn-secondary" onClick={onClose}>
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* simple styles for modal */
-const backdropStyle = {
-  position: "fixed",
-  inset: 0,
-  backgroundColor: "rgba(0,0,0,0.45)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 2000,
-};
-
-const modalDialogStyle = {
-  maxWidth: "900px",
-  width: "95%",
-};
