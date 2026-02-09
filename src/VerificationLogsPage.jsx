@@ -407,17 +407,17 @@ export default function VerificationLogsPage() {
                 className="btn"
                 onClick={() => addSelectedToReport()}
                 style={{
-                  backgroundColor: "#28a745",
-                  color: "white",
-                  border: `1px solid #28a745`
+                  backgroundColor: "var(--success-color)",
+                  color: "var(--text-color)",
+                  border: `1px solid var(--success-color)`
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "#28a745";
+                  e.currentTarget.style.color = "var(--success-color)";
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = "#28a745";
-                  e.currentTarget.style.color = "white";
+                  e.currentTarget.style.backgroundColor = "var(--success-color)";
+                  e.currentTarget.style.color = "var(--text-color)";
                 }}
               >
                 <FaPlus className="me-1" /> Add to Report
@@ -591,7 +591,7 @@ export default function VerificationLogsPage() {
                 </div>
                 <div className="col-md-6">
                   <h6>Metadata</h6>
-                  <pre style={{ maxHeight: 200, overflow: "auto", background: "#f8f9fa", padding: 12, borderRadius: 6 }}>
+                  <pre style={{ maxHeight: 200, overflow: "auto", background: "var(--secondary-color)", padding: 12, borderRadius: 6 }}>
                     {JSON.stringify(detailLog.metadata || {}, null, 2)}
                   </pre>
                 </div>
@@ -611,7 +611,7 @@ export default function VerificationLogsPage() {
         .sidebar-btn {
           background: none;
           border: none;
-          color: #000;
+          color: var(--text-color);
           padding: 10px 12px;
           border-radius: 5px;
           width: 100%;
@@ -619,7 +619,7 @@ export default function VerificationLogsPage() {
           transition: all 0.2s ease-in-out;
           font-weight: 500;
         }
-        .sidebar-btn:hover { background-color: #000; color: #fff; }
+        .sidebar-btn:hover { background-color: var(--accent-color); color: var(--primary-color); }
       `}</style>
     </div>
   );

@@ -37,8 +37,8 @@ export default function AdminDashboard() {
     {
       label: "New Users",
       data: growthValues,
-      borderColor: "#007bff",
-      backgroundColor: "rgba(0,123,255,0.2)",
+      borderColor: "var(--info-color)",
+      backgroundColor: "var(--info-color-light)",
       tension: 0.3,
       fill: true,
     },
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
       {
         label: "Reviews",
         data: [400, 100, 40],
-        backgroundColor: ["#198754", "#dc3545", "#6c757d"],
+        backgroundColor: ["var(--success-color)", "var(--error-color)", "var(--neutral-color)"],
       },
     ],
   };

@@ -40,7 +40,7 @@ export default function UserManagement() {
         style={{
           width: "240px",
           minHeight: "100vh",
-          backgroundColor: "#20232a",
+          backgroundColor: "var(--sidebar-color)",
         }}
       >
         <h4 className="text-center mb-4 fw-semibold">Admin Panel</h4>
@@ -78,7 +78,7 @@ export default function UserManagement() {
       {/* Main Content */}
       <div
         className="flex-grow-1 p-4"
-        style={{ background: "#f8f9fa", minHeight: "100vh" }}
+        style={{ background: "var(--primary-color)", minHeight: "100vh" }}
       >
         <h2 className="fw-bold mb-4 text-dark">User Management</h2>
 

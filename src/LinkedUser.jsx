@@ -230,8 +230,8 @@ export default function LinkedUser() {
               className={`alert alert-dismissible fade show`}
               role="alert"
               style={{
-                backgroundColor: messageType === "success" ? "rgba(40, 167, 69, 0.2)" : "rgba(220, 53, 69, 0.2)",
-                borderColor: messageType === "success" ? "#28a745" : "#dc3545",
+                backgroundColor: messageType === "success" ? "var(--success-color-light)" : "var(--error-color-light)",
+                borderColor: messageType === "success" ? "var(--success-color)" : "var(--error-color)",
                 color: "var(--text-color)",
               }}
             >
@@ -381,9 +381,9 @@ export default function LinkedUser() {
                                 borderRadius: "4px",
                                 backgroundColor:
                                   user.status === "active"
-                                    ? "rgba(40, 167, 69, 0.3)"
-                                    : "rgba(255, 193, 7, 0.3)",
-                                color: user.status === "active" ? "#28a745" : "#ffc107",
+                                    ? "var(--success-color-light)"
+                                    : "var(--warning-color-light)",
+                                color: user.status === "active" ? "var(--success-color)" : "var(--warning-color)",
                                 fontWeight: "bold",
                                 fontSize: "0.875rem",
                               }}
@@ -398,17 +398,17 @@ export default function LinkedUser() {
                                 onClick={() => handleApproveUser(user.id)}
                                 title="Approve User"
                                 style={{
-                                  backgroundColor: "rgba(40, 167, 69, 0.2)",
-                                  color: "#28a745",
-                                  border: "2px solid #28a745",
+                                  backgroundColor: "var(--success-color-light)",
+                                  color: "var(--success-color)",
+                                  border: "2px solid var(--success-color)",
                                 }}
                                 onMouseOver={(e) => {
-                                  e.currentTarget.style.backgroundColor = "#28a745";
-                                  e.currentTarget.style.color = "#fff";
+                                  e.currentTarget.style.backgroundColor = "var(--success-color)";
+                                  e.currentTarget.style.color = "var(--white-color)";
                                 }}
                                 onMouseOut={(e) => {
-                                  e.currentTarget.style.backgroundColor = "rgba(40, 167, 69, 0.2)";
-                                  e.currentTarget.style.color = "#28a745";
+                                  e.currentTarget.style.backgroundColor = "var(--success-color-light)";
+                                  e.currentTarget.style.color = "var(--success-color)";
                                 }}
                               >
                                 <FaCheck />
@@ -419,17 +419,17 @@ export default function LinkedUser() {
                               onClick={() => handleRemoveUser(user.id)}
                               title="Remove User"
                               style={{
-                                backgroundColor: "rgba(220, 53, 69, 0.2)",
-                                color: "#dc3545",
-                                border: "2px solid #dc3545",
+                                backgroundColor: "var(--error-color-light)",
+                                color: "var(--error-color)",
+                                border: "2px solid var(--error-color)",
                               }}
                               onMouseOver={(e) => {
-                                e.currentTarget.style.backgroundColor = "#dc3545";
-                                e.currentTarget.style.color = "#fff";
+                                e.currentTarget.style.backgroundColor = "var(--error-color)";
+                                e.currentTarget.style.color = "var(--white-color)";
                               }}
                               onMouseOut={(e) => {
-                                e.currentTarget.style.backgroundColor = "rgba(220, 53, 69, 0.2)";
-                                e.currentTarget.style.color = "#dc3545";
+                                e.currentTarget.style.backgroundColor = "var(--error-color-light)";
+                                e.currentTarget.style.color = "var(--error-color)";
                               }}
                             >
                               <FaTrash />

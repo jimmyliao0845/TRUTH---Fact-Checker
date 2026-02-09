@@ -175,9 +175,9 @@ export default function ManageTutorial() {
             <ul
               className="dropdown-menu dropdown-menu-end p-2 shadow-lg"
               style={{
-                backgroundColor: "#fff",
+                backgroundColor: "var(--secondary-color)",
                 borderRadius: "10px",
-                border: "1px solid #ddd",
+                border: "1px solid var(--accent-color, #ddd)",
                 minWidth: "250px",
               }}
             >

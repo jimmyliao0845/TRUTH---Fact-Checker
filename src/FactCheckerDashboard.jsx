@@ -182,8 +182,8 @@ export default function FactCheckerDashboard() {
       {
         label: "New Users",
         data: userGrowthValues,
-        borderColor: "#007bff",
-        backgroundColor: "rgba(0,123,255,0.3)",
+        borderColor: "var(--info-color)",
+        backgroundColor: "var(--info-color-light)",
         fill: true,
         tension: 0.4,
       },

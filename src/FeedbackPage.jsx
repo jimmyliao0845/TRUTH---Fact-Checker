@@ -143,7 +143,7 @@ export default function FeedbackPage() {
         className="d-flex flex-column p-3 border-end"
         style={{
           width: collapsed ? "80px" : "250px",
-          backgroundColor: "#d9d9d9",
+          backgroundColor: "var(--sidebar-color)",
           transition: "width 0.3s ease",
           height: "calc(100vh - 56px)",
           position: "fixed",

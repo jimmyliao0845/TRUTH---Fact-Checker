@@ -83,7 +83,7 @@ export default function GameScreen({ selectedGame, currentQuestion, onAnswerQues
             {/* Timer */}
             <div
               style={{
-                backgroundColor: timeLeft <= 3 ? "#ff6b6b" : "rgba(255,255,255,0.2)",
+                backgroundColor: timeLeft <= 3 ? "var(--accent-color)" : "rgba(255,255,255,0.2)",
                 padding: "8px 16px",
                 borderRadius: "20px",
                 fontSize: "1.1rem",

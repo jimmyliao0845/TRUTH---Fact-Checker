@@ -921,7 +921,7 @@ function ShopItemCard({ item, isUnlocked, onPurchase, userPoints }) {
               position: "absolute",
               top: "10px",
               right: "10px",
-              backgroundColor: "#28a745",
+              backgroundColor: "var(--success-color)",
               borderRadius: "50%",
               width: "30px",
               height: "30px",

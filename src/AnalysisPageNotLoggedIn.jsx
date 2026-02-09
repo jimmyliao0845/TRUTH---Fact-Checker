@@ -423,7 +423,7 @@ export default function AnalysisPageNotLoggedIn() {
               style={{
                 fontSize: "1rem",
                 borderRadius: "12px",
-                backgroundColor: "#f8f9fa",
+                backgroundColor: "var(--secondary-color)",
                 resize: "none"
               }}
             ></textarea>

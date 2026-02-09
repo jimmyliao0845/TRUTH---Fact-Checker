@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
       {/* Navbar */}
       <div
         className="d-flex justify-content-between align-items-center p-3 border-bottom"
-        style={{ backgroundColor: isDarkMode ? "#000" : "#fff" }}
+        style={{ backgroundColor: isDarkMode ? "var(--navbar-color)" : "var(--white-color)" }}
       >
         <div className="d-flex align-items-center gap-2">
           <img

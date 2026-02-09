@@ -315,7 +315,7 @@ const handleFileUpload = (event) => {
             <h4 className="fw-bold" style={{ color: "var(--text-color)" }}>
               🔍 Start Your Analysis
             </h4>
-            <p style={{ color: "#666666" }}>Enter text or upload a file to detect AI-generated content</p>
+            <p style={{ color: "var(--hint-text-color)" }}>Enter text or upload a file to detect AI-generated content</p>
           </div>
 
           {/* Text Input */}
@@ -343,7 +343,7 @@ const handleFileUpload = (event) => {
               }}
             ></textarea>
             <div className="text-end mt-2">
-              <small style={{ color: "#666666" }}>{inputText.length} characters</small>
+              <small style={{ color: "var(--hint-text-color)" }}>{inputText.length} characters</small>
             </div>
           </div>
 
@@ -423,7 +423,7 @@ const handleFileUpload = (event) => {
 
           {/* Supported Files Info */}
           <div className="text-center mt-4">
-            <small style={{ color: "#666666" }}>
+            <small style={{ color: "var(--hint-text-color)" }}>
               📄 Supported: Text, DOCX, Images (JPG, PNG, GIF), Videos (MP4, MOV, MKV, WEBM)
             </small>
           </div>

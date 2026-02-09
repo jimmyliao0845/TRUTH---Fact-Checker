@@ -34,10 +34,10 @@ export default function GamesList({ games, onSelectGame }) {
                   padding: "24px",
                   backgroundColor:
                     game.difficulty === "beginner"
-                      ? "rgba(100, 150, 255, 0.15)"
+                      ? "var(--info-color-light)"
                       : game.difficulty === "intermediate"
-                      ? "rgba(255, 200, 0, 0.15)"
-                      : "rgba(255, 100, 100, 0.15)",
+                      ? "var(--warning-color-light)"
+                      : "var(--error-color-light)",
                   textAlign: "center"
                 }}
               >

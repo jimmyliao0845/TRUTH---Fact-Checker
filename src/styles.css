@@ -8,6 +8,22 @@
   --button-color: #3a305033;
   --text-color: #ffffff;
   --accent-color: #ff6b6b;
+  --success-color: #198754;
+  --success-color-light: rgba(25, 135, 84, 0.2);
+  --error-color: #dc3545;
+  --error-color-light: rgba(220, 53, 69, 0.2);
+  --warning-color: #ffc107;
+  --warning-color-light: rgba(255, 193, 7, 0.2);
+  --neutral-color: #6c757d;
+  --neutral-color-light: rgba(108, 117, 125, 0.2);
+  --info-color: #0d6efd;
+  --info-color-light: rgba(13, 110, 253, 0.2);
+  --hint-text-color: #999999;
+  --light-bg-color: #f8f9fa;
+  --white-color: #ffffff;
+  --progress-danger-bg: #f8d7da;
+  --progress-success-bg: #d4edda;
+  --progress-warning-bg: #fff3cd;
 }
 
 /* GLOBAL LIGHT/DARK MODE BASE */
@@ -969,7 +985,6 @@ ul li span {
   gap: 10px;
 }
 
-<<<<<<< HEAD
 /* ================================
    FROM index.css
 ================================ */
@@ -1560,7 +1575,7 @@ body.night-mode .social-login-btn:hover {
 /* ================================
    END OF CONSOLIDATED CSS FILES
 ================================ */
-=======
+
 /* ============= THEME CONFIRMATION MODAL STYLES ============= */
 
 .theme-confirmation-overlay {

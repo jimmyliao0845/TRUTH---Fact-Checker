@@ -304,7 +304,7 @@ export default function UserProfile() {
       {/* ========== UNIFIED SIDEBAR ========== */}
       <div className={`app-sidebar ${collapsed ? 'collapsed' : ''}`}
         style={!isProfessional ? {
-          background: "linear-gradient(135deg, var(--secondary-color) 0%, rgba(0,123,255,0.05) 100%)",
+          background: "linear-gradient(135deg, var(--secondary-color) 0%, var(--info-color-light) 100%)",
         } : {}}>
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
@@ -997,7 +997,7 @@ export default function UserProfile() {
                             <td><span className="badge" style={{backgroundColor: "var(--accent-color)", color: "var(--primary-color)"}}>{sub.type}</span></td>
                             <td>{sub.date}</td>
                             <td>
-                              <span className="badge" style={{backgroundColor: sub.result === "AI-generated" ? "#ffc107" : "var(--accent-color)", color: sub.result === "AI-generated" ? "#000" : "var(--primary-color)"}}>
+                              <span className="badge" style={{backgroundColor: sub.result === "AI-generated" ? "var(--warning-color)" : "var(--accent-color)", color: sub.result === "AI-generated" ? "var(--primary-color)" : "var(--primary-color)"}}>
                                 {sub.result}
                               </span>
                             </td>

@@ -227,12 +227,12 @@ export default function UserFeedbackPage() {
             onClick={() => deleteReview(r.feedback_id)}
             style={{
               backgroundColor: "transparent",
-              color: "#dc3545",
-              border: "2px solid #dc3545",
+              color: "var(--error-color)",
+              border: "2px solid var(--error-color)",
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "#dc3545";
-              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.backgroundColor = "var(--error-color)";
+              e.currentTarget.style.color = "var(--white-color)";
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
@@ -246,16 +246,16 @@ export default function UserFeedbackPage() {
             onClick={() => flagReview(r.feedback_id)}
             style={{
               backgroundColor: "transparent",
-              color: "#ffc107",
-              border: "2px solid #ffc107",
+              color: "var(--warning-color)",
+              border: "2px solid var(--warning-color)",
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "#ffc107";
-              e.currentTarget.style.color = "#000";
+              e.currentTarget.style.backgroundColor = "var(--warning-color)";
+              e.currentTarget.style.color = "var(--primary-color)";
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#ffc107";
+              e.currentTarget.style.color = "var(--warning-color)";
             }}
           >
             Flag
@@ -548,16 +548,16 @@ export default function UserFeedbackPage() {
                             onClick={() => deleteReview(r.feedback_id)}
                             style={{
                               backgroundColor: "transparent",
-                              color: "#dc3545",
-                              border: "2px solid #dc3545",
+                              color: "var(--error-color)",
+                              border: "2px solid var(--error-color)",
                             }}
                             onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "#dc3545";
-                              e.currentTarget.style.color = "#fff";
+                              e.currentTarget.style.backgroundColor = "var(--error-color)";
+                              e.currentTarget.style.color = "var(--white-color)";
                             }}
                             onMouseOut={(e) => {
                               e.currentTarget.style.backgroundColor = "transparent";
-                              e.currentTarget.style.color = "#dc3545";
+                              e.currentTarget.style.color = "var(--error-color)";
                             }}
                           >
                             <FaTrashAlt />
@@ -567,16 +567,16 @@ export default function UserFeedbackPage() {
                             onClick={() => flagReview(r.feedback_id)}
                             style={{
                               backgroundColor: "transparent",
-                              color: "#ffc107",
-                              border: "2px solid #ffc107",
+                              color: "var(--warning-color)",
+                              border: "2px solid var(--warning-color)",
                             }}
                             onMouseOver={(e) => {
-                              e.currentTarget.style.backgroundColor = "#ffc107";
-                              e.currentTarget.style.color = "#000";
+                              e.currentTarget.style.backgroundColor = "var(--warning-color)";
+                              e.currentTarget.style.color = "var(--primary-color)";
                             }}
                             onMouseOut={(e) => {
                               e.currentTarget.style.backgroundColor = "transparent";
-                              e.currentTarget.style.color = "#ffc107";
+                              e.currentTarget.style.color = "var(--warning-color)";
                             }}
                           >
                             Flag
@@ -684,16 +684,16 @@ export default function UserFeedbackPage() {
                     onClick={() => { deleteReview(selectedReview.feedback_id); setSelectedReview(null); }}
                     style={{
                       backgroundColor: "transparent",
-                      color: "#dc3545",
-                      border: "2px solid #dc3545",
+                      color: "var(--error-color)",
+                      border: "2px solid var(--error-color)",
                     }}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "#dc3545";
-                      e.currentTarget.style.color = "#fff";
+                      e.currentTarget.style.backgroundColor = "var(--error-color)";
+                      e.currentTarget.style.color = "var(--white-color)";
                     }}
                     onMouseOut={(e) => {
                       e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = "#dc3545";
+                      e.currentTarget.style.color = "var(--error-color)";
                     }}
                   >
                     Delete
@@ -742,16 +742,16 @@ export default function UserFeedbackPage() {
                   onClick={() => { flagReview(selectedReview.feedback_id); setSelectedReview(null); }}
                   style={{
                     backgroundColor: "transparent",
-                    color: "#ffc107",
-                    border: "2px solid #ffc107",
+                    color: "var(--warning-color)",
+                    border: "2px solid var(--warning-color)",
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = "#ffc107";
-                    e.currentTarget.style.color = "#000";
+                    e.currentTarget.style.backgroundColor = "var(--warning-color)";
+                    e.currentTarget.style.color = "var(--primary-color)";
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "#ffc107";
+                    e.currentTarget.style.color = "var(--warning-color)";
                   }}
                 >
                   Flag
@@ -796,7 +796,7 @@ const modalBackdrop = {
 const modalCard = {
   width: "820px",
   maxWidth: "95%",
-  background: "#fff",
+  background: "var(--secondary-color)",
   borderRadius: 8,
   padding: 20,
   boxShadow: "0 10px 30px rgba(0,0,0,0.2)",

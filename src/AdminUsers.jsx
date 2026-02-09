@@ -262,7 +262,7 @@ export default function AdminUsers() {
                     <td>{user.provider || "Email"}</td>
                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
                     <td>
-                      <span style={{ color: "#28a745", fontWeight: "bold" }}>Active</span>
+                      <span style={{ color: "var(--success-color)", fontWeight: "bold" }}>Active</span>
                     </td>
                   </tr>
                 ))}
