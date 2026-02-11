@@ -236,7 +236,7 @@ export default function UserFeedbackPage() {
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "#dc3545";
+              e.currentTarget.style.color = "var(--error-color)";
             }}
           >
             <FaTrashAlt />
@@ -768,7 +768,7 @@ export default function UserFeedbackPage() {
         .sidebar-btn {
           background: none;
           border: none;
-          color: #000;
+          color: var(--text-color-light);
           padding: 10px 12px;
           border-radius: 5px;
           width: 100%;
@@ -776,7 +776,7 @@ export default function UserFeedbackPage() {
           transition: all 0.2s ease-in-out;
           font-weight: 500;
         }
-        .sidebar-btn:hover { background-color: #000; color: #fff; }
+        .sidebar-btn:hover { background-color: var(--text-color-light); color: var(--white-color); }
       `}</style>
     </div>
   );

@@ -233,7 +233,7 @@ export default function FeedbackPage() {
             position: "sticky",
             top: 0,
             zIndex: 1000,
-            borderBottom: "1px solid #ddd",
+            borderBottom: "1px solid var(--border-color-dark)",
           }}
         >
           <h5 className="mb-0">

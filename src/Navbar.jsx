@@ -142,7 +142,7 @@ export default function Navbar() {
                     }}
                     onMouseOver={(e) => {
                       e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                      e.currentTarget.style.color = "#ffffff";
+                      e.currentTarget.style.color = "var(--white-color)";
                     }}
                     onMouseOut={(e) => {
                       e.currentTarget.style.backgroundColor = "var(--secondary-color)";
@@ -162,7 +162,7 @@ export default function Navbar() {
                     }}
                     onMouseOver={(e) => {
                       e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                      e.currentTarget.style.color = "#ffffff";
+                      e.currentTarget.style.color = "var(--white-color)";
                     }}
                     onMouseOut={(e) => {
                       e.currentTarget.style.backgroundColor = "var(--secondary-color)";
@@ -181,7 +181,7 @@ export default function Navbar() {
                     }}
                     onMouseOver={(e) => {
                       e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                      e.currentTarget.style.color = "#ffffff";
+                      e.currentTarget.style.color = "var(--white-color)";
                     }}
                     onMouseOut={(e) => {
                       e.currentTarget.style.backgroundColor = "var(--secondary-color)";

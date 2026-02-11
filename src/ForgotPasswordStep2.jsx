@@ -22,9 +22,9 @@ export default function ForgotPasswordStep2() {
       <div
         className="navbar d-flex justify-content-between align-items-center px-3"
         style={{
-          backgroundColor: darkMode ? "#000" : "#fff",
-          color: darkMode ? "#fff" : "#000",
-          borderBottom: "1px solid #ccc",
+          backgroundColor: darkMode ? "var(--primary-color)" : "var(--primary-color-light)",
+          color: darkMode ? "var(--text-color)" : "var(--text-color-light)",
+          borderBottom: `1px solid var(--border-color-dark)`,
         }}
       >
         <div className="logo-container d-flex align-items-center gap-2">
@@ -36,8 +36,8 @@ export default function ForgotPasswordStep2() {
             className="theme-toggle btn btn-sm"
             onClick={toggleTheme}
             style={{
-              border: `1px solid ${darkMode ? "#fff" : "#000"}`,
-              color: darkMode ? "#fff" : "#000",
+              border: `1px solid ${darkMode ? "var(--text-color)" : "var(--text-color-light)"}`,
+              color: darkMode ? "var(--text-color)" : "var(--text-color-light)",
             }}
           >
             {darkMode ? "☀ Light Mode" : "🌙 Dark Mode"}
@@ -51,7 +51,7 @@ export default function ForgotPasswordStep2() {
         <div
           className="form-box p-4 rounded"
           style={{
-            backgroundColor: darkMode ? "#333" : "#ddd",
+            backgroundColor: darkMode ? "var(--secondary-color)" : "var(--secondary-color-light)",
             display: "inline-block",
             minWidth: "320px",
           }}

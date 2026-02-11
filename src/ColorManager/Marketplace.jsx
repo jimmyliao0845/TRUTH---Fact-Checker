@@ -23,6 +23,10 @@ const THEMES = {
       text: "#ffffff",
       accent: "#ff6b6b",
     },
+    overlays: {
+      color: "rgba(255, 255, 255, 0.05)",
+      border: "rgba(255, 255, 255, 0.1)",
+    },
   },
   white: {
     name: "White",
@@ -37,6 +41,10 @@ const THEMES = {
       button: "#e8e8e8",
       text: "#000000",
       accent: "#0066cc",
+    },
+    overlays: {
+      color: "rgba(0, 0, 0, 0.05)",
+      border: "rgba(0, 0, 0, 0.1)",
     },
   },
   ocean: {
@@ -53,6 +61,10 @@ const THEMES = {
       text: "#ffffff",
       accent: "#5dade2",
     },
+    overlays: {
+      color: "rgba(255, 255, 255, 0.05)",
+      border: "rgba(255, 255, 255, 0.1)",
+    },
   },
   forest: {
     name: "Forest",
@@ -67,6 +79,10 @@ const THEMES = {
       button: "#4a8a6f",
       text: "#ffffff",
       accent: "#52d96b",
+    },
+    overlays: {
+      color: "rgba(255, 255, 255, 0.05)",
+      border: "rgba(255, 255, 255, 0.1)",
     },
   },
   sunset: {
@@ -83,6 +99,10 @@ const THEMES = {
       text: "#ffffff",
       accent: "#ffd93d",
     },
+    overlays: {
+      color: "rgba(255, 255, 255, 0.05)",
+      border: "rgba(255, 255, 255, 0.1)",
+    },
   },
   purple: {
     name: "Purple",
@@ -98,6 +118,10 @@ const THEMES = {
       text: "#ffffff",
       accent: "#ce93d8",
     },
+    overlays: {
+      color: "rgba(255, 255, 255, 0.05)",
+      border: "rgba(255, 255, 255, 0.1)",
+    },
   },
   neon: {
     name: "Neon",
@@ -112,6 +136,10 @@ const THEMES = {
       button: "#00ff00",
       text: "#00ff00",
       accent: "#ff00ff",
+    },
+    overlays: {
+      color: "rgba(0, 255, 0, 0.05)",
+      border: "rgba(0, 255, 0, 0.15)",
     },
   },
 };
@@ -134,21 +162,35 @@ export const ColorThemeManager = {
     root.style.setProperty("--button-color", theme.colors.button);
     root.style.setProperty("--text-color", theme.colors.text);
     root.style.setProperty("--accent-color", theme.colors.accent);
+    
+    // Apply overlay colors if defined in theme
+    if (theme.overlays) {
+      root.style.setProperty("--overlay-color", theme.overlays.color);
+      root.style.setProperty("--overlay-border", theme.overlays.border);
+    }
 
     localStorage.setItem("selectedTheme", themeName);
   },
 
   resetToDefault: () => {
-    // Reset to original design from main branch (Light mode)
+    // Reset to white theme (light mode default)
+    const whiteTheme = THEMES.white;
     const root = document.documentElement;
-    root.style.setProperty("--primary-color", "#ffffff");       // white
-    root.style.setProperty("--secondary-color", "#f5f5f5");     // light gray
-    root.style.setProperty("--navbar-color", "#ffffff");        // white navbar (changed from #09090d)
-    root.style.setProperty("--sidebar-color", "#f5f5f5");       // light sidebar
-    root.style.setProperty("--background-color", "#ffffff");    // white background
-    root.style.setProperty("--button-color", "#0d6efd");        // blue button
-    root.style.setProperty("--text-color", "#000000");          // black text
-    root.style.setProperty("--accent-color", "#0d6efd");        // blue accent
+    
+    root.style.setProperty("--primary-color", whiteTheme.colors.primary);
+    root.style.setProperty("--secondary-color", whiteTheme.colors.secondary);
+    root.style.setProperty("--navbar-color", whiteTheme.colors.navbar);
+    root.style.setProperty("--sidebar-color", whiteTheme.colors.sidebar);
+    root.style.setProperty("--background-color", whiteTheme.colors.background);
+    root.style.setProperty("--button-color", whiteTheme.colors.button);
+    root.style.setProperty("--text-color", whiteTheme.colors.text);
+    root.style.setProperty("--accent-color", whiteTheme.colors.accent);
+    
+    // Apply overlay colors for white theme
+    if (whiteTheme.overlays) {
+      root.style.setProperty("--overlay-color", whiteTheme.overlays.color);
+      root.style.setProperty("--overlay-border", whiteTheme.overlays.border);
+    }
     
     localStorage.removeItem("selectedTheme");
     localStorage.removeItem("customColors");
@@ -171,58 +213,31 @@ export const ColorThemeManager = {
   },
 };
 
-// ============= SHOP SERVICE =============
+// ============= HELPER FUNCTION =============
+// Get default colors from Black theme (default theme)
+const getDefaultColorValue = (colorKey) => {
+  return THEMES.black.colors[colorKey] || "#09090d";
+};
+
+// Generate color shop items from THEMES definitions - single source of truth
+const generateColorShopItems = () => {
+  return Object.entries(THEMES)
+    .filter(([key]) => key !== "black" && key !== "white") // Free themes not in shop
+    .map(([key, theme]) => ({
+      id: `color_${key}`,
+      name: `${theme.name} Theme`,
+      description: theme.description,
+      price: theme.price,
+      type: "color",
+      icon: key,
+      color: theme.colors.primary, // Reference primary color from theme definition
+    }));
+};
 
 const SHOP_ITEMS = {
   colors: {
     category: "Color Themes",
-    items: [
-      {
-        id: "color_ocean",
-        name: "Ocean Theme",
-        description: "Cool blue theme with calm colors",
-        price: 500,
-        type: "color",
-        icon: "ocean",
-        color: "#0a4a6e",
-      },
-      {
-        id: "color_forest",
-        name: "Forest Theme",
-        description: "Nature-inspired green theme",
-        price: 500,
-        type: "color",
-        icon: "forest",
-        color: "#1b4620",
-      },
-      {
-        id: "color_sunset",
-        name: "Sunset Theme",
-        description: "Warm orange & pink theme",
-        price: 500,
-        type: "color",
-        icon: "sunset",
-        color: "#8b4513",
-      },
-      {
-        id: "color_purple",
-        name: "Purple Theme",
-        description: "Royal purple theme",
-        price: 750,
-        type: "color",
-        icon: "purple",
-        color: "#4a148c",
-      },
-      {
-        id: "color_neon",
-        name: "Neon Theme",
-        description: "Cyberpunk neon theme",
-        price: 1000,
-        type: "color",
-        icon: "neon",
-        color: "#0a0e27",
-      },
-    ],
+    items: generateColorShopItems(),
   },
   passes: {
     category: "Entry Passes",
@@ -462,8 +477,8 @@ export default function Marketplace() {
         <div
           className="marketplace-header mb-5 rounded p-4"
           style={{
-            backgroundColor: "rgba(255, 255, 255, 0.05)",
-            border: "2px solid rgba(255, 255, 255, 0.1)",
+            backgroundColor: "var(--overlay-color)",
+            border: "2px solid var(--overlay-border)",
           }}
         >
           <div className="row align-items-center">
@@ -483,7 +498,7 @@ export default function Marketplace() {
               <div className="d-flex justify-content-md-end justify-content-start align-items-center gap-3 flex-wrap">
                 <div className="points-display">
                   <h5 className="mb-0">
-                    <i className="bi bi-coin me-2" style={{ color: "#ffd93d" }}></i>
+                    <i className="bi bi-coin me-2" style={{ color: "var(--currency-color)" }}></i>
                     {userData?.points || 0}
                   </h5>
                   <small className="text-muted">Points</small>
@@ -685,11 +700,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.primary || "#09090d"}
+                      defaultValue={customColors.primary || getDefaultColorValue('primary')}
                       onChange={(e) => handleCustomColorChange("primary", e.target.value)}
                       title="Choose primary color"
                     />
-                    <span className="color-value ms-2">{customColors.primary || "#09090d"}</span>
+                    <span className="color-value ms-2">{customColors.primary || getDefaultColorValue('primary')}</span>
                   </div>
                 </div>
               </div>
@@ -701,11 +716,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.secondary || "#1a1a23"}
+                      defaultValue={customColors.secondary || getDefaultColorValue('secondary')}
                       onChange={(e) => handleCustomColorChange("secondary", e.target.value)}
                       title="Choose secondary color"
                     />
-                    <span className="color-value ms-2">{customColors.secondary || "#1a1a23"}</span>
+                    <span className="color-value ms-2">{customColors.secondary || getDefaultColorValue('secondary')}</span>
                   </div>
                 </div>
               </div>
@@ -717,11 +732,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.navbar || "#09090d"}
+                      defaultValue={customColors.navbar || getDefaultColorValue('navbar')}
                       onChange={(e) => handleCustomColorChange("navbar", e.target.value)}
                       title="Choose navbar color"
                     />
-                    <span className="color-value ms-2">{customColors.navbar || "#09090d"}</span>
+                    <span className="color-value ms-2">{customColors.navbar || getDefaultColorValue('navbar')}</span>
                   </div>
                 </div>
               </div>
@@ -733,11 +748,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.sidebar || "#1a1a23"}
+                      defaultValue={customColors.sidebar || getDefaultColorValue('sidebar')}
                       onChange={(e) => handleCustomColorChange("sidebar", e.target.value)}
                       title="Choose sidebar color"
                     />
-                    <span className="color-value ms-2">{customColors.sidebar || "#1a1a23"}</span>
+                    <span className="color-value ms-2">{customColors.sidebar || getDefaultColorValue('sidebar')}</span>
                   </div>
                 </div>
               </div>
@@ -749,11 +764,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.background || "#0f0f14"}
+                      defaultValue={customColors.background || getDefaultColorValue('background')}
                       onChange={(e) => handleCustomColorChange("background", e.target.value)}
                       title="Choose background color"
                     />
-                    <span className="color-value ms-2">{customColors.background || "#0f0f14"}</span>
+                    <span className="color-value ms-2">{customColors.background || getDefaultColorValue('background')}</span>
                   </div>
                 </div>
               </div>
@@ -765,11 +780,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.button || "#007bff"}
+                      defaultValue={customColors.button || getDefaultColorValue('button')}
                       onChange={(e) => handleCustomColorChange("button", e.target.value)}
                       title="Choose button color"
                     />
-                    <span className="color-value ms-2">{customColors.button || "#007bff"}</span>
+                    <span className="color-value ms-2">{customColors.button || getDefaultColorValue('button')}</span>
                   </div>
                 </div>
               </div>
@@ -781,11 +796,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.text || "#ffffff"}
+                      defaultValue={customColors.text || getDefaultColorValue('text')}
                       onChange={(e) => handleCustomColorChange("text", e.target.value)}
                       title="Choose text color"
                     />
-                    <span className="color-value ms-2">{customColors.text || "#ffffff"}</span>
+                    <span className="color-value ms-2">{customColors.text || getDefaultColorValue('text')}</span>
                   </div>
                 </div>
               </div>
@@ -797,11 +812,11 @@ export default function Marketplace() {
                     <input
                       type="color"
                       className="form-control form-control-color"
-                      defaultValue={customColors.accent || "#ff6b6b"}
+                      defaultValue={customColors.accent || getDefaultColorValue('accent')}
                       onChange={(e) => handleCustomColorChange("accent", e.target.value)}
                       title="Choose accent color"
                     />
-                    <span className="color-value ms-2">{customColors.accent || "#ff6b6b"}</span>
+                    <span className="color-value ms-2">{customColors.accent || getDefaultColorValue('accent')}</span>
                   </div>
                 </div>
               </div>
@@ -879,8 +894,8 @@ function ShopItemCard({ item, isUnlocked, onPurchase, userPoints }) {
     <div
       className="shop-item-card h-100 rounded overflow-hidden transition"
       style={{
-        backgroundColor: "rgba(255, 255, 255, 0.05)",
-        border: "2px solid rgba(255, 255, 255, 0.1)",
+        backgroundColor: "var(--overlay-color)",
+        border: "2px solid var(--overlay-border)",
         cursor: "pointer",
         transform: isHovered ? "translateY(-5px)" : "translateY(0)",
         boxShadow: isHovered
@@ -894,7 +909,7 @@ function ShopItemCard({ item, isUnlocked, onPurchase, userPoints }) {
       <div
         style={{
           height: "100px",
-          backgroundColor: item.color || "#3a305033",
+          backgroundColor: item.color || getDefaultColorValue('button'),
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -951,7 +966,7 @@ function ShopItemCard({ item, isUnlocked, onPurchase, userPoints }) {
         <div className="d-flex justify-content-between align-items-center gap-2">
           <div className="price-badge">
             <h6 className="mb-0">
-              <i className="bi bi-coin me-1" style={{ color: "#ffd93d" }}></i>
+              <i className="bi bi-coin me-1" style={{ color: "var(--currency-color)" }}></i>
               {item.price}
             </h6>
           </div>

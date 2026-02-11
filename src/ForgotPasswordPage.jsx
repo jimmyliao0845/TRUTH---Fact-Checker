@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
         <div
           className="p-4 rounded"
           style={{
-            backgroundColor: isDarkMode ? "#333" : "#ddd",
+            backgroundColor: isDarkMode ? "var(--secondary-color)" : "var(--secondary-color-light)",
             width: "100%",
             maxWidth: "400px",
           }}

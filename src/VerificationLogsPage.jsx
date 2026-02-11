@@ -639,7 +639,7 @@ const detailBackdrop = {
 const detailCard = {
   width: "880px",
   maxWidth: "95%",
-  background: "#fff",
+  background: "var(--white-color)",
   borderRadius: 8,
   padding: 20,
   boxShadow: "0 10px 30px rgba(0,0,0,0.2)",

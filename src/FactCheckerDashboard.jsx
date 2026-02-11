@@ -196,7 +196,7 @@ export default function FactCheckerDashboard() {
       {
         label: "Reviews",
         data: [85, 10, 5],
-        backgroundColor: ["#28a745", "#ffc107", "#dc3545"],
+        backgroundColor: ["var(--success-color)", "var(--warning-color)", "var(--error-color)"],
       },
     ],
   };
@@ -704,7 +704,7 @@ export default function FactCheckerDashboard() {
                           className="btn p-0 border-0"
                           style={{ color: "var(--accent-color)", cursor: "pointer" }}
                           onMouseOver={(e) => {
-                            e.currentTarget.style.color = "#dc3545";
+                            e.currentTarget.style.color = "var(--error-color)";
                           }}
                           onMouseOut={(e) => {
                             e.currentTarget.style.color = "var(--accent-color)";
@@ -946,7 +946,7 @@ export default function FactCheckerDashboard() {
           .sidebar-btn {
             background: none;
             border: none;
-            color: #000;
+            color: var(--text-color-light);
             padding: 10px 12px;
             border-radius: 5px;
             width: 100%;
@@ -956,8 +956,8 @@ export default function FactCheckerDashboard() {
           }
 
           .sidebar-btn:hover {
-            background-color: #000;
-            color: #fff;
+            background-color: var(--text-color-light);
+            color: var(--white-color);
           }
           
           /* Custom table adjustments */
@@ -967,7 +967,7 @@ export default function FactCheckerDashboard() {
           
           .form-select:focus {
             box-shadow: 0 0 0 0.25rem rgba(100, 100, 100, 0.25);
-            border-color: #a0a0a0;
+            border-color: var(--neutral-color);
           }
         `}
       </style>

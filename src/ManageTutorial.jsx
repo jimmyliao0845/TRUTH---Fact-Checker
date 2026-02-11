@@ -177,7 +177,7 @@ export default function ManageTutorial() {
               style={{
                 backgroundColor: "var(--secondary-color)",
                 borderRadius: "10px",
-                border: "1px solid var(--accent-color, #ddd)",
+                border: "1px solid var(--accent-color)",
                 minWidth: "250px",
               }}
             >
@@ -232,8 +232,8 @@ export default function ManageTutorial() {
                       <span
                         className="badge"
                         style={{
-                          backgroundColor: item.tag === "MP" ? "var(--accent-color)" : item.tag === "TR" ? "#28a745" : "#ffc107",
-                          color: item.tag === "MP" ? "var(--primary-color)" : item.tag === "RU" ? "#000" : "#fff"
+                          backgroundColor: item.tag === "MP" ? "var(--accent-color)" : item.tag === "TR" ? "var(--success-color)" : "var(--warning-color)",
+                          color: item.tag === "MP" ? "var(--primary-color)" : item.tag === "RU" ? "var(--white-color)" : "var(--primary-color)"
                         }}
                       >
                         {item.tag}

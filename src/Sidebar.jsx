@@ -47,7 +47,7 @@ export default function Sidebar() {
         }
         .sidebar-nav a:hover {
           background-color: var(--accent-color);
-          color: #ffffff;
+          color: var(--white-color);
         }
       `}</style>
     </div>

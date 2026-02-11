@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import LoadingScreen from "./LoadingScreen";
+import OfflineBanner from "./components/OfflineBanner";
 import HomePage from "./HomePage";
 import LoginPage from "./LoginPage";
 import RegisterPage from "./RegisterPage";
@@ -21,11 +22,11 @@ import ProfessionalReportsPage from "./ProfessionalReportsPage";
 import UserProfile from "./UserProfile";
 import LinkedUser from "./LinkedUser";
 
-// ✅ Admin Pages
-import AdminDashboard from "./AdminDashboard";
-import AdminUsers from "./AdminUsers"; 
-import AdminTutorialPage from "./AdminTutorialPage";
-import AdminReviewsPage from "./AdminReviewsPage";
+// ✅ Unified Admin Panel (CMS)
+import AdminPanel from "./AdminPanel";
+
+// ✅ CMS Frontend Viewer
+import { TutorialList, TutorialView, CMSPage, AnnouncementsBanner } from "./TutorialViewer";
 
 // ✅ Marketplace & Theme
 import Marketplace from "./ColorManager/Marketplace";
@@ -62,6 +63,7 @@ function AppContent() {
     <>
       {loading && <LoadingScreen />}
       <Navbar />
+      <OfflineBanner />
       <Routes>
         {/* Home */}
         <Route path="/" element={<HomePage />} />
@@ -121,11 +123,14 @@ function AppContent() {
           }
         />
 
-        {/* ✅ Admin Pages */}
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/users" element={<AdminUsers />} /> 
-        <Route path="/admin/tutorials" element={<AdminTutorialPage />} />
-        <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+        {/* ✅ Unified Admin Panel */}
+        <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/admin-dashboard" element={<AdminPanel />} />
+
+        {/* ✅ CMS Content Pages (Frontend) */}
+        <Route path="/tutorials" element={<TutorialList />} />
+        <Route path="/tutorials/:id" element={<TutorialView />} />
+        <Route path="/page/:slug" element={<CMSPage />} />
 
         {/* ✅ General User Pages */}
         <Route path="/game" element={<GamePage />} />

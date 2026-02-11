@@ -492,8 +492,8 @@ export default function GeneralUserProfile() {
                                 <span
                                   className="badge"
                                   style={{
-                                    backgroundColor: sub.result === "AI-generated" ? "#ffc107" : "var(--accent-color)",
-                                    color: sub.result === "AI-generated" ? "#000" : "var(--primary-color)"
+                                    backgroundColor: sub.result === "AI-generated" ? "var(--warning-color)" : "var(--accent-color)",
+                                    color: sub.result === "AI-generated" ? "var(--primary-color)" : "var(--text-color-light)"
                                   }}
                                 >
                                   {sub.result}

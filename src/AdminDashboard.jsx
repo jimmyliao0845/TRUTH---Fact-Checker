@@ -284,6 +284,29 @@ export default function AdminDashboard() {
               <i className="fas fa-chart-line me-2"></i> Analytics
             </Link>
           </li>
+          <li className="nav-item mb-2">
+            <Link
+              to="/admin/cms"
+              style={{
+                color: "var(--text-color)",
+                backgroundColor: "transparent",
+                padding: "10px",
+                borderRadius: "4px",
+                display: "inline-block",
+                textDecoration: "none",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                e.currentTarget.style.color = "var(--primary-color)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "var(--text-color)";
+              }}
+            >
+              <i className="fas fa-edit me-2"></i> Content Manager
+            </Link>
+          </li>
         </ul>
         <hr style={{ borderColor: "var(--accent-color)" }} />
         <div className="mt-auto text-center">
