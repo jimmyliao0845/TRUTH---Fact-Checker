@@ -396,10 +396,13 @@ export default function AdminPanel() {
       className="d-flex flex-column p-3"
       style={{
         width: "240px",
-        minHeight: "100vh",
+        height: "100vh",
+        overflow: "hidden",
         backgroundColor: "var(--secondary-color)",
         borderRight: "2px solid var(--accent-color)",
         boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
+        position: "sticky",
+        top: 0,
       }}
     >
       <h4 className="text-center mb-4 fw-semibold" style={{ color: "var(--text-color)" }}>
@@ -413,14 +416,16 @@ export default function AdminPanel() {
             <button
               className="nav-link w-100 text-start border-0"
               style={{
-                color: activeTab === item.id ? "var(--primary-color)" : "var(--text-color)",
-                backgroundColor: activeTab === item.id ? "var(--accent-color)" : "transparent",
+                color: "var(--text-color)",
+                backgroundColor: "transparent",
                 padding: "10px 12px",
                 borderRadius: "5px",
+                borderLeft: activeTab === item.id ? "3px solid var(--accent-color)" : "3px solid transparent",
+                transition: "all 0.2s ease",
               }}
               onClick={() => setActiveTab(item.id)}
             >
-              <i className={`fas fa-${item.icon} me-2`}></i>
+              <i className={`fas fa-${item.icon} me-2`} style={{ color: activeTab === item.id ? "var(--accent-color)" : "var(--text-color)" }}></i>
               {item.label}
             </button>
           </li>

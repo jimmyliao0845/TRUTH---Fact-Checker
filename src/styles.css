@@ -33,6 +33,11 @@
   --overlay-color-light: rgba(255, 255, 255, 0.1);
   --overlay-border: rgba(255, 255, 255, 0.1);
   
+  /* Tab Colors (dark theme defaults) */
+  --tab-bg: rgba(255, 255, 255, 0.1);
+  --tab-bg-hover: rgba(255, 255, 255, 0.2);
+  --tab-bg-active: rgba(0, 191, 255, 0.3);
+  
   /* Light Mode Variants */
   --primary-color-light: #ffffff;
   --secondary-color-light: #f5f5f5;
@@ -612,7 +617,7 @@ ul li span {
 }
 
 .marketplace-header {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  background: linear-gradient(135deg, var(--overlay-color) 0%, rgba(255, 255, 255, 0.02) 100%);
   backdrop-filter: blur(10px);
   animation: slideDown 0.5s ease-out;
 }
@@ -620,7 +625,7 @@ ul li span {
 /* Points Display */
 .points-display {
   background: rgba(255, 217, 61, 0.1);
-  border: 2px solid rgba(255, 217, 61, 0.3);
+  border: 2px solid var(--currency-color);
   padding: 0.625rem 1.25rem;
   border-radius: 0.5rem;
   text-align: center;
@@ -690,7 +695,7 @@ ul li span {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, var(--overlay-color-light), transparent);
   transition: left 0.5s;
 }
 
@@ -710,7 +715,7 @@ ul li span {
 }
 
 .shop-item-card .text-info {
-  color: #5dade2 !important;
+  color: var(--info-color) !important;
 }
 
 .shop-item-card .btn {
@@ -748,13 +753,13 @@ ul li span {
   border-radius: 8px 8px 0 0;
   font-weight: 600;
   opacity: 1;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--tab-bg);
   margin-right: 5px;
 }
 
 .nav-tabs .nav-link:hover {
   color: var(--accent-color) !important;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--tab-bg-hover);
   border: 2px solid var(--accent-color);
   opacity: 1;
   text-decoration: none;
@@ -762,7 +767,7 @@ ul li span {
 
 .nav-tabs .nav-link.active {
   color: var(--accent-color) !important;
-  background: rgba(0, 191, 255, 0.3);
+  background: var(--tab-bg-active);
   border: 2px solid var(--accent-color);
   border-bottom: 3px solid var(--accent-color);
   font-weight: 700;

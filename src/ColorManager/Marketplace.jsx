@@ -27,6 +27,11 @@ const THEMES = {
       color: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.1)",
     },
+    tabs: {
+      bg: "rgba(255, 255, 255, 0.1)",
+      bgHover: "rgba(255, 255, 255, 0.2)",
+      bgActive: "rgba(255, 107, 107, 0.3)",
+    },
   },
   white: {
     name: "White",
@@ -45,6 +50,11 @@ const THEMES = {
     overlays: {
       color: "rgba(0, 0, 0, 0.05)",
       border: "rgba(0, 0, 0, 0.1)",
+    },
+    tabs: {
+      bg: "rgba(0, 0, 0, 0.1)",
+      bgHover: "rgba(0, 0, 0, 0.2)",
+      bgActive: "rgba(13, 110, 253, 0.3)",
     },
   },
   ocean: {
@@ -65,6 +75,11 @@ const THEMES = {
       color: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.1)",
     },
+    tabs: {
+      bg: "rgba(255, 255, 255, 0.1)",
+      bgHover: "rgba(255, 255, 255, 0.2)",
+      bgActive: "rgba(93, 173, 226, 0.3)",
+    },
   },
   forest: {
     name: "Forest",
@@ -83,6 +98,11 @@ const THEMES = {
     overlays: {
       color: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.1)",
+    },
+    tabs: {
+      bg: "rgba(255, 255, 255, 0.1)",
+      bgHover: "rgba(255, 255, 255, 0.2)",
+      bgActive: "rgba(82, 217, 107, 0.3)",
     },
   },
   sunset: {
@@ -103,6 +123,11 @@ const THEMES = {
       color: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.1)",
     },
+    tabs: {
+      bg: "rgba(255, 255, 255, 0.1)",
+      bgHover: "rgba(255, 255, 255, 0.2)",
+      bgActive: "rgba(255, 217, 61, 0.3)",
+    },
   },
   purple: {
     name: "Purple",
@@ -122,6 +147,11 @@ const THEMES = {
       color: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.1)",
     },
+    tabs: {
+      bg: "rgba(255, 255, 255, 0.1)",
+      bgHover: "rgba(255, 255, 255, 0.2)",
+      bgActive: "rgba(206, 147, 216, 0.3)",
+    },
   },
   neon: {
     name: "Neon",
@@ -140,6 +170,11 @@ const THEMES = {
     overlays: {
       color: "rgba(0, 255, 0, 0.05)",
       border: "rgba(0, 255, 0, 0.15)",
+    },
+    tabs: {
+      bg: "rgba(0, 255, 0, 0.1)",
+      bgHover: "rgba(0, 255, 0, 0.2)",
+      bgActive: "rgba(255, 0, 255, 0.3)",
     },
   },
 };
@@ -168,6 +203,13 @@ export const ColorThemeManager = {
       root.style.setProperty("--overlay-color", theme.overlays.color);
       root.style.setProperty("--overlay-border", theme.overlays.border);
     }
+    
+    // Apply tab colors if defined in theme
+    if (theme.tabs) {
+      root.style.setProperty("--tab-bg", theme.tabs.bg);
+      root.style.setProperty("--tab-bg-hover", theme.tabs.bgHover);
+      root.style.setProperty("--tab-bg-active", theme.tabs.bgActive);
+    }
 
     localStorage.setItem("selectedTheme", themeName);
   },
@@ -190,6 +232,13 @@ export const ColorThemeManager = {
     if (whiteTheme.overlays) {
       root.style.setProperty("--overlay-color", whiteTheme.overlays.color);
       root.style.setProperty("--overlay-border", whiteTheme.overlays.border);
+    }
+    
+    // Apply tab colors for white theme
+    if (whiteTheme.tabs) {
+      root.style.setProperty("--tab-bg", whiteTheme.tabs.bg);
+      root.style.setProperty("--tab-bg-hover", whiteTheme.tabs.bgHover);
+      root.style.setProperty("--tab-bg-active", whiteTheme.tabs.bgActive);
     }
     
     localStorage.removeItem("selectedTheme");
