@@ -5,12 +5,30 @@ import { onAuthStateChanged } from "firebase/auth";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
+import { InstallButton, IOSInstallInstructions } from "./components/InstallButton";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [displayedText, setDisplayedText] = useState("");
   const [showContent, setShowContent] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showIOSPrompt, setShowIOSPrompt] = useState(false);
+
+  // Check if iOS and show install instructions
+  useEffect(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const hasSeenPrompt = localStorage.getItem('ios-install-prompt-seen');
+    
+    if (isIOS && !isStandalone && !hasSeenPrompt) {
+      setTimeout(() => setShowIOSPrompt(true), 3000);
+    }
+  }, []);
+
+  const handleCloseIOSPrompt = () => {
+    setShowIOSPrompt(false);
+    localStorage.setItem('ios-install-prompt-seen', 'true');
+  };
 
   // Check authentication status (but don't redirect)
   useEffect(() => {
@@ -102,8 +120,16 @@ export default function HomePage() {
             >
               Try T.R.U.T.H. Now <i className="bi bi-arrow-right ms-2"></i>
             </button>
+            
+            {/* Install App Button */}
+            <div style={{ animation: "fadeInUp 1.2s ease-out", marginTop: "1rem" }}>
+              <InstallButton variant="large" />
+            </div>
           </>
         )}
+        
+        {/* iOS Install Instructions */}
+        <IOSInstallInstructions show={showIOSPrompt} onClose={handleCloseIOSPrompt} />
       </div>
 
       {/* About Section */}
