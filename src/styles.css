@@ -32,6 +32,7 @@
   --overlay-color: rgba(255, 255, 255, 0.05);
   --overlay-color-light: rgba(255, 255, 255, 0.1);
   --overlay-border: rgba(255, 255, 255, 0.1);
+  --overlay-border-light: rgba(255, 255, 255, 0.3);
   
   /* Tab Colors (dark theme defaults) */
   --tab-bg: rgba(255, 255, 255, 0.1);
@@ -454,8 +455,8 @@ ul li span {
 }
 
 .theme-confirmation-dialog {
-  background: #1a1a23;
-  border: 2px solid rgba(0, 191, 255, 0.3);
+  background: var(--secondary-color);
+  border: 2px solid var(--overlay-border);
   border-radius: 0.75rem;
   max-width: min(500px, 90%);
   width: 90%;
@@ -479,11 +480,11 @@ ul li span {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem;
-  border-bottom: 1px solid rgba(0, 191, 255, 0.2);
+  border-bottom: 1px solid var(--overlay-color);
 }
 
 .confirmation-header h5 {
-  color: #00bfff;
+  color: var(--accent-color);
   font-weight: 700;
   margin: 0;
 }
@@ -491,7 +492,7 @@ ul li span {
 .confirmation-header .btn-close {
   background: none;
   border: none;
-  color: #ffffff;
+  color: var(--text-color);
   opacity: 0.7;
   cursor: pointer;
   padding: 0;
@@ -505,7 +506,8 @@ ul li span {
 
 .confirmation-body {
   padding: 1.25rem;
-  color: #e0e0e0;
+  color: var(--text-color);
+  opacity: 0.9;
 }
 
 .confirmation-body p {
@@ -518,7 +520,7 @@ ul li span {
 }
 
 .confirmation-body strong {
-  color: #00bfff;
+  color: var(--accent-color);
   font-weight: 600;
 }
 
@@ -526,7 +528,7 @@ ul li span {
   display: flex;
   gap: 0.625rem;
   padding: 1.25rem;
-  border-top: 1px solid rgba(0, 191, 255, 0.2);
+  border-top: 1px solid var(--overlay-color);
   justify-content: flex-end;
 }
 
@@ -538,25 +540,26 @@ ul li span {
 }
 
 .confirmation-footer .btn-secondary {
-  background-color: #555;
-  border-color: #555;
-  color: #ffffff;
+  background-color: var(--button-color);
+  border-color: var(--button-color);
+  color: var(--text-color);
 }
 
 .confirmation-footer .btn-secondary:hover {
-  background-color: #666;
-  border-color: #666;
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
 .confirmation-footer .btn-primary {
-  background-color: #00bfff;
-  border-color: #00bfff;
-  color: #000000;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--primary-color);
 }
 
 .confirmation-footer .btn-primary:hover {
-  background-color: #00a8d8;
-  border-color: #00a8d8;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  opacity: 0.8;
 }
 
 /* Responsive */
@@ -595,6 +598,7 @@ ul li span {
   color: var(--text-color);
   width: 100%;
   box-sizing: border-box;
+  background-color: var(--background-color);
 }
 
 .marketplace-container h2,
@@ -651,10 +655,11 @@ ul li span {
 .theme-card h6 {
   font-weight: 600;
   font-size: 0.95rem;
+  color: inherit !important;
 }
 
 .theme-card p {
-  color: inherit;
+  color: inherit !important;
   opacity: 0.9;
 }
 
@@ -706,11 +711,11 @@ ul li span {
 .shop-item-card h6 {
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--text-color);
+  color: inherit !important;
 }
 
 .shop-item-card p {
-  color: var(--text-color);
+  color: inherit !important;
   opacity: 0.85;
 }
 
@@ -1995,3 +2000,150 @@ body.night-mode .social-login-btn:hover {
     padding: 5% 5%;
   }
 }
+
+/* ================================
+   MARKETPLACE COMPONENT STYLES
+================================ */
+
+/* Marketplace Header */
+.marketplace-header {
+  background-color: var(--overlay-color);
+  border: 2px solid var(--overlay-border);
+}
+
+/* Theme Card */
+.theme-card-item {
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-card-item.unlocked {
+  opacity: 1;
+}
+
+.theme-card-item.locked {
+  filter: grayscale(70%) brightness(0.85);
+  cursor: not-allowed;
+}
+
+.theme-card-item.selected {
+  border: 3px solid var(--accent-color);
+  transform: scale(1.05);
+}
+
+.theme-card-item.unselected {
+  border: 2px solid var(--overlay-border);
+  transform: scale(1);
+}
+
+/* Color Swatch */
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid var(--overlay-border);
+  display: inline-block;
+}
+
+/* Theme Purchase Badge */
+.theme-badge-price {
+  font-size: 0.7rem;
+}
+
+/* Custom Theme Editor */
+.custom-theme-editor {
+  background-color: var(--overlay-color);
+  border: 2px solid var(--overlay-border);
+  border-radius: 0.5rem;
+}
+
+.custom-theme-editor h5 {
+  color: var(--text-color);
+}
+
+/* Custom Color Label */
+.custom-color-label {
+  color: var(--text-color);
+}
+
+/* Color Value Display */
+.color-value {
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+/* Theme Button Primary */
+.theme-btn-primary {
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.theme-btn-primary:hover {
+  background-color: var(--accent-color);
+  opacity: 0.9;
+}
+
+/* Theme Button Secondary */
+.theme-btn-secondary {
+  background-color: var(--button-color);
+  color: var(--text-color);
+  border: 1px solid var(--overlay-border);
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.theme-btn-secondary:hover {
+  background-color: var(--overlay-color);
+  border-color: var(--overlay-border);
+}
+
+/* Shop Item Card */
+.shop-item-header {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Color Item Preview */
+.color-swatch-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 10px;
+  border: 3px solid var(--overlay-border-light);
+}
+
+/* Shop Item Unlocked Badge */
+.shop-unlocked-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--success-color);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Currency Icon */
+.currency-icon {
+  color: var(--currency-color);
+}
+
+/* Cursor Pointer */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Transition Utility */
+.transition {
+  transition: all 0.3s ease;
+}
+
+

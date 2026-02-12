@@ -26,6 +26,7 @@ const THEMES = {
     overlays: {
       color: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.1)",
+      borderLight: "rgba(255, 255, 255, 0.3)",
     },
     tabs: {
       bg: "rgba(255, 255, 255, 0.1)",
@@ -50,6 +51,7 @@ const THEMES = {
     overlays: {
       color: "rgba(0, 0, 0, 0.05)",
       border: "rgba(0, 0, 0, 0.1)",
+      borderLight: "rgba(0, 0, 0, 0.3)",
     },
     tabs: {
       bg: "rgba(0, 0, 0, 0.1)",
@@ -72,8 +74,9 @@ const THEMES = {
       accent: "#5dade2",
     },
     overlays: {
-      color: "rgba(255, 255, 255, 0.05)",
-      border: "rgba(255, 255, 255, 0.1)",
+      color: "rgba(255, 255, 255, 0.12)",
+      border: "rgba(255, 255, 255, 0.2)",
+      borderLight: "rgba(255, 255, 255, 0.35)",
     },
     tabs: {
       bg: "rgba(255, 255, 255, 0.1)",
@@ -96,8 +99,9 @@ const THEMES = {
       accent: "#52d96b",
     },
     overlays: {
-      color: "rgba(255, 255, 255, 0.05)",
-      border: "rgba(255, 255, 255, 0.1)",
+      color: "rgba(255, 255, 255, 0.12)",
+      border: "rgba(255, 255, 255, 0.2)",
+      borderLight: "rgba(255, 255, 255, 0.35)",
     },
     tabs: {
       bg: "rgba(255, 255, 255, 0.1)",
@@ -120,8 +124,9 @@ const THEMES = {
       accent: "#ffd93d",
     },
     overlays: {
-      color: "rgba(255, 255, 255, 0.05)",
-      border: "rgba(255, 255, 255, 0.1)",
+      color: "rgba(255, 255, 255, 0.12)",
+      border: "rgba(255, 255, 255, 0.2)",
+      borderLight: "rgba(255, 255, 255, 0.35)",
     },
     tabs: {
       bg: "rgba(255, 255, 255, 0.1)",
@@ -144,8 +149,9 @@ const THEMES = {
       accent: "#ce93d8",
     },
     overlays: {
-      color: "rgba(255, 255, 255, 0.05)",
-      border: "rgba(255, 255, 255, 0.1)",
+      color: "rgba(255, 255, 255, 0.12)",
+      border: "rgba(255, 255, 255, 0.2)",
+      borderLight: "rgba(255, 255, 255, 0.35)",
     },
     tabs: {
       bg: "rgba(255, 255, 255, 0.1)",
@@ -168,13 +174,40 @@ const THEMES = {
       accent: "#ff00ff",
     },
     overlays: {
-      color: "rgba(0, 255, 0, 0.05)",
-      border: "rgba(0, 255, 0, 0.15)",
+      color: "rgba(0, 255, 0, 0.12)",
+      border: "rgba(0, 255, 0, 0.25)",
+      borderLight: "rgba(0, 255, 0, 0.4)",
     },
     tabs: {
       bg: "rgba(0, 255, 0, 0.1)",
       bgHover: "rgba(0, 255, 0, 0.2)",
       bgActive: "rgba(255, 0, 255, 0.3)",
+    },
+  },
+  custom: {
+    name: "Custom",
+    description: "Create your own theme",
+    price: 0,
+    isCustom: true,
+    colors: {
+      primary: "#09090d",
+      secondary: "#1a1a23",
+      navbar: "#09090d",
+      sidebar: "#1a1a23",
+      background: "#0f0f14",
+      button: "#3a305033",
+      text: "#ffffff",
+      accent: "#ff6b6b",
+    },
+    overlays: {
+      color: "rgba(255, 255, 255, 0.05)",
+      border: "rgba(255, 255, 255, 0.1)",
+      borderLight: "rgba(255, 255, 255, 0.3)",
+    },
+    tabs: {
+      bg: "rgba(255, 255, 255, 0.1)",
+      bgHover: "rgba(255, 255, 255, 0.2)",
+      bgActive: "rgba(255, 107, 107, 0.3)",
     },
   },
 };
@@ -185,30 +218,66 @@ export const ColorThemeManager = {
   getTheme: (themeName) => THEMES[themeName] || THEMES.black,
 
   applyTheme: (themeName) => {
-    const theme = THEMES[themeName];
+    let theme = THEMES[themeName];
     if (!theme) return;
 
     const root = document.documentElement;
-    root.style.setProperty("--primary-color", theme.colors.primary);
-    root.style.setProperty("--secondary-color", theme.colors.secondary);
-    root.style.setProperty("--navbar-color", theme.colors.navbar);
-    root.style.setProperty("--sidebar-color", theme.colors.sidebar);
-    root.style.setProperty("--background-color", theme.colors.background);
-    root.style.setProperty("--button-color", theme.colors.button);
-    root.style.setProperty("--text-color", theme.colors.text);
-    root.style.setProperty("--accent-color", theme.colors.accent);
     
-    // Apply overlay colors if defined in theme
-    if (theme.overlays) {
-      root.style.setProperty("--overlay-color", theme.overlays.color);
-      root.style.setProperty("--overlay-border", theme.overlays.border);
-    }
-    
-    // Apply tab colors if defined in theme
-    if (theme.tabs) {
-      root.style.setProperty("--tab-bg", theme.tabs.bg);
-      root.style.setProperty("--tab-bg-hover", theme.tabs.bgHover);
-      root.style.setProperty("--tab-bg-active", theme.tabs.bgActive);
+    // If custom theme, load saved custom colors
+    if (themeName === "custom") {
+      const savedCustomColors = localStorage.getItem("customColors");
+      if (savedCustomColors) {
+        const customColors = JSON.parse(savedCustomColors);
+        // Apply custom colors directly
+        Object.entries(customColors).forEach(([key, value]) => {
+          root.style.setProperty(`--${key}-color`, value);
+        });
+      } else {
+        // Fallback to black theme defaults for custom
+        theme = THEMES.black;
+        root.style.setProperty("--primary-color", theme.colors.primary);
+        root.style.setProperty("--secondary-color", theme.colors.secondary);
+        root.style.setProperty("--navbar-color", theme.colors.navbar);
+        root.style.setProperty("--sidebar-color", theme.colors.sidebar);
+        root.style.setProperty("--background-color", theme.colors.background);
+        root.style.setProperty("--button-color", theme.colors.button);
+        root.style.setProperty("--text-color", theme.colors.text);
+        root.style.setProperty("--accent-color", theme.colors.accent);
+        if (theme.overlays) {
+          root.style.setProperty("--overlay-color", theme.overlays.color);
+          root.style.setProperty("--overlay-border", theme.overlays.border);
+          root.style.setProperty("--overlay-border-light", theme.overlays.borderLight);
+        }
+        if (theme.tabs) {
+          root.style.setProperty("--tab-bg", theme.tabs.bg);
+          root.style.setProperty("--tab-bg-hover", theme.tabs.bgHover);
+          root.style.setProperty("--tab-bg-active", theme.tabs.bgActive);
+        }
+      }
+    } else {
+      // Apply standard theme colors
+      root.style.setProperty("--primary-color", theme.colors.primary);
+      root.style.setProperty("--secondary-color", theme.colors.secondary);
+      root.style.setProperty("--navbar-color", theme.colors.navbar);
+      root.style.setProperty("--sidebar-color", theme.colors.sidebar);
+      root.style.setProperty("--background-color", theme.colors.background);
+      root.style.setProperty("--button-color", theme.colors.button);
+      root.style.setProperty("--text-color", theme.colors.text);
+      root.style.setProperty("--accent-color", theme.colors.accent);
+      
+      // Apply overlay colors if defined in theme
+      if (theme.overlays) {
+        root.style.setProperty("--overlay-color", theme.overlays.color);
+        root.style.setProperty("--overlay-border", theme.overlays.border);
+        root.style.setProperty("--overlay-border-light", theme.overlays.borderLight);
+      }
+      
+      // Apply tab colors if defined in theme
+      if (theme.tabs) {
+        root.style.setProperty("--tab-bg", theme.tabs.bg);
+        root.style.setProperty("--tab-bg-hover", theme.tabs.bgHover);
+        root.style.setProperty("--tab-bg-active", theme.tabs.bgActive);
+      }
     }
 
     localStorage.setItem("selectedTheme", themeName);
@@ -232,6 +301,7 @@ export const ColorThemeManager = {
     if (whiteTheme.overlays) {
       root.style.setProperty("--overlay-color", whiteTheme.overlays.color);
       root.style.setProperty("--overlay-border", whiteTheme.overlays.border);
+      root.style.setProperty("--overlay-border-light", whiteTheme.overlays.borderLight);
     }
     
     // Apply tab colors for white theme
@@ -257,15 +327,295 @@ export const ColorThemeManager = {
   },
 
   isThemeUnlocked: (themeName, unlockedThemes) => {
-    if (themeName === "black" || themeName === "white") return true;
-    return unlockedThemes?.includes(themeName) || false;
+    // Free themes: black, white, custom
+    if (themeName === "black" || themeName === "white" || themeName === "custom") {
+      return true;
+    }
+    // Check if other themes are in the unlocked list
+    if (unlockedThemes && Array.isArray(unlockedThemes)) {
+      return unlockedThemes.includes(`color_${themeName}`);
+    }
+    return false;
   },
 };
 
 // ============= HELPER FUNCTION =============
 // Get default colors from Black theme (default theme)
 const getDefaultColorValue = (colorKey) => {
-  return THEMES.black.colors[colorKey] || "#09090d";
+  // Try to get from THEMES.black.colors first
+  if (THEMES.black.colors[colorKey]) {
+    return THEMES.black.colors[colorKey];
+  }
+  
+  // For new colors not in THEMES, derive sensible defaults
+  const defaultColorMap = {
+    // Light variants - slightly lighter than base colors
+    "primary-light": "#2a2a35",
+    "secondary-light": "#2a2a35",
+    "text-light": "#b0b0b0",
+    "background-light": "#1a1a23",
+    
+    // Status colors
+    "success": "#52d96b",
+    "error": "#ff6b6b",
+    "warning": "#ffd93d",
+    "info": "#5dade2",
+    "success-light": "rgba(82, 217, 107, 0.2)",
+    "error-light": "rgba(255, 107, 107, 0.2)",
+    "warning-light": "rgba(255, 217, 61, 0.2)",
+    "info-light": "rgba(93, 173, 226, 0.2)",
+    
+    // Tab colors
+    "tab-bg": "rgba(255, 255, 255, 0.1)",
+    "tab-bg-hover": "rgba(255, 255, 255, 0.2)",
+    "tab-bg-active": "rgba(255, 107, 107, 0.3)",
+    
+    // Border and overlay
+    "border-color-dark": "rgba(255, 255, 255, 0.1)",
+    "overlay-color": "rgba(255, 255, 255, 0.05)",
+    "overlay-border": "rgba(255, 255, 255, 0.1)",
+    
+    // Utility colors
+    "hint-text-color": "#808080",
+    "light-bg-color": "#1a1a23",
+    "currency-color": "#ffd93d",
+  };
+  
+  return defaultColorMap[colorKey] || "#09090d";
+};
+
+// Custom Color Definitions - with lock status, descriptions, and pricing
+const CUSTOM_COLOR_DEFINITIONS = {
+  // Core Colors (Free)
+  primary: {
+    label: "Primary Color",
+    description: "Used for main component backgrounds and primary buttons",
+    locked: false,
+    price: 0,
+    id: "custom_color_primary"
+  },
+  secondary: {
+    label: "Secondary Color",
+    description: "Used for secondary UI elements and hover states",
+    locked: false,
+    price: 0,
+    id: "custom_color_secondary"
+  },
+  text: {
+    label: "Text Color",
+    description: "Main text color for all content and headings",
+    locked: false,
+    price: 0,
+    id: "custom_color_text"
+  },
+  background: {
+    label: "Background Color",
+    description: "Main background for entire page and containers",
+    locked: false,
+    price: 0,
+    id: "custom_color_background"
+  },
+
+  // Navigation & Layout (Locked - 300pts each)
+  navbar: {
+    label: "Navbar Color",
+    description: "Top navigation bar styling",
+    locked: true,
+    price: 300,
+    id: "custom_color_navbar"
+  },
+  sidebar: {
+    label: "Sidebar Color",
+    description: "Left sidebar and navigation panel styling",
+    locked: true,
+    price: 300,
+    id: "custom_color_sidebar"
+  },
+
+  // Interactive Elements (Locked - 250pts each)
+  button: {
+    label: "Button Color",
+    description: "Interactive buttons and form elements",
+    locked: true,
+    price: 250,
+    id: "custom_color_button"
+  },
+  accent: {
+    label: "Accent Color",
+    description: "Highlights, active states, and accent elements",
+    locked: true,
+    price: 400,
+    id: "custom_color_accent"
+  },
+
+  // Light Variants (Locked - 200pts each)
+  "primary-light": {
+    label: "Primary Light",
+    description: "Light variant of primary color for hover and subtle backgrounds",
+    locked: true,
+    price: 200,
+    id: "custom_color_primary_light"
+  },
+  "secondary-light": {
+    label: "Secondary Light",
+    description: "Light variant of secondary color",
+    locked: true,
+    price: 200,
+    id: "custom_color_secondary_light"
+  },
+  "text-light": {
+    label: "Text Light",
+    description: "Light text color for disabled or secondary text",
+    locked: true,
+    price: 200,
+    id: "custom_color_text_light"
+  },
+  "background-light": {
+    label: "Background Light",
+    description: "Light variant background for secondary containers",
+    locked: true,
+    price: 200,
+    id: "custom_color_background_light"
+  },
+
+  // Status Colors (Locked - 150pts each)
+  success: {
+    label: "Success Color",
+    description: "Green color for success states, confirmations, and alerts",
+    locked: true,
+    price: 150,
+    id: "custom_color_success"
+  },
+  error: {
+    label: "Error Color",
+    description: "Red color for error states and warnings",
+    locked: true,
+    price: 150,
+    id: "custom_color_error"
+  },
+  warning: {
+    label: "Warning Color",
+    description: "Yellow color for warning states and notifications",
+    locked: true,
+    price: 150,
+    id: "custom_color_warning"
+  },
+  info: {
+    label: "Info Color",
+    description: "Blue color for informational messages and hints",
+    locked: true,
+    price: 150,
+    id: "custom_color_info"
+  },
+
+  // Status Light Variants (Locked - 100pts each)
+  "success-light": {
+    label: "Success Light",
+    description: "Light variant of success color for backgrounds",
+    locked: true,
+    price: 100,
+    id: "custom_color_success_light"
+  },
+  "error-light": {
+    label: "Error Light",
+    description: "Light variant of error color for backgrounds",
+    locked: true,
+    price: 100,
+    id: "custom_color_error_light"
+  },
+  "warning-light": {
+    label: "Warning Light",
+    description: "Light variant of warning color for backgrounds",
+    locked: true,
+    price: 100,
+    id: "custom_color_warning_light"
+  },
+  "info-light": {
+    label: "Info Light",
+    description: "Light variant of info color for backgrounds",
+    locked: true,
+    price: 100,
+    id: "custom_color_info_light"
+  },
+
+  // Tab Colors (Locked - 200pts each)
+  "tab-bg": {
+    label: "Tab Background",
+    description: "Inactive tab background color",
+    locked: true,
+    price: 200,
+    id: "custom_color_tab_bg"
+  },
+  "tab-bg-hover": {
+    label: "Tab Hover",
+    description: "Tab background on hover state",
+    locked: true,
+    price: 200,
+    id: "custom_color_tab_bg_hover"
+  },
+  "tab-bg-active": {
+    label: "Tab Active",
+    description: "Active tab background color",
+    locked: true,
+    price: 200,
+    id: "custom_color_tab_bg_active"
+  },
+
+  // Borders & Overlays (Locked - 150pts each)
+  "border-color-dark": {
+    label: "Border Color",
+    description: "Color for borders, dividers, and outlines",
+    locked: true,
+    price: 150,
+    id: "custom_color_border_dark"
+  },
+  "overlay-color": {
+    label: "Overlay Background",
+    description: "Base color for overlays and semi-transparent backgrounds",
+    locked: true,
+    price: 150,
+    id: "custom_color_overlay"
+  },
+  "overlay-border": {
+    label: "Overlay Border",
+    description: "Border color for overlays and modal elements",
+    locked: true,
+    price: 150,
+    id: "custom_color_overlay_border"
+  },
+
+  // Utility Colors (Locked - 100pts each)
+  "hint-text-color": {
+    label: "Hint Text Color",
+    description: "Subtle text color for hints and placeholder text",
+    locked: true,
+    price: 100,
+    id: "custom_color_hint_text"
+  },
+  "light-bg-color": {
+    label: "Light Background",
+    description: "Very light background for subtle backgrounds",
+    locked: true,
+    price: 100,
+    id: "custom_color_light_bg"
+  },
+  "currency-color": {
+    label: "Currency Color",
+    description: "Color for displaying currency and points",
+    locked: true,
+    price: 100,
+    id: "custom_color_currency"
+  },
+};
+
+// Helper function to check if a custom color is unlocked by the user
+const isCustomColorUnlocked = (colorKey, unlockedItems) => {
+  const colorDef = CUSTOM_COLOR_DEFINITIONS[colorKey];
+  if (!colorDef || !colorDef.locked) {
+    return true; // Free colors are always unlocked
+  }
+  // Check if user has purchased this color
+  return unlockedItems && Array.isArray(unlockedItems) && unlockedItems.includes(colorDef.id);
 };
 
 // Generate color shop items from THEMES definitions - single source of truth
@@ -382,6 +732,8 @@ export default function Marketplace() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [pendingTheme, setPendingTheme] = useState(null);
   const [customColors, setCustomColors] = useState({});
+  const [showThemePurchaseConfirmation, setShowThemePurchaseConfirmation] = useState(false);
+  const [pendingPurchaseTheme, setPendingPurchaseTheme] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -417,15 +769,18 @@ export default function Marketplace() {
 
   const handleThemeChange = (themeName) => {
     if (ColorThemeManager.isThemeUnlocked(themeName, userData?.unlockedItems)) {
-      // Show confirmation for black and white themes
-      if (themeName === "black" || themeName === "white") {
-        setPendingTheme(themeName);
-        setShowConfirmation(true);
-      } else {
-        // Apply other themes directly
-        ColorThemeManager.applyTheme(themeName);
-        setCurrentTheme(themeName);
-      }
+      // Show confirmation for all theme changes
+      setPendingTheme(themeName);
+      setShowConfirmation(true);
+    } else {
+      // Theme is locked - show message
+      const theme = THEMES[themeName];
+      setPurchaseMessage(`${theme.name} is locked. Purchase it from the shop to unlock!`);
+      setMessageType("error");
+      setTimeout(() => {
+        setPurchaseMessage("");
+        setMessageType("");
+      }, 3000);
     }
   };
 
@@ -458,7 +813,10 @@ export default function Marketplace() {
 
   const handleSaveCustomColors = () => {
     localStorage.setItem("customColors", JSON.stringify(customColors));
-    setPurchaseMessage("Custom colors saved successfully!");
+    // Apply custom theme and save as selected theme
+    ColorThemeManager.applyTheme("custom");
+    setCurrentTheme("custom");
+    setPurchaseMessage("Custom theme saved and applied successfully!");
     setMessageType("success");
     setTimeout(() => {
       setPurchaseMessage("");
@@ -476,15 +834,53 @@ export default function Marketplace() {
     const result = ShopService.purchaseItem(user.uid, itemId, price);
 
     if (result.success) {
-      setPurchaseMessage(result.message);
-      setMessageType("success");
       const updatedData = ShopService.getUserData(user.uid);
       setUserData(updatedData);
+      
+      // Check if this is a color theme purchase
+      if (itemId.startsWith("color_")) {
+        const themeName = itemId.replace("color_", "");
+        setPendingPurchaseTheme(themeName);
+        setShowThemePurchaseConfirmation(true);
+      } else {
+        // For non-theme purchases, show regular success message
+        setPurchaseMessage(result.message);
+        setMessageType("success");
+        setTimeout(() => {
+          setPurchaseMessage("");
+          setMessageType("");
+        }, 3000);
+      }
     } else {
       setPurchaseMessage(result.message);
       setMessageType("error");
+      setTimeout(() => {
+        setPurchaseMessage("");
+        setMessageType("");
+      }, 3000);
     }
+  };
 
+  const handleConfirmPurchaseAndApplyTheme = () => {
+    if (pendingPurchaseTheme) {
+      ColorThemeManager.applyTheme(pendingPurchaseTheme);
+      setCurrentTheme(pendingPurchaseTheme);
+      setPurchaseMessage(`${THEMES[pendingPurchaseTheme].name} theme purchased and applied successfully!`);
+      setMessageType("success");
+      setShowThemePurchaseConfirmation(false);
+      setPendingPurchaseTheme(null);
+      setTimeout(() => {
+        setPurchaseMessage("");
+        setMessageType("");
+      }, 3000);
+    }
+  };
+
+  const handleConfirmPurchaseNoTheme = () => {
+    setPurchaseMessage(`${THEMES[pendingPurchaseTheme].name} theme purchased successfully! You can apply it anytime.`);
+    setMessageType("success");
+    setShowThemePurchaseConfirmation(false);
+    setPendingPurchaseTheme(null);
     setTimeout(() => {
       setPurchaseMessage("");
       setMessageType("");
@@ -523,13 +919,7 @@ export default function Marketplace() {
     <div className="marketplace-container pt-5">
       <div className="container-lg p-4">
         {/* Header */}
-        <div
-          className="marketplace-header mb-5 rounded p-4"
-          style={{
-            backgroundColor: "var(--overlay-color)",
-            border: "2px solid var(--overlay-border)",
-          }}
-        >
+        <div className="marketplace-header mb-5 rounded p-4">
           <div className="row align-items-center">
             <div className="col-md-6">
               <button
@@ -547,7 +937,7 @@ export default function Marketplace() {
               <div className="d-flex justify-content-md-end justify-content-start align-items-center gap-3 flex-wrap">
                 <div className="points-display">
                   <h5 className="mb-0">
-                    <i className="bi bi-coin me-2" style={{ color: "var(--currency-color)" }}></i>
+                    <i className="bi bi-coin me-2 currency-icon"></i>
                     {userData?.points || 0}
                   </h5>
                   <small className="text-muted">Points</small>
@@ -600,23 +990,22 @@ export default function Marketplace() {
               <i className="bi bi-shop me-2"></i>Shop
             </button>
           </li>
-          <li className="nav-item" role="presentation">
-            <button
-              className={`nav-link ${activeTab === "custom" ? "active" : ""}`}
-              onClick={() => setActiveTab("custom")}
-              role="tab"
-            >
-              <i className="bi bi-palette2 me-2"></i>Custom Colors
-            </button>
-          </li>
         </ul>
 
         {/* Themes Tab */}
         {activeTab === "themes" && (
           <div className="themes-section">
             <h4 className="mb-4">Choose Your Theme</h4>
-            <div className="row g-3">
-              {Object.entries(THEMES).map(([key, theme]) => {
+            <div className="row g-3 mb-5">
+              {Object.entries(THEMES)
+                .filter(([key]) => {
+                  // Only show unlocked themes
+                  return ColorThemeManager.isThemeUnlocked(
+                    key,
+                    userData?.unlockedItems
+                  );
+                })
+                .map(([key, theme]) => {
                 const isUnlocked = ColorThemeManager.isThemeUnlocked(
                   key,
                   userData?.unlockedItems
@@ -627,16 +1016,12 @@ export default function Marketplace() {
                   <div key={key} className="col-6 col-md-4 col-lg-3">
                     <div
                       className={`theme-card p-3 rounded cursor-pointer h-100 transition ${
-                        isSelected ? "selected" : ""
+                        isSelected ? "theme-card-item selected" : "theme-card-item unselected"
+                      } ${
+                        isUnlocked ? "unlocked" : "locked"
                       }`}
                       style={{
                         backgroundColor: theme.colors.primary,
-                        cursor: isUnlocked ? "pointer" : "not-allowed",
-                        opacity: isUnlocked ? 1 : 0.5,
-                        border: isSelected
-                          ? "3px solid #00bfff"
-                          : "2px solid rgba(255,255,255,0.1)",
-                        transform: isSelected ? "scale(1.05)" : "scale(1)",
                       }}
                       onClick={() => handleThemeChange(key)}
                     >
@@ -646,8 +1031,7 @@ export default function Marketplace() {
                         </h6>
                         {!isUnlocked && (
                           <span
-                            className="badge bg-warning text-dark"
-                            style={{ fontSize: "0.7rem" }}
+                            className="badge bg-warning text-dark theme-badge-price"
                           >
                             {theme.price} pts
                           </span>
@@ -672,7 +1056,7 @@ export default function Marketplace() {
                                 height: "20px",
                                 backgroundColor: color,
                                 borderRadius: "4px",
-                                border: "1px solid rgba(255,255,255,0.2)",
+                                border: "1px solid rgba(255, 255, 255, 0.3)",
                               }}
                             />
                           ))}
@@ -680,7 +1064,7 @@ export default function Marketplace() {
 
                       {isSelected && (
                         <div
-                          className="mt-2 text-center text-success fw-bold"
+                          className="mt-2 text-center fw-bold"
                           style={{ color: theme.colors.accent }}
                         >
                           <i className="bi bi-check-circle"></i> Active
@@ -691,6 +1075,284 @@ export default function Marketplace() {
                 );
               })}
             </div>
+
+            {/* Custom Colors Section - Show when Custom theme is selected */}
+            {currentTheme === "custom" && (
+              <div 
+                className="custom-theme-editor mt-5 p-4 rounded"
+                style={{
+                  backgroundColor: THEMES.custom.overlays.color,
+                  borderColor: THEMES.custom.overlays.border,
+                }}
+              >
+                <h5 className="mb-4" style={{ color: THEMES.custom.colors.text }}>
+                  <i className="bi bi-palette2 me-2"></i>Customize Your Theme Colors
+                </h5>
+
+                {/* Core Colors Section */}
+                <div className="color-section mb-4">
+                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                    <i className="bi bi-star me-2"></i>Core Colors
+                  </h6>
+                  <div className="row g-3">
+                    {Object.entries(CUSTOM_COLOR_DEFINITIONS)
+                      .filter(([key]) => ["primary", "secondary", "text", "background"].includes(key))
+                      .map(([key, colorDef]) => {
+                        const isUnlocked = isCustomColorUnlocked(key, userData?.unlockedItems);
+                        
+                        return (
+                          <div key={key} className="col-12 col-md-6">
+                            <div className="custom-color-group">
+                              <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                    {colorDef.label}
+                                    {colorDef.locked && !isUnlocked && (
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                    )}
+                                  </label>
+                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                    {colorDef.description}
+                                  </small>
+                                </div>
+                              </div>
+
+                              {isUnlocked ? (
+                                <div className="color-input-wrapper d-flex gap-2 align-items-center">
+                                  <input
+                                    type="color"
+                                    className="form-control form-control-color"
+                                    defaultValue={customColors[key] || getDefaultColorValue(key)}
+                                    onChange={(e) => handleCustomColorChange(key, e.target.value)}
+                                    title={`Choose ${colorDef.label.toLowerCase()}`}
+                                  />
+                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                    {customColors[key] || getDefaultColorValue(key)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <button
+                                  className="btn btn-sm w-100"
+                                  style={{
+                                    backgroundColor: THEMES.custom.colors.accent,
+                                    color: THEMES.custom.colors.primary,
+                                    border: "none",
+                                    fontWeight: "600"
+                                  }}
+                                  onClick={() => handlePurchase(colorDef.id, colorDef.price)}
+                                >
+                                  <i className="bi bi-lock me-1"></i>Unlock ({colorDef.price} pts)
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Navigation & Layout Section */}
+                <div className="color-section mb-4">
+                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                    <i className="bi bi-layout-sidebar me-2"></i>Navigation & Layout
+                  </h6>
+                  <div className="row g-3">
+                    {Object.entries(CUSTOM_COLOR_DEFINITIONS)
+                      .filter(([key]) => ["navbar", "sidebar"].includes(key))
+                      .map(([key, colorDef]) => {
+                        const isUnlocked = isCustomColorUnlocked(key, userData?.unlockedItems);
+                        
+                        return (
+                          <div key={key} className="col-12 col-md-6">
+                            <div className="custom-color-group">
+                              <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                    {colorDef.label}
+                                    {colorDef.locked && !isUnlocked && (
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                    )}
+                                  </label>
+                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                    {colorDef.description}
+                                  </small>
+                                </div>
+                              </div>
+
+                              {isUnlocked ? (
+                                <div className="color-input-wrapper d-flex gap-2 align-items-center">
+                                  <input
+                                    type="color"
+                                    className="form-control form-control-color"
+                                    defaultValue={customColors[key] || getDefaultColorValue(key)}
+                                    onChange={(e) => handleCustomColorChange(key, e.target.value)}
+                                    title={`Choose ${colorDef.label.toLowerCase()}`}
+                                  />
+                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                    {customColors[key] || getDefaultColorValue(key)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <button
+                                  className="btn btn-sm w-100"
+                                  style={{
+                                    backgroundColor: THEMES.custom.colors.accent,
+                                    color: THEMES.custom.colors.primary,
+                                    border: "none",
+                                    fontWeight: "600"
+                                  }}
+                                  onClick={() => handlePurchase(colorDef.id, colorDef.price)}
+                                >
+                                  <i className="bi bi-lock me-1"></i>Unlock ({colorDef.price} pts)
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Interactive Elements Section */}
+                <div className="color-section mb-4">
+                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                    <i className="bi bi-cursor-fill me-2"></i>Interactive Elements
+                  </h6>
+                  <div className="row g-3">
+                    {Object.entries(CUSTOM_COLOR_DEFINITIONS)
+                      .filter(([key]) => ["button", "accent"].includes(key))
+                      .map(([key, colorDef]) => {
+                        const isUnlocked = isCustomColorUnlocked(key, userData?.unlockedItems);
+                        
+                        return (
+                          <div key={key} className="col-12 col-md-6">
+                            <div className="custom-color-group">
+                              <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                    {colorDef.label}
+                                    {colorDef.locked && !isUnlocked && (
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                    )}
+                                  </label>
+                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                    {colorDef.description}
+                                  </small>
+                                </div>
+                              </div>
+
+                              {isUnlocked ? (
+                                <div className="color-input-wrapper d-flex gap-2 align-items-center">
+                                  <input
+                                    type="color"
+                                    className="form-control form-control-color"
+                                    defaultValue={customColors[key] || getDefaultColorValue(key)}
+                                    onChange={(e) => handleCustomColorChange(key, e.target.value)}
+                                    title={`Choose ${colorDef.label.toLowerCase()}`}
+                                  />
+                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                    {customColors[key] || getDefaultColorValue(key)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <button
+                                  className="btn btn-sm w-100"
+                                  style={{
+                                    backgroundColor: THEMES.custom.colors.accent,
+                                    color: THEMES.custom.colors.primary,
+                                    border: "none",
+                                    fontWeight: "600"
+                                  }}
+                                  onClick={() => handlePurchase(colorDef.id, colorDef.price)}
+                                >
+                                  <i className="bi bi-lock me-1"></i>Unlock ({colorDef.price} pts)
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                {/* Advanced Colors Section */}
+                <div className="color-section mb-4">
+                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                    <i className="bi bi-gear me-2"></i>Advanced Colors (Light Variants, Status, Tabs & More)
+                  </h6>
+                  <div className="row g-3">
+                    {Object.entries(CUSTOM_COLOR_DEFINITIONS)
+                      .filter(([key]) => !["primary", "secondary", "text", "background", "navbar", "sidebar", "button", "accent"].includes(key))
+                      .map(([key, colorDef]) => {
+                        const isUnlocked = isCustomColorUnlocked(key, userData?.unlockedItems);
+                        
+                        return (
+                          <div key={key} className="col-12 col-md-6">
+                            <div className="custom-color-group">
+                              <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                    {colorDef.label}
+                                    {colorDef.locked && !isUnlocked && (
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                    )}
+                                  </label>
+                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                    {colorDef.description}
+                                  </small>
+                                </div>
+                              </div>
+
+                              {isUnlocked ? (
+                                <div className="color-input-wrapper d-flex gap-2 align-items-center">
+                                  <input
+                                    type="color"
+                                    className="form-control form-control-color"
+                                    defaultValue={customColors[key] || getDefaultColorValue(key)}
+                                    onChange={(e) => handleCustomColorChange(key, e.target.value)}
+                                    title={`Choose ${colorDef.label.toLowerCase()}`}
+                                  />
+                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                    {customColors[key] || getDefaultColorValue(key)}
+                                  </span>
+                                </div>
+                              ) : (
+                                <button
+                                  className="btn btn-sm w-100"
+                                  style={{
+                                    backgroundColor: THEMES.custom.colors.accent,
+                                    color: THEMES.custom.colors.primary,
+                                    border: "none",
+                                    fontWeight: "600"
+                                  }}
+                                  onClick={() => handlePurchase(colorDef.id, colorDef.price)}
+                                >
+                                  <i className="bi bi-lock me-1"></i>Unlock ({colorDef.price} pts)
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                </div>
+
+                <div className="mt-4 d-flex gap-2">
+                  <button
+                    className="btn theme-btn-primary"
+                    onClick={handleSaveCustomColors}
+                  >
+                    <i className="bi bi-check-circle me-1"></i>Save Custom Theme
+                  </button>
+                  <button
+                    className="btn theme-btn-secondary"
+                    onClick={() => setCurrentTheme("black")}
+                  >
+                    <i className="bi bi-x-circle me-1"></i>Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -703,7 +1365,9 @@ export default function Marketplace() {
                   <i className="bi bi-palette me-2"></i>Color Themes
                 </h4>
               </div>
-              {SHOP_ITEMS.colors.items.map((item) => (
+              {SHOP_ITEMS.colors.items
+                .filter((item) => !ShopService.isItemUnlocked(user.uid, item.id))
+                .map((item) => (
                 <div key={item.id} className="col-12 col-sm-6 col-lg-4">
                   <ShopItemCard
                     item={item}
@@ -731,159 +1395,6 @@ export default function Marketplace() {
                   />
                 </div>
               ))}
-            </div>
-          </div>
-        )}
-
-        {/* Custom Colors Tab */}
-        {activeTab === "custom" && (
-          <div className="custom-colors-section">
-            <h4 className="mb-4">
-              <i className="bi bi-palette2 me-2"></i>Customize Your Theme Colors
-            </h4>
-            <div className="row g-3">
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Primary Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.primary || getDefaultColorValue('primary')}
-                      onChange={(e) => handleCustomColorChange("primary", e.target.value)}
-                      title="Choose primary color"
-                    />
-                    <span className="color-value ms-2">{customColors.primary || getDefaultColorValue('primary')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Secondary Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.secondary || getDefaultColorValue('secondary')}
-                      onChange={(e) => handleCustomColorChange("secondary", e.target.value)}
-                      title="Choose secondary color"
-                    />
-                    <span className="color-value ms-2">{customColors.secondary || getDefaultColorValue('secondary')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Navbar Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.navbar || getDefaultColorValue('navbar')}
-                      onChange={(e) => handleCustomColorChange("navbar", e.target.value)}
-                      title="Choose navbar color"
-                    />
-                    <span className="color-value ms-2">{customColors.navbar || getDefaultColorValue('navbar')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Sidebar Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.sidebar || getDefaultColorValue('sidebar')}
-                      onChange={(e) => handleCustomColorChange("sidebar", e.target.value)}
-                      title="Choose sidebar color"
-                    />
-                    <span className="color-value ms-2">{customColors.sidebar || getDefaultColorValue('sidebar')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Background Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.background || getDefaultColorValue('background')}
-                      onChange={(e) => handleCustomColorChange("background", e.target.value)}
-                      title="Choose background color"
-                    />
-                    <span className="color-value ms-2">{customColors.background || getDefaultColorValue('background')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Button Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.button || getDefaultColorValue('button')}
-                      onChange={(e) => handleCustomColorChange("button", e.target.value)}
-                      title="Choose button color"
-                    />
-                    <span className="color-value ms-2">{customColors.button || getDefaultColorValue('button')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Text Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.text || getDefaultColorValue('text')}
-                      onChange={(e) => handleCustomColorChange("text", e.target.value)}
-                      title="Choose text color"
-                    />
-                    <span className="color-value ms-2">{customColors.text || getDefaultColorValue('text')}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-12 col-md-6">
-                <div className="custom-color-group">
-                  <label className="form-label">Accent Color</label>
-                  <div className="color-input-wrapper">
-                    <input
-                      type="color"
-                      className="form-control form-control-color"
-                      defaultValue={customColors.accent || getDefaultColorValue('accent')}
-                      onChange={(e) => handleCustomColorChange("accent", e.target.value)}
-                      title="Choose accent color"
-                    />
-                    <span className="color-value ms-2">{customColors.accent || getDefaultColorValue('accent')}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 d-flex gap-2">
-              <button
-                className="btn btn-primary"
-                onClick={handleSaveCustomColors}
-              >
-                <i className="bi bi-check-circle me-1"></i>Save Custom Colors
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setActiveTab("themes")}
-              >
-                <i className="bi bi-x-circle me-1"></i>Cancel
-              </button>
             </div>
           </div>
         )}
@@ -929,6 +1440,47 @@ export default function Marketplace() {
           </div>
         </div>
       )}
+
+      {/* Theme Purchase Confirmation Modal */}
+      {showThemePurchaseConfirmation && pendingPurchaseTheme && (
+        <div className="theme-confirmation-overlay">
+          <div className="theme-confirmation-dialog">
+            <div className="confirmation-header">
+              <h5 className="mb-0">
+                <i className="bi bi-gift me-2"></i>
+                Theme Purchased!
+              </h5>
+              <button
+                className="btn-close"
+                onClick={handleConfirmPurchaseNoTheme}
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="confirmation-body">
+              <p>
+                <strong>{THEMES[pendingPurchaseTheme]?.name}</strong> theme has been unlocked!
+              </p>
+              <p className="mb-0">
+                Would you like to apply this theme now?
+              </p>
+            </div>
+            <div className="confirmation-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={handleConfirmPurchaseNoTheme}
+              >
+                <i className="bi bi-clock me-1"></i>Apply Later
+              </button>
+              <button
+                className="btn btn-success"
+                onClick={handleConfirmPurchaseAndApplyTheme}
+              >
+                <i className="bi bi-check-circle me-1"></i>Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -942,37 +1494,19 @@ function ShopItemCard({ item, isUnlocked, onPurchase, userPoints }) {
   return (
     <div
       className="shop-item-card h-100 rounded overflow-hidden transition"
-      style={{
-        backgroundColor: "var(--overlay-color)",
-        border: "2px solid var(--overlay-border)",
-        cursor: "pointer",
-        transform: isHovered ? "translateY(-5px)" : "translateY(0)",
-        boxShadow: isHovered
-          ? "0 10px 30px rgba(0, 0, 0, 0.3)"
-          : "0 5px 15px rgba(0, 0, 0, 0.1)",
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Header */}
       <div
+        className="shop-item-header"
         style={{
-          height: "100px",
           backgroundColor: item.color || getDefaultColorValue('button'),
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "relative",
         }}
       >
         {item.type === "color" ? (
           <div
+            className="color-swatch-preview"
             style={{
-              width: "60px",
-              height: "60px",
               backgroundColor: item.color,
-              borderRadius: "10px",
-              border: "3px solid rgba(255, 255, 255, 0.3)",
             }}
           />
         ) : (
@@ -981,18 +1515,7 @@ function ShopItemCard({ item, isUnlocked, onPurchase, userPoints }) {
 
         {isUnlocked && (
           <div
-            style={{
-              position: "absolute",
-              top: "10px",
-              right: "10px",
-              backgroundColor: "var(--success-color)",
-              borderRadius: "50%",
-              width: "30px",
-              height: "30px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            className="shop-unlocked-badge"
           >
             <i className="bi bi-check-lg text-white"></i>
           </div>
@@ -1015,7 +1538,7 @@ function ShopItemCard({ item, isUnlocked, onPurchase, userPoints }) {
         <div className="d-flex justify-content-between align-items-center gap-2">
           <div className="price-badge">
             <h6 className="mb-0">
-              <i className="bi bi-coin me-1" style={{ color: "var(--currency-color)" }}></i>
+              <i className="bi bi-coin me-1 currency-icon"></i>
               {item.price}
             </h6>
           </div>
