@@ -39,9 +39,14 @@ export default function LoginPage() {
 
   const handleProviderLogin = async (provider) => {
     try {
-      await signInWithPopup(auth, provider);
-      navigate("/"); // ✅ replaced window.location.href
+      const result = await signInWithPopup(auth, provider);
+      console.log("OAuth sign-in successful:", result.user.email);
+      navigate("/");
     } catch (err) {
+      console.error("OAuth Error Code:", err.code);
+      console.error("OAuth Error Message:", err.message);
+      
+      // Handle specific errors
       if (
         err.code === "auth/cancelled-popup-request" ||
         err.code === "auth/popup-closed-by-user"
@@ -49,7 +54,22 @@ export default function LoginPage() {
         console.log("Popup closed by user");
         return;
       }
-      alert(err.message);
+      
+      if (err.code === "auth/unauthorized-domain") {
+        alert(
+          "This domain is not authorized. Please contact the admin or check Firebase Console > Authentication > Settings > Authorized domains."
+        );
+        return;
+      }
+      
+      if (err.code === "auth/operation-not-supported-in-this-environment") {
+        alert(
+          "OAuth is not properly configured. Please ensure Google/GitHub OAuth apps are set up and redirect URIs are added."
+        );
+        return;
+      }
+      
+      alert(`Sign-in failed: ${err.message}`);
     }
   };
 
@@ -67,7 +87,7 @@ export default function LoginPage() {
                   src="/assets/digima_logo.svg"
                   alt="logo"
                   className="img-fluid"
-                  style={{ width: "120px" }}
+                  style={{ width: "clamp(80px, 15vw, 140px)" }}
                 />
               </div>
               <div className="card border-0 p-lg-3 shadow-lg">
@@ -128,56 +148,67 @@ export default function LoginPage() {
                   <span className="span-or">Or:</span>
 
                   {/* Social Buttons */}
-                  <div className="d-flex align-items-center justify-content-center flex-wrap">
-                    <div className="text-center me-2 flex-fill">
-                      <button
-                        type="button"
-                        onClick={() => handleProviderLogin(githubProvider)}
-                        className="register-social-btn w-100 d-flex align-items-center justify-content-center"
+                  <div style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "clamp(0.75rem, 2vw, 1rem)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%"
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => handleProviderLogin(githubProvider)}
+                      className="register-social-btn d-flex align-items-center justify-content-center"
+                      style={{
+                        borderRadius: "10px",
+                        padding: "clamp(0.6rem, 2vw, 0.75rem)",
+                        height: "clamp(44px, 10vw, 50px)",
+                        fontWeight: "500",
+                        fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
+                        width: "100%",
+                        maxWidth: "100%",
+                        cursor: "pointer"
+                      }}
+                    >
+                      <img
+                        src="/assets/github.svg"
+                        alt="GitHub"
                         style={{
-                          borderRadius: "10px",
-                          padding: "10px",
-                          height: "50px",
-                          fontWeight: "500",
+                          width: "clamp(20px, 5vw, 24px)",
+                          height: "clamp(20px, 5vw, 24px)",
+                          marginRight: "clamp(0.5rem, 2vw, 0.75rem)",
                         }}
-                      >
-                        <img
-                          src="/assets/github.svg"
-                          alt="GitHub"
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            marginRight: "10px",
-                          }}
-                        />
-                        Continue with GitHub
-                      </button>
-                    </div>
+                      />
+                      Continue with GitHub
+                    </button>
 
-                    <div className="text-center me-2 flex-fill mt-2 mt-md-0">
-                      <button
-                        type="button"
-                        onClick={() => handleProviderLogin(googleProvider)}
-                        className="register-social-btn w-100 d-flex align-items-center justify-content-center"
+                    <button
+                      type="button"
+                      onClick={() => handleProviderLogin(googleProvider)}
+                      className="register-social-btn d-flex align-items-center justify-content-center"
+                      style={{
+                        borderRadius: "10px",
+                        padding: "clamp(0.6rem, 2vw, 0.75rem)",
+                        height: "clamp(44px, 10vw, 50px)",
+                        fontWeight: "500",
+                        fontSize: "clamp(0.85rem, 1.5vw, 1rem)",
+                        width: "100%",
+                        maxWidth: "100%",
+                        cursor: "pointer"
+                      }}
+                    >
+                      <img
+                        src="/assets/google.svg"
+                        alt="Google"
                         style={{
-                          borderRadius: "10px",
-                          padding: "10px",
-                          height: "50px",
-                          fontWeight: "500",
+                          width: "clamp(20px, 5vw, 24px)",
+                          height: "clamp(20px, 5vw, 24px)",
+                          marginRight: "clamp(0.5rem, 2vw, 0.75rem)",
                         }}
-                      >
-                        <img
-                          src="/assets/google.svg"
-                          alt="Google"
-                          style={{
-                            width: "24px",
-                            height: "24px",
-                            marginRight: "10px",
-                          }}
-                        />
-                        Continue with Google
-                      </button>
-                    </div>
+                      />
+                      Continue with Google
+                    </button>
                   </div>
 
                   {/* Sign Up Link */}

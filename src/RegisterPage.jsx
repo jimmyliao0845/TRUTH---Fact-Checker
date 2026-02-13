@@ -225,6 +225,7 @@ export default function RegisterPage() {
   const handleProviderLogin = async (provider) => {
     try {
       const result = await signInWithPopup(auth, provider);
+      console.log("OAuth sign-in successful:", result.user.email);
       const user = result.user;
 
       const providerName = provider.providerId.includes("google") ? "google" : "github";
@@ -250,10 +251,28 @@ export default function RegisterPage() {
 
       navigate("/");
     } catch (err) {
+      console.error("OAuth Error Code:", err.code);
+      console.error("OAuth Error Message:", err.message);
+      
       if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
         console.log("Popup closed by user");
         return;
       }
+      
+      if (err.code === "auth/unauthorized-domain") {
+        setErrorMsg(
+          "This domain is not authorized. Please check Firebase Console > Authentication > Settings > Authorized domains."
+        );
+        return;
+      }
+      
+      if (err.code === "auth/operation-not-supported-in-this-environment") {
+        setErrorMsg(
+          "OAuth is not properly configured. Google/GitHub OAuth apps need to be set up properly."
+        );
+        return;
+      }
+      
       setErrorMsg(err.message);
     }
   };
@@ -275,7 +294,7 @@ export default function RegisterPage() {
                     src="/assets/digima_logo.svg"
                     alt="Logo"
                     className="img-fluid"
-                    style={{ width: "120px", height: "auto" }}
+                    style={{ width: "clamp(80px, 15vw, 140px)", height: "auto" }}
                   />
                 </div>
 
@@ -405,17 +424,35 @@ export default function RegisterPage() {
                           <span className="span-or">Or:</span>
                         </div>
 
-                        <div className="d-flex align-items-center justify-content-center gap-2">
+                        <div style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "clamp(0.75rem, 2vw, 1rem)",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: "100%"
+                        }}>
                           <button
                             type="button"
                             onClick={() => handleProviderLogin(githubProvider)}
-                            className="register-social-btn w-100 d-flex align-items-center justify-content-center"
+                            className="register-social-btn d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "100%",
+                              maxWidth: "100%",
+                              height: "clamp(44px, 10vw, 50px)",
+                              padding: "clamp(0.6rem, 2vw, 0.75rem)",
+                              cursor: "pointer"
+                            }}
                           >
                             <img
-                              className="img-fluid m-1"
+                              className="img-fluid"
                               src="/assets/github.svg"
                               alt="GitHub"
-                              style={{ width: "24px", height: "24px" }}
+                              style={{
+                                width: "clamp(20px, 5vw, 24px)",
+                                height: "clamp(20px, 5vw, 24px)",
+                                marginRight: "clamp(0.5rem, 2vw, 0.75rem)"
+                              }}
                             />
                             <span className="ms-2">GitHub</span>
                           </button>
@@ -423,13 +460,24 @@ export default function RegisterPage() {
                           <button
                             type="button"
                             onClick={() => handleProviderLogin(googleProvider)}
-                            className="register-social-btn w-100 d-flex align-items-center justify-content-center"
+                            className="register-social-btn d-flex align-items-center justify-content-center"
+                            style={{
+                              width: "100%",
+                              maxWidth: "100%",
+                              height: "clamp(44px, 10vw, 50px)",
+                              padding: "clamp(0.6rem, 2vw, 0.75rem)",
+                              cursor: "pointer"
+                            }}
                           >
                             <img
-                              className="img-fluid m-1"
+                              className="img-fluid"
                               src="/assets/google.svg"
                               alt="Google"
-                              style={{ width: "24px", height: "24px" }}
+                              style={{
+                                width: "clamp(20px, 5vw, 24px)",
+                                height: "clamp(20px, 5vw, 24px)",
+                                marginRight: "clamp(0.5rem, 2vw, 0.75rem)"
+                              }}
                             />
                             <span className="ms-2">Google</span>
                           </button>

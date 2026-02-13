@@ -50,25 +50,28 @@ export default function Navbar() {
         borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
       }}
     >
-      <div className="container-fluid d-flex align-items-center justify-content-between">
+      <div className="container-fluid d-flex align-items-center justify-content-between" style={{ gap: "1rem", flexWrap: "wrap" }}>
         {/* Left: Brand */}
-        <Link className="navbar-brand fw-bold" to="/" style={{ color: "var(--text-color)" }}>
+        <Link className="navbar-brand fw-bold" to="/" style={{ color: "var(--text-color)", fontSize: "clamp(1rem, 5vw, 1.5rem)" }}>
           T.R.U.T.H.
         </Link>
 
         {/* Right Side: Buttons / Profile */}
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center" style={{ gap: "0.5rem", flexWrap: "wrap", justifyContent: "flex-end", flex: 1 }}>
           {/* Auth Buttons or Profile */}
           {!user ? (
             <>
               <Link
                 to="/login"
-                className="btn rounded-pill px-4 py-2 me-2"
+                className="btn rounded-pill"
                 style={{
                   backgroundColor: "transparent",
                   color: "var(--text-color)",
                   border: "2px solid var(--text-color)",
-                  transition: "all 0.3s ease"
+                  transition: "all 0.3s ease",
+                  padding: "clamp(0.4rem, 2vw, 0.6rem) clamp(0.8rem, 4vw, 1rem)",
+                  fontSize: "clamp(0.75rem, 2vw, 0.95rem)",
+                  whiteSpace: "nowrap"
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = "var(--text-color)";
@@ -83,13 +86,16 @@ export default function Navbar() {
               </Link>
               <Link
                 to="/register"
-                className="btn rounded-pill px-4 py-2"
+                className="btn rounded-pill"
                 style={{
                   backgroundColor: "var(--text-color)",
                   color: "var(--primary-color)",
                   border: "2px solid var(--text-color)",
                   fontWeight: "600",
-                  transition: "all 0.3s ease"
+                  transition: "all 0.3s ease",
+                  padding: "clamp(0.4rem, 2vw, 0.6rem) clamp(0.8rem, 4vw, 1rem)",
+                  fontSize: "clamp(0.75rem, 2vw, 0.95rem)",
+                  whiteSpace: "nowrap"
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = "transparent";

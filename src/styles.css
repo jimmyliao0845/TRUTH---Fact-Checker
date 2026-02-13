@@ -1184,13 +1184,20 @@ body.night-mode .btn-signup:hover {
     transition: all 0.3s ease;
     color: var(--text-color) !important;
     font-weight: 500;
+    min-height: 44px;
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .register-social-btn img {
     filter: none;
 }
 
-.register-social-btn:hover {
+.register-social-btn:hover,
+.register-social-btn:active,
+.register-social-btn:focus {
     background-color: #f0f0f0 !important;
     color: #000 !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -1207,10 +1214,24 @@ body.night-mode .register-social-btn img {
     filter: brightness(0) invert(1);
 }
 
-body.night-mode .register-social-btn:hover {
+body.night-mode .register-social-btn:hover,
+body.night-mode .register-social-btn:active,
+body.night-mode .register-social-btn:focus {
     background-color: #444654 !important;
     color: #fff !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* Mobile Touch States */
+@media (max-width: 767.98px) {
+    .register-social-btn {
+        min-height: 50px;
+        font-size: clamp(0.85rem, 1.5vw, 1rem);
+    }
+    
+    .register-social-btn:active {
+        transform: scale(0.98);
+    }
 }
 
 .register-terms {
@@ -2271,5 +2292,191 @@ body.night-mode .social-login-btn:hover {
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN & MOBILE OPTIMIZATION
+   ===================================================== */
+
+/* Mobile First - Extra Small Devices (< 576px) */
+@media (max-width: 575.98px) {
+  /* Navbar Responsiveness */
+  .navbar {
+    padding: 0.5rem 0.75rem !important;
+  }
+
+  .navbar-brand {
+    font-size: 1.1rem !important;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    padding: 1rem 0.5rem !important;
+    min-height: auto !important;
+  }
+
+  .display-1 {
+    font-size: clamp(1.5rem, 8vw, 2.5rem) !important;
+    min-height: 80px !important;
+  }
+
+  .lead {
+    font-size: 1rem !important;
+    padding: 0 0.5rem !important;
+  }
+
+  /* Button Responsiveness */
+  .btn-lg {
+    padding: 0.5rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
+
+  /* Cards */
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .row.g-4 > div {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Text Responsiveness */
+  .display-4 {
+    font-size: clamp(1.5rem, 7vw, 2rem) !important;
+  }
+
+  .display-3 {
+    font-size: clamp(1.3rem, 6vw, 1.8rem) !important;
+  }
+
+  /* Sidebar/Panel */
+  .sidebar {
+    width: 100% !important;
+    transform: translateX(-100%) !important;
+    position: fixed !important;
+  }
+
+  /* Modal/Dialog Responsiveness */
+  .modal-content {
+    border-radius: 1rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: 1rem;
+    padding: 0.6rem 0.75rem;
+  }
+}
+
+/* Small Devices (576px - 767px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .display-1 {
+    font-size: clamp(2rem, 10vw, 3rem) !important;
+    min-height: 100px !important;
+  }
+
+  .btn-lg {
+    padding: 0.6rem 2rem !important;
+    font-size: 1.05rem !important;
+  }
+
+  .display-4 {
+    font-size: clamp(1.8rem, 8vw, 2.2rem) !important;
+  }
+}
+
+/* Medium Devices (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .display-1 {
+    font-size: 3rem !important;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 2.5rem !important;
+  }
+}
+
+/* Large Devices (992px and up) */
+@media (min-width: 992px) {
+  .display-1 {
+    font-size: 3.5rem !important;
+  }
+
+  .navbar {
+    padding: 1rem 1.5rem !important;
+  }
+}
+
+/* =====================================================
+   RESPONSIVE FLEX & GRID UTILITIES
+   ===================================================== */
+
+/* Ensure flex containers wrap properly on mobile */
+.flex-responsive {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+@media (max-width: 575.98px) {
+  .flex-responsive {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .flex-responsive > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* Container Padding Responsive */
+.container,
+.container-fluid {
+  padding-left: clamp(0.75rem, 5vw, 2rem);
+  padding-right: clamp(0.75rem, 5vw, 2rem);
+}
+
+@media (max-width: 575.98px) {
+  .container,
+  .container-fluid {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+/* =====================================================
+   ASPECT RATIO FOR IMAGES & MEDIA
+   ===================================================== */
+
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.aspect-ratio-16-9 {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.aspect-ratio-1-1 {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+}
+
+/* =====================================================
+   SAFE AREA INSETS (For Mobile Web Apps/PWA)
+   ===================================================== */
+
+@supports (padding: max(0px)) {
+  body {
+    padding-left: max(env(safe-area-inset-left), 0px);
+    padding-right: max(env(safe-area-inset-right), 0px);
+  }
+
+  .navbar {
+    padding-left: max(env(safe-area-inset-left), 1rem) !important;
+    padding-right: max(env(safe-area-inset-right), 1rem) !important;
   }
 }

@@ -76,15 +76,16 @@ export default function HomePage() {
         padding: "2rem",
         position: "relative"
       }}>
-        <h1 className="display-1 fw-bold mb-3" style={{ 
-          minHeight: "120px",
+        <h1 className="fw-bold mb-3" style={{ 
+          fontSize: "clamp(2rem, 8vw, 4rem)",
+          minHeight: "clamp(80px, 15vw, 120px)",
           display: "flex",
           alignItems: "center"
         }}>
           {displayedText}
           <span className="typing-cursor" style={{
             animation: "blink 1s infinite",
-            marginLeft: "5px"
+            marginLeft: "clamp(2px, 1vw, 8px)"
           }}>|</span>
         </h1>
         
@@ -98,11 +99,12 @@ export default function HomePage() {
             </p>
             
             <button
-              className="btn btn-lg px-5 py-3 rounded-pill shadow"
+              className="btn rounded-pill shadow"
               onClick={() => navigate(isLoggedIn ? "/analysis-logged" : "/analysis")}
               style={{ 
                 animation: "fadeInUp 1s ease-out",
-                fontSize: "1.2rem",
+                fontSize: "clamp(0.9rem, 2.5vw, 1.2rem)",
+                padding: "clamp(0.6rem, 2vw, 1.2rem) clamp(1.2rem, 4vw, 2rem)",
                 fontWeight: "600",
                 backgroundColor: "var(--accent-color)",
                 color: "var(--primary-color)",
@@ -135,8 +137,8 @@ export default function HomePage() {
       {/* About Section */}
       <section className="container py-5" style={{ backgroundColor: "var(--primary-color)" }}>
         <div className="text-center mb-5">
-          <h2 className="display-4 fw-bold mb-3" style={{ color: "var(--text-color)" }}>About T.R.U.T.H.</h2>
-          <p className="lead" style={{ maxWidth: "800px", margin: "0 auto", color: "var(--text-color)" }}>
+          <h2 className="fw-bold mb-3" style={{ color: "var(--text-color)", fontSize: "clamp(1.5rem, 5vw, 2.5rem)" }}>About T.R.U.T.H.</h2>
+          <p style={{ maxWidth: "800px", margin: "0 auto", color: "var(--text-color)", fontSize: "clamp(0.9rem, 2vw, 1rem)" }}>
             An AI-powered platform designed to ensure the integrity and authenticity of digital content in an era of sophisticated manipulation.
           </p>
         </div>
@@ -156,25 +158,25 @@ export default function HomePage() {
                 <div className="d-flex align-items-center mb-3">
                   <div className="p-3 rounded-circle me-3" style={{ 
                     backgroundColor: "var(--accent-color)",
-                    width: "60px",
-                    height: "60px",
+                    width: "clamp(50px, 12vw, 70px)",
+                    height: "clamp(50px, 12vw, 70px)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <i className="bi bi-camera-video-fill fs-3" style={{ color: "var(--text-color)" }}></i>
+                    <i className="bi bi-camera-video-fill" style={{ color: "var(--text-color)", fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}></i>
                   </div>
-                  <h4 className="card-title mb-0 fw-bold" style={{ color: "var(--text-color)" }}>Image & Video Checker</h4>
+                  <h4 className="card-title mb-0 fw-bold" style={{ color: "var(--text-color)", fontSize: "clamp(1rem, 2.5vw, 1.3rem)" }}>Image & Video Checker</h4>
                 </div>
-                <p className="card-text" style={{ color: "var(--text-color)" }}>
+                <p className="card-text" style={{ color: "var(--text-color)", fontSize: "clamp(0.85rem, 1.8vw, 1rem)" }}>
                   Advanced deepfake detection using state-of-the-art neural networks to identify manipulated visual content.
                 </p>
                 <div className="mt-3">
                   <span className="badge" style={{ 
                     backgroundColor: "var(--accent-color)", 
                     color: "var(--primary-color)",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.9rem"
+                    padding: "clamp(0.3rem, 1vw, 0.6rem) clamp(0.6rem, 2vw, 1rem)",
+                    fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)"
                   }}>
                     <i className="bi bi-lock-fill me-1"></i> Registered Users Only
                   </span>
@@ -196,25 +198,25 @@ export default function HomePage() {
                 <div className="d-flex align-items-center mb-3">
                   <div className="p-3 rounded-circle me-3" style={{ 
                     backgroundColor: "var(--accent-color)",
-                    width: "60px",
-                    height: "60px",
+                    width: "clamp(50px, 12vw, 70px)",
+                    height: "clamp(50px, 12vw, 70px)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center"
                   }}>
-                    <i className="bi bi-file-text-fill fs-3" style={{ color: "var(--text-color)" }}></i>
+                    <i className="bi bi-file-text-fill" style={{ color: "var(--text-color)", fontSize: "clamp(1.2rem, 3vw, 1.75rem)" }}></i>
                   </div>
-                  <h4 className="card-title mb-0 fw-bold" style={{ color: "var(--text-color)" }}>Text Checker</h4>
+                  <h4 className="card-title mb-0 fw-bold" style={{ color: "var(--text-color)", fontSize: "clamp(1rem, 2.5vw, 1.3rem)" }}>Text Checker</h4>
                 </div>
-                <p className="card-text" style={{ color: "var(--text-color)" }}>
+                <p className="card-text" style={{ color: "var(--text-color)", fontSize: "clamp(0.85rem, 1.8vw, 1rem)" }}>
                   Detect AI-generated text and distinguish between human-written and machine-generated content with high accuracy.
                 </p>
                 <div className="mt-3">
                   <span className="badge" style={{ 
                     backgroundColor: "var(--accent-color)", 
                     color: "var(--primary-color)",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.9rem"
+                    padding: "clamp(0.3rem, 1vw, 0.6rem) clamp(0.6rem, 2vw, 1rem)",
+                    fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)"
                   }}>
                     <i className="bi bi-check-circle-fill me-1"></i> Free for All
                   </span>
@@ -231,17 +233,19 @@ export default function HomePage() {
         color: "var(--text-color)"
       }}>
         <div className="container">
-          <h2 className="display-5 fw-bold mb-3">Ready to Verify Your Content?</h2>
-          <p className="lead mb-4">Join thousands of users protecting digital authenticity</p>
-          <div className="d-flex gap-3 justify-content-center flex-wrap">
+          <h2 className="fw-bold mb-3" style={{ fontSize: "clamp(1.5rem, 5vw, 2.5rem)" }}>Ready to Verify Your Content?</h2>
+          <p className="mb-4" style={{ fontSize: "clamp(0.9rem, 2.5vw, 1rem)" }}>Join thousands of users protecting digital authenticity</p>
+          <div className="d-flex justify-content-center flex-wrap" style={{ gap: "clamp(0.8rem, 2vw, 1rem)" }}>
             <button
-              className="btn btn-lg px-5 py-3 rounded-pill"
+              className="btn rounded-pill"
               onClick={() => navigate("/register")}
               style={{
                 backgroundColor: "var(--accent-color)",
                 color: "var(--primary-color)",
                 border: "2px solid var(--accent-color)",
                 fontWeight: "600",
+                fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
+                padding: "clamp(0.6rem, 1.5vw, 1rem) clamp(1.2rem, 3vw, 1.8rem)",
                 transition: "all 0.3s ease"
               }}
               onMouseOver={(e) => {
@@ -256,13 +260,15 @@ export default function HomePage() {
               Get Started Free
             </button>
             <button
-              className="btn btn-lg px-5 py-3 rounded-pill"
+              className="btn rounded-pill"
               onClick={() => navigate(isLoggedIn ? "/analysis-logged" : "/analysis")}
               style={{
                 backgroundColor: "transparent",
                 color: "var(--text-color)",
                 border: "2px solid var(--text-color)",
                 fontWeight: "600",
+                fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
+                padding: "clamp(0.6rem, 1.5vw, 1rem) clamp(1.2rem, 3vw, 1.8rem)",
                 transition: "all 0.3s ease"
               }}
               onMouseOver={(e) => {
