@@ -15,6 +15,8 @@ export default function AnalysisPageLoggedIn() {
   const [displayedText, setDisplayedText] = useState("");
   const [showLogo, setShowLogo] = useState(false);
   const [showTruth, setShowTruth] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertType, setAlertType] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -49,7 +51,12 @@ export default function AnalysisPageLoggedIn() {
   // Handle text submission with API
     const handleSubmit = async () => {
     if (!inputText.trim()) {
-      alert("Please enter some text first!");
+      setAlertMessage("Please enter some text first!");
+      setAlertType("error");
+      setTimeout(() => {
+        setAlertMessage("");
+        setAlertType("");
+      }, 3000);
       return;
     }
   
@@ -124,7 +131,6 @@ const handleFileUpload = (event) => {
       "text/plain",                                                              // TXT
       "image/jpeg",
       "image/png",
-      "image/gif",
       "video/mp4",
       "video/quicktime",
       "video/x-matroska",
@@ -132,7 +138,12 @@ const handleFileUpload = (event) => {
     ];
   
     if (!allowedTypes.includes(file.type)) {
-      alert("Only DOCX, PDF, TXT, images (JPG, PNG), and videos (MP4, MOV, MKV, WEBM) are allowed!");
+      setAlertMessage("Only DOCX, PDF, TXT, images (JPG, PNG only), and videos (MP4, MOV, MKV, WEBM) are allowed!");
+      setAlertType("error");
+      setTimeout(() => {
+        setAlertMessage("");
+        setAlertType("");
+      }, 4000);
       return;
     }
   
@@ -153,6 +164,38 @@ const handleFileUpload = (event) => {
 
   return (
     <div className="d-flex" style={{ paddingTop: "56px", backgroundColor: "var(--primary-color)", minHeight: "100vh", color: "var(--text-color)" }}>
+      {/* Custom Alert */}
+      {alertMessage && (
+        <div className={`custom-alert custom-alert-${alertType}`} style={{
+          position: "fixed",
+          top: "70px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 1050,
+          animation: "slideDown 0.3s ease-out",
+          backgroundColor: alertType === "error" ? "var(--accent-color)" : "var(--secondary-color)",
+          color: "var(--text-color)",
+          border: `2px solid var(--accent-color)`
+        }}>
+          <div className="d-flex align-items-center justify-content-between">
+            <span>{alertMessage}</span>
+            <button 
+              onClick={() => setAlertMessage("")}
+              style={{
+                background: "none",
+                border: "none",
+                color: "inherit",
+                cursor: "pointer",
+                fontSize: "1.5rem",
+                marginLeft: "15px"
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+      
       {/* Sidebar */}
       <div 
               className="d-flex flex-column p-3 border-end"
@@ -187,9 +230,14 @@ const handleFileUpload = (event) => {
               </div>
       
               {!collapsed && (
-                <div className="white-box p-3 mt-3">
-                  <div style={{ fontSize: "0.85rem", opacity: 0.8 }}>📋 Analysis History</div>
-                  <div style={{ fontSize: "0.75rem", marginTop: "8px", opacity: 0.6 }}>Your previous analyses appear here</div>
+                <div className="p-3 mt-3" style={{ 
+                  backgroundColor: "var(--background-color)",
+                  borderRadius: "8px",
+                  border: `1px solid var(--accent-color)`,
+                  opacity: 0.9
+                }}>
+                  <div style={{ fontSize: "0.85rem", opacity: 0.9, color: "var(--text-color)" }}>📋 Analysis History</div>
+                  <div style={{ fontSize: "0.75rem", marginTop: "8px", opacity: 0.7, color: "var(--text-color)" }}>Your previous analyses appear here</div>
                 </div>
               )}
               
@@ -297,7 +345,7 @@ const handleFileUpload = (event) => {
               </span>
             )}
           </h1>
-          <p className="text-muted mt-2">Trusted Recognition Using Trained Heuristics</p>
+          <p className="mt-2" style={{ color: "var(--text-color)", opacity: 0.8 }}>Trusted Recognition Using Trained Heuristics</p>
         </div>
 
         {/* Input Card */}
@@ -312,7 +360,7 @@ const handleFileUpload = (event) => {
           }}
         >
           <div className="text-center mb-4">
-            <h4 className="fw-bold" style={{ color: "var(--text-color)" }}>
+            <h4 className="fw-bold" style={{ color: "#333333" }}>
               🔍 Start Your Analysis
             </h4>
             <p style={{ color: "var(--hint-text-color)" }}>Enter text or upload a file to detect AI-generated content</p>
@@ -416,7 +464,7 @@ const handleFileUpload = (event) => {
               type="file"
               ref={fileInputRef}
               style={{ display: "none" }}
-              accept=".docx,.pdf,.txt,image/*,video/*,application/pdf"
+              accept=".docx,.pdf,.txt,.jpg,.jpeg,.png,.mp4,.mov,.mkv,.webm,application/pdf"
               onChange={handleFileUpload}
             />
           </div>
@@ -424,7 +472,7 @@ const handleFileUpload = (event) => {
           {/* Supported Files Info */}
           <div className="text-center mt-4">
             <small style={{ color: "var(--hint-text-color)" }}>
-              📄 Supported: Text, DOCX, Images (JPG, PNG, GIF), Videos (MP4, MOV, MKV, WEBM)
+              📄 5 Text Verifications (max 200 words) • 1 Image Verification (JPG, PNG) • 1 Video Verification (MP4, MOV, MKV, WEBM - under file size limit)
             </small>
           </div>
         </div>   

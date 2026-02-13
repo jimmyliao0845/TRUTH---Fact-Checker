@@ -1092,7 +1092,7 @@ export default function AdminPanel() {
     <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", minHeight: "100vh" }}>
       {renderSidebar()}
       
-      <main className="flex-grow-1 p-4">
+      <main className="flex-grow-1 p-4" style={{ marginTop: "4rem" }}>
         {renderMainContent()}
       </main>
 

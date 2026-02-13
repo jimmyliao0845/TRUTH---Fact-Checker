@@ -337,6 +337,23 @@ export const ColorThemeManager = {
     }
     return false;
   },
+
+  applySavedTheme: (themeId, themeObj) => {
+    const root = document.documentElement;
+    
+    if (themeObj && themeObj.colors) {
+      root.style.setProperty("--primary-color", themeObj.colors.primary);
+      root.style.setProperty("--secondary-color", themeObj.colors.secondary);
+      root.style.setProperty("--navbar-color", themeObj.colors.navbar);
+      root.style.setProperty("--sidebar-color", themeObj.colors.sidebar);
+      root.style.setProperty("--background-color", themeObj.colors.background);
+      root.style.setProperty("--button-color", themeObj.colors.button);
+      root.style.setProperty("--text-color", themeObj.colors.text);
+      root.style.setProperty("--accent-color", themeObj.colors.accent);
+    }
+    
+    localStorage.setItem("selectedTheme", themeId);
+  },
 };
 
 // ============= HELPER FUNCTION =============
@@ -621,7 +638,7 @@ const isCustomColorUnlocked = (colorKey, unlockedItems) => {
 // Generate color shop items from THEMES definitions - single source of truth
 const generateColorShopItems = () => {
   return Object.entries(THEMES)
-    .filter(([key]) => key !== "black" && key !== "white") // Free themes not in shop
+    .filter(([key]) => key !== "black" && key !== "white" && key !== "custom") // Free themes and custom not in shop
     .map(([key, theme]) => ({
       id: `color_${key}`,
       name: `${theme.name} Theme`,
@@ -734,6 +751,11 @@ export default function Marketplace() {
   const [customColors, setCustomColors] = useState({});
   const [showThemePurchaseConfirmation, setShowThemePurchaseConfirmation] = useState(false);
   const [pendingPurchaseTheme, setPendingPurchaseTheme] = useState(null);
+  const [savedCustomThemes, setSavedCustomThemes] = useState({});
+  const [showSaveThemeModal, setShowSaveThemeModal] = useState(false);
+  const [newThemeName, setNewThemeName] = useState("");
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [themeToDelete, setThemeToDelete] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -751,6 +773,12 @@ export default function Marketplace() {
     const saved = ColorThemeManager.loadSavedTheme();
     setCurrentTheme(saved);
 
+    // Load saved custom themes from localStorage
+    const savedThemes = localStorage.getItem("savedCustomThemes");
+    if (savedThemes) {
+      setSavedCustomThemes(JSON.parse(savedThemes));
+    }
+
     return () => unsubscribe();
   }, []);
 
@@ -764,10 +792,43 @@ export default function Marketplace() {
       Object.entries(colors).forEach(([key, value]) => {
         document.documentElement.style.setProperty(`--${key}-color`, value);
       });
+    } else {
+      // If no saved custom colors, initialize with current theme's colors
+      const currentColors = getCurrentThemeColors();
+      const initColors = {};
+      Object.keys(CUSTOM_COLOR_DEFINITIONS).forEach((colorKey) => {
+        initColors[colorKey] = currentColors[colorKey] || getDefaultColorValue(colorKey);
+      });
+      setCustomColors(initColors);
     }
   }, []);
 
   const handleThemeChange = (themeName) => {
+    // Custom theme is special - initialize with current active theme colors, then open editor
+    if (themeName === "custom") {
+      const currentColors = getCurrentThemeColors();
+      // Pre-populate customColors with ALL color definitions - use current theme colors + defaults for others
+      const allCustomColors = {};
+      Object.keys(CUSTOM_COLOR_DEFINITIONS).forEach((colorKey) => {
+        // Try to get from current theme, otherwise use default value
+        allCustomColors[colorKey] = currentColors[colorKey] || getDefaultColorValue(colorKey);
+      });
+      setCustomColors(allCustomColors);
+      // Save to localStorage so ColorThemeManager can find it
+      localStorage.setItem("customColors", JSON.stringify(allCustomColors));
+      // Apply the theme with the pre-populated colors
+      ColorThemeManager.applyTheme("custom");
+      setCurrentTheme("custom");
+      return;
+    }
+
+    // Check if it's a saved custom theme
+    if (savedCustomThemes[themeName]) {
+      setPendingTheme(themeName);
+      setShowConfirmation(true);
+      return;
+    }
+
     if (ColorThemeManager.isThemeUnlocked(themeName, userData?.unlockedItems)) {
       // Show confirmation for all theme changes
       setPendingTheme(themeName);
@@ -786,7 +847,13 @@ export default function Marketplace() {
 
   const handleConfirmThemeChange = () => {
     if (pendingTheme) {
-      ColorThemeManager.applyTheme(pendingTheme);
+      // Check if it's a saved custom theme
+      if (savedCustomThemes[pendingTheme]) {
+        const theme = savedCustomThemes[pendingTheme];
+        ColorThemeManager.applySavedTheme(pendingTheme, theme);
+      } else {
+        ColorThemeManager.applyTheme(pendingTheme);
+      }
       setCurrentTheme(pendingTheme);
       setShowConfirmation(false);
       setPendingTheme(null);
@@ -822,6 +889,109 @@ export default function Marketplace() {
       setPurchaseMessage("");
       setMessageType("");
     }, 3000);
+  };
+
+  const handleOpenSaveThemeModal = () => {
+    setNewThemeName("");
+    setShowSaveThemeModal(true);
+  };
+
+  const handleSaveThemeWithName = () => {
+    if (!newThemeName.trim()) {
+      setPurchaseMessage("Please enter a theme name");
+      setMessageType("error");
+      setTimeout(() => {
+        setPurchaseMessage("");
+        setMessageType("");
+      }, 3000);
+      return;
+    }
+
+    const themeId = `custom_${newThemeName.toLowerCase().replace(/\s+/g, "_")}`;
+    
+    // Create new theme object from current custom colors
+    const newTheme = {
+      name: newThemeName,
+      description: `Custom theme: ${newThemeName}`,
+      price: 0,
+      isCustom: true,
+      isSaved: true,
+      colors: {
+        primary: customColors.primary || "#09090d",
+        secondary: customColors.secondary || "#1a1a23",
+        navbar: customColors.navbar || "#09090d",
+        sidebar: customColors.sidebar || "#1a1a23",
+        background: customColors.background || "#0f0f14",
+        button: customColors.button || "#3a305033",
+        text: customColors.text || "#ffffff",
+        accent: customColors.accent || "#ff6b6b",
+      },
+    };
+
+    // Save to localStorage
+    const updatedThemes = { ...savedCustomThemes, [themeId]: newTheme };
+    localStorage.setItem("savedCustomThemes", JSON.stringify(updatedThemes));
+    setSavedCustomThemes(updatedThemes);
+
+    // Apply the saved theme
+    ColorThemeManager.applySavedTheme(themeId, newTheme);
+    setCurrentTheme(themeId);
+
+    setPurchaseMessage(`Theme "${newThemeName}" saved successfully!`);
+    setMessageType("success");
+    setShowSaveThemeModal(false);
+    setNewThemeName("");
+    
+    setTimeout(() => {
+      setPurchaseMessage("");
+      setMessageType("");
+    }, 3000);
+  };
+
+  const handleDeleteSavedTheme = (themeId) => {
+    setThemeToDelete(themeId);
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleConfirmDeleteTheme = () => {
+    if (themeToDelete) {
+      const updatedThemes = { ...savedCustomThemes };
+      delete updatedThemes[themeToDelete];
+      localStorage.setItem("savedCustomThemes", JSON.stringify(updatedThemes));
+      setSavedCustomThemes(updatedThemes);
+      
+      // If deleted theme was active, switch to black theme
+      if (currentTheme === themeToDelete) {
+        ColorThemeManager.applyTheme("black");
+        setCurrentTheme("black");
+      }
+      
+      setPurchaseMessage("Theme deleted successfully!");
+      setMessageType("success");
+      setShowDeleteConfirmation(false);
+      setThemeToDelete(null);
+      setTimeout(() => {
+        setPurchaseMessage("");
+        setMessageType("");
+      }, 3000);
+    }
+  };
+
+  const handleCancelDeleteTheme = () => {
+    setShowDeleteConfirmation(false);
+    setThemeToDelete(null);
+  };
+
+  const getThemeById = (themeId) => {
+    if (savedCustomThemes[themeId]) {
+      return savedCustomThemes[themeId];
+    }
+    return THEMES[themeId];
+  };
+
+  const getCurrentThemeColors = () => {
+    const theme = getThemeById(currentTheme);
+    return theme ? theme.colors : THEMES.black.colors;
   };
 
   const handlePurchase = (itemId, price) => {
@@ -1011,22 +1181,23 @@ export default function Marketplace() {
                   userData?.unlockedItems
                 );
                 const isSelected = currentTheme === key;
+                
+                // For Custom theme, display the actual custom colors from state
+                const displayColors = key === "custom" ? customColors : theme.colors;
 
                 return (
                   <div key={key} className="col-6 col-md-4 col-lg-3">
                     <div
-                      className={`theme-card p-3 rounded cursor-pointer h-100 transition ${
-                        isSelected ? "theme-card-item selected" : "theme-card-item unselected"
-                      } ${
-                        isUnlocked ? "unlocked" : "locked"
-                      }`}
+                      className={`theme-card p-3 rounded cursor-pointer h-100 transition ${isSelected ? "theme-card-item selected" : "theme-card-item unselected"} ${isUnlocked ? "unlocked" : "locked"}`}
                       style={{
-                        backgroundColor: theme.colors.primary,
+                        backgroundColor: displayColors.primary,
+                        border: isSelected ? `3px solid ${displayColors.accent} !important` : `2px solid rgba(255, 255, 255, 0.1) !important`,
+                        transform: isSelected ? "scale(1.05) !important" : "scale(1) !important",
                       }}
                       onClick={() => handleThemeChange(key)}
                     >
                       <div className="d-flex justify-content-between align-items-start mb-2">
-                        <h6 className="m-0" style={{ color: theme.colors.text }}>
+                        <h6 className="m-0" style={{ color: displayColors.text }}>
                           {theme.name}
                         </h6>
                         {!isUnlocked && (
@@ -1036,6 +1207,75 @@ export default function Marketplace() {
                             {theme.price} pts
                           </span>
                         )}
+                      </div>
+
+                      <p
+                        className="small m-0"
+                        style={{ color: displayColors.text, opacity: 0.8 }}
+                      >
+                        {theme.description}
+                      </p>
+
+                      <div className="d-flex gap-1 mt-3">
+                        {Object.values(displayColors)
+                          .slice(0, 4)
+                          .map((color, idx) => (
+                            <div
+                              key={idx}
+                              style={{
+                                width: "20px",
+                                height: "20px",
+                                backgroundColor: color,
+                                borderRadius: "4px",
+                                border: "1px solid rgba(255, 255, 255, 0.3)",
+                              }}
+                            />
+                          ))}
+                      </div>
+
+                      {isSelected && (
+                        <div
+                          className="mt-2 text-center fw-bold"
+                          style={{ color: displayColors.accent }}
+                        >
+                          <i className="bi bi-check-circle"></i> Active
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Render Saved Custom Themes */}
+              {Object.entries(savedCustomThemes).map(([themeId, theme]) => {
+                const isSelected = currentTheme === themeId;
+
+                return (
+                  <div key={themeId} className="col-6 col-md-4 col-lg-3 position-relative">
+                    <div
+                      className={`theme-card p-3 rounded cursor-pointer h-100 transition ${isSelected ? "theme-card-item selected" : "theme-card-item unselected"} unlocked saved-custom-theme`}
+                      style={{
+                        backgroundColor: theme.colors.primary,
+                        border: isSelected ? `3px solid ${theme.colors.accent} !important` : `2px solid rgba(255, 255, 255, 0.1) !important`,
+                        transform: isSelected ? "scale(1.05) !important" : "scale(1) !important",
+                      }}
+                      onClick={() => handleThemeChange(themeId)}
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <h6 className="m-0" style={{ color: theme.colors.text }}>
+                          {theme.name}
+                        </h6>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          style={{ padding: "0.3rem 0.5rem", fontSize: "0.75rem" }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteSavedTheme(themeId);
+                          }}
+                          title="Delete this theme"
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
                       </div>
 
                       <p
@@ -1081,17 +1321,18 @@ export default function Marketplace() {
               <div 
                 className="custom-theme-editor mt-5 p-4 rounded"
                 style={{
-                  backgroundColor: THEMES.custom.overlays.color,
-                  borderColor: THEMES.custom.overlays.border,
+                  backgroundColor: getCurrentThemeColors().primary,
+                  borderColor: "rgba(255, 255, 255, 0.1)",
+                  border: "2px solid rgba(255, 255, 255, 0.1)",
                 }}
               >
-                <h5 className="mb-4" style={{ color: THEMES.custom.colors.text }}>
+                <h5 className="mb-4" style={{ color: getCurrentThemeColors().text }}>
                   <i className="bi bi-palette2 me-2"></i>Customize Your Theme Colors
                 </h5>
 
                 {/* Core Colors Section */}
                 <div className="color-section mb-4">
-                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                  <h6 style={{ color: getCurrentThemeColors().text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid rgba(255, 255, 255, 0.1)` }}>
                     <i className="bi bi-star me-2"></i>Core Colors
                   </h6>
                   <div className="row g-3">
@@ -1105,13 +1346,13 @@ export default function Marketplace() {
                             <div className="custom-color-group">
                               <div className="d-flex justify-content-between align-items-start mb-2">
                                 <div>
-                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                  <label className="form-label custom-color-label" style={{ color: getCurrentThemeColors().text }}>
                                     {colorDef.label}
                                     {colorDef.locked && !isUnlocked && (
-                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: getCurrentThemeColors().accent, fontSize: "0.8rem" }}></i>
                                     )}
                                   </label>
-                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                  <small style={{ color: getCurrentThemeColors().text, opacity: 0.7, display: "block" }}>
                                     {colorDef.description}
                                   </small>
                                 </div>
@@ -1126,7 +1367,7 @@ export default function Marketplace() {
                                     onChange={(e) => handleCustomColorChange(key, e.target.value)}
                                     title={`Choose ${colorDef.label.toLowerCase()}`}
                                   />
-                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                  <span className="color-value" style={{ color: getCurrentThemeColors().text }}>
                                     {customColors[key] || getDefaultColorValue(key)}
                                   </span>
                                 </div>
@@ -1134,8 +1375,8 @@ export default function Marketplace() {
                                 <button
                                   className="btn btn-sm w-100"
                                   style={{
-                                    backgroundColor: THEMES.custom.colors.accent,
-                                    color: THEMES.custom.colors.primary,
+                                    backgroundColor: getCurrentThemeColors().accent,
+                                    color: getCurrentThemeColors().primary,
                                     border: "none",
                                     fontWeight: "600"
                                   }}
@@ -1153,7 +1394,7 @@ export default function Marketplace() {
 
                 {/* Navigation & Layout Section */}
                 <div className="color-section mb-4">
-                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                  <h6 style={{ color: getCurrentThemeColors().text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid rgba(255, 255, 255, 0.1)` }}>
                     <i className="bi bi-layout-sidebar me-2"></i>Navigation & Layout
                   </h6>
                   <div className="row g-3">
@@ -1167,13 +1408,13 @@ export default function Marketplace() {
                             <div className="custom-color-group">
                               <div className="d-flex justify-content-between align-items-start mb-2">
                                 <div>
-                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                  <label className="form-label custom-color-label" style={{ color: getCurrentThemeColors().text }}>
                                     {colorDef.label}
                                     {colorDef.locked && !isUnlocked && (
-                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: getCurrentThemeColors().accent, fontSize: "0.8rem" }}></i>
                                     )}
                                   </label>
-                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                  <small style={{ color: getCurrentThemeColors().text, opacity: 0.7, display: "block" }}>
                                     {colorDef.description}
                                   </small>
                                 </div>
@@ -1188,7 +1429,7 @@ export default function Marketplace() {
                                     onChange={(e) => handleCustomColorChange(key, e.target.value)}
                                     title={`Choose ${colorDef.label.toLowerCase()}`}
                                   />
-                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                  <span className="color-value" style={{ color: getCurrentThemeColors().text }}>
                                     {customColors[key] || getDefaultColorValue(key)}
                                   </span>
                                 </div>
@@ -1196,8 +1437,8 @@ export default function Marketplace() {
                                 <button
                                   className="btn btn-sm w-100"
                                   style={{
-                                    backgroundColor: THEMES.custom.colors.accent,
-                                    color: THEMES.custom.colors.primary,
+                                    backgroundColor: getCurrentThemeColors().accent,
+                                    color: getCurrentThemeColors().primary,
                                     border: "none",
                                     fontWeight: "600"
                                   }}
@@ -1215,7 +1456,7 @@ export default function Marketplace() {
 
                 {/* Interactive Elements Section */}
                 <div className="color-section mb-4">
-                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                  <h6 style={{ color: getCurrentThemeColors().text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid rgba(255, 255, 255, 0.1)` }}>
                     <i className="bi bi-cursor-fill me-2"></i>Interactive Elements
                   </h6>
                   <div className="row g-3">
@@ -1229,13 +1470,13 @@ export default function Marketplace() {
                             <div className="custom-color-group">
                               <div className="d-flex justify-content-between align-items-start mb-2">
                                 <div>
-                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                  <label className="form-label custom-color-label" style={{ color: getCurrentThemeColors().text }}>
                                     {colorDef.label}
                                     {colorDef.locked && !isUnlocked && (
-                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: getCurrentThemeColors().accent, fontSize: "0.8rem" }}></i>
                                     )}
                                   </label>
-                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                  <small style={{ color: getCurrentThemeColors().text, opacity: 0.7, display: "block" }}>
                                     {colorDef.description}
                                   </small>
                                 </div>
@@ -1250,7 +1491,7 @@ export default function Marketplace() {
                                     onChange={(e) => handleCustomColorChange(key, e.target.value)}
                                     title={`Choose ${colorDef.label.toLowerCase()}`}
                                   />
-                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                  <span className="color-value" style={{ color: getCurrentThemeColors().text }}>
                                     {customColors[key] || getDefaultColorValue(key)}
                                   </span>
                                 </div>
@@ -1258,8 +1499,8 @@ export default function Marketplace() {
                                 <button
                                   className="btn btn-sm w-100"
                                   style={{
-                                    backgroundColor: THEMES.custom.colors.accent,
-                                    color: THEMES.custom.colors.primary,
+                                    backgroundColor: getCurrentThemeColors().accent,
+                                    color: getCurrentThemeColors().primary,
                                     border: "none",
                                     fontWeight: "600"
                                   }}
@@ -1277,7 +1518,7 @@ export default function Marketplace() {
 
                 {/* Advanced Colors Section */}
                 <div className="color-section mb-4">
-                  <h6 style={{ color: THEMES.custom.colors.text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid ${THEMES.custom.overlays.border}` }}>
+                  <h6 style={{ color: getCurrentThemeColors().text, marginBottom: "1rem", paddingBottom: "0.5rem", borderBottom: `1px solid rgba(255, 255, 255, 0.1)` }}>
                     <i className="bi bi-gear me-2"></i>Advanced Colors (Light Variants, Status, Tabs & More)
                   </h6>
                   <div className="row g-3">
@@ -1291,13 +1532,13 @@ export default function Marketplace() {
                             <div className="custom-color-group">
                               <div className="d-flex justify-content-between align-items-start mb-2">
                                 <div>
-                                  <label className="form-label custom-color-label" style={{ color: THEMES.custom.colors.text }}>
+                                  <label className="form-label custom-color-label" style={{ color: getCurrentThemeColors().text }}>
                                     {colorDef.label}
                                     {colorDef.locked && !isUnlocked && (
-                                      <i className="bi bi-lock-fill ms-2" style={{ color: "#ff6b6b", fontSize: "0.8rem" }}></i>
+                                      <i className="bi bi-lock-fill ms-2" style={{ color: getCurrentThemeColors().accent, fontSize: "0.8rem" }}></i>
                                     )}
                                   </label>
-                                  <small style={{ color: THEMES.custom.colors.text, opacity: 0.7, display: "block" }}>
+                                  <small style={{ color: getCurrentThemeColors().text, opacity: 0.7, display: "block" }}>
                                     {colorDef.description}
                                   </small>
                                 </div>
@@ -1312,7 +1553,7 @@ export default function Marketplace() {
                                     onChange={(e) => handleCustomColorChange(key, e.target.value)}
                                     title={`Choose ${colorDef.label.toLowerCase()}`}
                                   />
-                                  <span className="color-value" style={{ color: THEMES.custom.colors.text }}>
+                                  <span className="color-value" style={{ color: getCurrentThemeColors().text }}>
                                     {customColors[key] || getDefaultColorValue(key)}
                                   </span>
                                 </div>
@@ -1320,8 +1561,8 @@ export default function Marketplace() {
                                 <button
                                   className="btn btn-sm w-100"
                                   style={{
-                                    backgroundColor: THEMES.custom.colors.accent,
-                                    color: THEMES.custom.colors.primary,
+                                    backgroundColor: getCurrentThemeColors().accent,
+                                    color: getCurrentThemeColors().primary,
                                     border: "none",
                                     fontWeight: "600"
                                   }}
@@ -1342,7 +1583,19 @@ export default function Marketplace() {
                     className="btn theme-btn-primary"
                     onClick={handleSaveCustomColors}
                   >
-                    <i className="bi bi-check-circle me-1"></i>Save Custom Theme
+                    <i className="bi bi-check-circle me-1"></i>Apply Custom Theme
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={handleOpenSaveThemeModal}
+                    style={{
+                      backgroundColor: getCurrentThemeColors().accent,
+                      color: getCurrentThemeColors().primary,
+                      border: "none",
+                      fontWeight: "600"
+                    }}
+                  >
+                    <i className="bi bi-save me-1"></i>Save as Theme
                   </button>
                   <button
                     className="btn theme-btn-secondary"
@@ -1417,7 +1670,7 @@ export default function Marketplace() {
             </div>
             <div className="confirmation-body">
               <p>
-                You're about to apply the <strong>{THEMES[pendingTheme]?.name}</strong> theme to your entire application.
+                You're about to apply the <strong>{getThemeById(pendingTheme)?.name}</strong> theme to your entire application.
               </p>
               <p className="mb-0">
                 This will change the colors of your navbar, sidebar, background, buttons, and all other interface elements.
@@ -1476,6 +1729,95 @@ export default function Marketplace() {
                 onClick={handleConfirmPurchaseAndApplyTheme}
               >
                 <i className="bi bi-check-circle me-1"></i>Apply Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Save Theme Modal */}
+      {showSaveThemeModal && (
+        <div className="theme-confirmation-overlay">
+          <div className="theme-confirmation-dialog">
+            <div className="confirmation-header">
+              <h5 className="mb-0">
+                <i className="bi bi-save me-2"></i>
+                Save Custom Theme
+              </h5>
+              <button
+                className="btn-close"
+                onClick={() => setShowSaveThemeModal(false)}
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="confirmation-body">
+              <p className="mb-3">Enter a name for your custom theme:</p>
+              <input
+                type="text"
+                className="form-control form-control-lg"
+                placeholder="e.g., My Cool Theme"
+                value={newThemeName}
+                onChange={(e) => setNewThemeName(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleSaveThemeWithName();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            <div className="confirmation-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowSaveThemeModal(false)}
+              >
+                <i className="bi bi-x-circle me-1"></i>Cancel
+              </button>
+              <button
+                className="btn btn-success"
+                onClick={handleSaveThemeWithName}
+                disabled={!newThemeName.trim()}
+              >
+                <i className="bi bi-check-circle me-1"></i>Save Theme
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Theme Confirmation Modal */}
+      {showDeleteConfirmation && themeToDelete && (
+        <div className="theme-confirmation-overlay">
+          <div className="theme-confirmation-dialog">
+            <div className="confirmation-header">
+              <h5 className="mb-0">
+                <i className="bi bi-exclamation-triangle me-2"></i>
+                Delete Theme
+              </h5>
+              <button
+                className="btn-close"
+                onClick={handleCancelDeleteTheme}
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="confirmation-body">
+              <p>
+                Are you sure you want to delete <strong>"{savedCustomThemes[themeToDelete]?.name}"</strong>?
+              </p>
+              <p className="mb-0 text-muted">This action cannot be undone.</p>
+            </div>
+            <div className="confirmation-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={handleCancelDeleteTheme}
+              >
+                <i className="bi bi-x-circle me-1"></i>Cancel
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={handleConfirmDeleteTheme}
+              >
+                <i className="bi bi-trash me-1"></i>Delete
               </button>
             </div>
           </div>
