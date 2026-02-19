@@ -86,18 +86,27 @@ export function InstallButton({ variant = 'default', className = '' }) {
       <button
         onClick={handleInstall}
         disabled={isInstalling}
-        className={`btn btn-sm d-flex align-items-center gap-1 ${className}`}
+        className={`btn rounded-pill d-flex align-items-center gap-2 ${className}`}
         style={{
-          backgroundColor: 'var(--accent-color)',
+          backgroundColor: 'var(--text-color)',
           color: 'var(--primary-color)',
-          border: 'none',
-          borderRadius: '8px',
-          padding: '6px 12px',
+          border: '2px solid var(--text-color)',
           fontWeight: '600',
-          fontSize: '0.85rem'
+          transition: 'all 0.3s ease',
+          padding: 'clamp(0.4rem, 2vw, 0.6rem) clamp(0.8rem, 4vw, 1rem)',
+          fontSize: 'clamp(0.75rem, 2vw, 0.95rem)',
+          whiteSpace: 'nowrap'
+        }}
+        onMouseOver={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+          e.currentTarget.style.color = 'var(--text-color)';
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.backgroundColor = 'var(--text-color)';
+          e.currentTarget.style.color = 'var(--primary-color)';
         }}
       >
-        <FaDownload size={14} />
+        <FaDownload />
         {!isInstalling && <span>Install</span>}
       </button>
     );

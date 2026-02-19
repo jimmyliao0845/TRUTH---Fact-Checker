@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
@@ -21,7 +21,9 @@ import GamesList from "./GamesList";
 
 export default function GamePage() {
   const navigate = useNavigate();
+  const mainContentRef = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -40,6 +42,52 @@ export default function GamePage() {
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Swipe gesture handler for mobile sidebar
+  const handleSwipe = useCallback((direction) => {
+    if (direction === "right") {
+      setSidebarVisible(true);
+    } else if (direction === "left") {
+      setSidebarVisible(false);
+    }
+  }, []);
+
+  // Set up touch listeners for swipe on mobile
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        const direction = diffX > 0 ? 'left' : 'right';
+        handleSwipe(direction);
+      }
+    };
+
+    const element = mainContentRef.current;
+    if (element) {
+      element.addEventListener('touchstart', handleTouchStart, false);
+      element.addEventListener('touchend', handleTouchEnd, false);
+    }
+
+    return () => {
+      if (element) {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, [handleSwipe]);
 
   // Load daily games count from localStorage
   useEffect(() => {
@@ -214,129 +262,62 @@ export default function GamePage() {
 
   // Main game selection page with sidebar
   return (
-    <div className="d-flex" style={{ paddingTop: "56px", backgroundColor: "var(--primary-color)", minHeight: "100vh", color: "var(--text-color)" }}>
-      {/* Sidebar */}
+    <div className="d-flex" style={{ paddingTop: "56px" }}>
+      {/* Sidebar Overlay for Mobile */}
       <div 
-        className="d-flex flex-column p-3 border-end"
-        style={{
-          width: collapsed ? "80px" : "200px",
-          backgroundColor: "var(--secondary-color)",
-          transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
-          position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
-          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
-          borderRight: `2px solid var(--accent-color)`
-        }}
-      >
+        className={`sidebar-overlay ${sidebarVisible ? 'visible' : ''}`}
+        onClick={() => setSidebarVisible(false)}
+      />
+
+      {/* Sidebar */}
+      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''} ${sidebarVisible ? 'visible' : ''}`}>
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
-            className="btn btn-sm"
+            className="app-sidebar-toggle"
             onClick={() => setCollapsed(!collapsed)}
-            style={{ 
-              border: "none",
-              backgroundColor: "var(--accent-color)",
-              color: "var(--primary-color)",
-              padding: "6px 10px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
           >
             <FaBars />
           </button>
         </div>
         
-        {!collapsed && (
-          <div className="white-box p-3 mt-3">
-            <div style={{ fontSize: "0.85rem", opacity: 0.8 }}>🎮 Games Hub</div>
-            <div style={{ fontSize: "0.75rem", marginTop: "8px", opacity: 0.6 }}>Learn by playing interactive games</div>
-          </div>
-        )}
-        
-        {/* Action Buttons */}
-        <div className="d-flex flex-column gap-3 mt-4">
+        {/* Sidebar Items */}
+        <div className="d-flex flex-column gap-1">
           <button 
-            className="btn btn-link text-decoration-none d-flex align-items-center p-2"
+            className="app-sidebar-item"
             onClick={() => navigate("/analysis-logged")}
-            style={{ 
-              transition: "all 0.2s",
-              color: "var(--text-color)",
-              borderRadius: "6px",
-              fontSize: "0.95rem",
-              fontWeight: "500"
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--accent-color)";
-              e.currentTarget.style.color = "var(--primary-color)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--text-color)";
-            }}
           >
             <FaArrowLeft size={18} />
-            {!collapsed && <span className="ms-3">Back to Analysis</span>}
+            <span className="app-sidebar-label">Back to Analysis</span>
           </button>
 
           <button 
-            className="btn btn-link text-decoration-none d-flex align-items-center p-2"
-            onClick={() => navigate("/general-user-profile")}
-            style={{ 
-              color: "var(--text-color)",
-              borderRadius: "6px",
-              fontSize: "0.95rem",
-              fontWeight: "500"
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--accent-color)";
-              e.currentTarget.style.color = "var(--primary-color)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--text-color)";
-            }}
+            className="app-sidebar-item"
+            onClick={() => navigate("/user/profile")}
           >
             <FaTrophy size={18} />
-            {!collapsed && <span className="ms-3">My Stats</span>}
+            <span className="app-sidebar-label">My Stats</span>
           </button>
 
           <button 
-            className="btn btn-link text-decoration-none d-flex align-items-center p-2"
+            className="app-sidebar-item"
             onClick={() => navigate("/factcheckerdashboard")}
-            style={{ 
-              color: "var(--text-color)",
-              borderRadius: "6px",
-              fontSize: "0.95rem",
-              fontWeight: "500"
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = "var(--accent-color)";
-              e.currentTarget.style.color = "var(--primary-color)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = "var(--text-color)";
-            }}
           >
             <FaBriefcase size={18} />
-            {!collapsed && <span className="ms-3">Professional Dashboard</span>}
+            <span className="app-sidebar-label">Professional Dashboard</span>
           </button>
         </div>
+
+        {!collapsed && (
+          <div className="mt-4 small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
+            Games workspace
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
-      <div
-        className="flex-grow-1 d-flex flex-column"
-        style={{
-          marginLeft: collapsed ? "80px" : "200px",
-          transition: "margin-left 0.3s ease",
-          minHeight: "calc(100vh - 56px)",
-          padding: "2rem",
-          backgroundColor: "var(--primary-color)",
-          color: "var(--text-color)"
-        }}
+      <main
+        ref={mainContentRef}
+        className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}
       >
         {/* Header Section */}
         <div className="text-center mb-5" style={{ animation: "fadeIn 0.6s ease-in" }}>
@@ -410,7 +391,6 @@ export default function GamePage() {
             ))}
           </div>
         </div>
-      </div>
 
       {/* CSS for animations */}
       <style>
@@ -430,6 +410,7 @@ export default function GamePage() {
           }
         `}
       </style>
+    </main>
     </div>
   );
 }

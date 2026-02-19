@@ -120,114 +120,92 @@ export default function GeneralUserProfile() {
   );
 
   return (
-    <div className="d-flex" style={{ 
-      backgroundColor: "var(--primary-color)", 
-      paddingTop: "56px",
-      minHeight: "100vh",
-      color: "var(--text-color)"
-    }}>
-      {/* SIDEBAR */}
+    <>
+      {/* Sidebar Overlay for Mobile */}
       <div
-        className="d-flex flex-column p-3 border-end"
-        style={{
-          width: collapsed ? "80px" : "250px",
-          backgroundColor: "var(--secondary-color)",
-          transition: "width 0.3s ease",
-          height: "calc(100vh - 56px)",
-          position: "fixed",
-          top: "56px",
-          left: 0,
-          overflowY: "auto",
-          zIndex: 900,
-          boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
-          borderRight: `2px solid var(--accent-color)`
-        }}
-      >
+        className={`sidebar-overlay ${sidebarVisible ? 'visible' : ''}`}
+       onClick={() => setSidebarVisible(false)}
+      />
+
+      {/* Sidebar */}
+      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''} ${sidebarVisible ? 'visible' : ''}`}>
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
-            className="btn btn-sm"
+            className="app-sidebar-toggle"
             onClick={() => setCollapsed(!collapsed)}
-            style={{ 
-              border: "none",
-              backgroundColor: "var(--accent-color)",
-              color: "var(--primary-color)",
-              padding: "6px 10px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
           >
             <FaBars />
           </button>
         </div>
 
-        {/* Sidebar Menu */}
-        <ul className="nav flex-column">
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${activeTab === "profile" ? "active" : ""}`}
-              onClick={() => setActiveTab("profile")}
-              disabled={activeTab === "profile"}
-            >
-              <FaUser className="me-2" />
-              {!collapsed && "My Profile"}
-            </button>
-          </li>
+        {/* Sidebar Items */}
+        <div className="d-flex flex-column gap-1">
+          <button
+            className={`app-sidebar-item ${activeTab === "profile" ? "active" : ""}`}
+            onClick={() => setActiveTab("profile")}
+            disabled={activeTab === "profile"}
+          >
+            <FaUser className="fa-icon" />
+            <span className="app-sidebar-label">My Profile</span>
+          </button>
 
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${activeTab === "submissions" ? "active" : ""}`}
-              onClick={() => setActiveTab("submissions")}
-              disabled={activeTab === "submissions"}
-            >
-              <FaHistory className="me-2" />
-              {!collapsed && "Submissions"}
-            </button>
-          </li>
+          <button
+            className={`app-sidebar-item ${activeTab === "submissions" ? "active" : ""}`}
+            onClick={() => setActiveTab("submissions")}
+            disabled={activeTab === "submissions"}
+          >
+            <FaHistory className="fa-icon" />
+            <span className="app-sidebar-label">Submissions</span>
+          </button>
 
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${activeTab === "games" ? "active" : ""}`}
-              onClick={() => setActiveTab("games")}
-              disabled={activeTab === "games"}
-            >
-              <FaTrophy className="me-2" />
-              {!collapsed && "Game Stats"}
-            </button>
-          </li>
+          <button
+            className={`app-sidebar-item ${activeTab === "games" ? "active" : ""}`}
+            onClick={() => setActiveTab("games")}
+            disabled={activeTab === "games"}
+          >
+            <FaTrophy className="fa-icon" />
+            <span className="app-sidebar-label">Game Stats</span>
+          </button>
 
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${activeTab === "messages" ? "active" : ""}`}
-              onClick={() => setActiveTab("messages")}
-              disabled={activeTab === "messages"}
-            >
-              <FaCommentDots className="me-2" />
-              {!collapsed && "Messages"}
-            </button>
-          </li>
+          <button
+            className={`app-sidebar-item ${activeTab === "messages" ? "active" : ""}`}
+            onClick={() => setActiveTab("messages")}
+            disabled={activeTab === "messages"}
+          >
+            <FaCommentDots className="fa-icon" />
+            <span className="app-sidebar-label">Messages</span>
+          </button>
 
-          <li>
-            <button
-              className={`btn sidebar-btn text-start ${activeTab === "settings" ? "active" : ""}`}
-              onClick={() => setActiveTab("settings")}
-              disabled={activeTab === "settings"}
-            >
-              <FaCog className="me-2" />
-              {!collapsed && "Settings"}
-            </button>
-          </li>
+          <button
+            className={`app-sidebar-item ${activeTab === "settings" ? "active" : ""}`}
+            onClick={() => setActiveTab("settings")}
+            disabled={activeTab === "settings"}
+          >
+            <FaCog className="fa-icon" />
+            <span className="app-sidebar-label">Settings</span>
+          </button>
 
-          <li className="mt-4 border-top pt-2">
-            <button
-              className={`btn sidebar-btn text-start ${location.pathname === "/analysis-logged" ? "active" : ""}`}
-              onClick={() => navigate("/analysis-logged")}
-              disabled={location.pathname === "/analysis-logged"}
-            >
-              <FaArrowLeft className="me-2" />
-              {!collapsed && "Back to Analysis"}
-            </button>
-          </li>
-        </ul>
+          <div style={{ borderTop: "1px solid var(--accent-color)", marginTop: "1rem", marginBottom: "1rem" }} />
+
+          <button
+            className={`app-sidebar-item ${location.pathname === "/analysis-logged" ? "active" : ""}`}
+            onClick={() => navigate("/analysis-logged")}
+            disabled={location.pathname === "/analysis-logged"}
+          >
+            <FaArrowLeft className="fa-icon" />
+            <span className="app-sidebar-label">Back to Analysis</span>
+          </button>
+        </div>
+
+        {!collapsed && (
+          <div className="mt-4 small" style={{ color: "var(--text-color)", opacity: 0.7 }}>
+            User workspace
+          </div>
+        )}
+      </div>
+
+      {/* Main Content */}
+      <main className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
 
         {!collapsed && (
           <div className="mt-auto small text-muted">
@@ -237,14 +215,7 @@ export default function GeneralUserProfile() {
       </div>
 
       {/* MAIN CONTENT */}
-      <div
-        className="flex-grow-1"
-        style={{
-          marginLeft: collapsed ? "80px" : "250px",
-          transition: "margin-left 0.3s ease",
-          minHeight: "100vh",
-        }}
-      >
+      <main className="app-main-content flex-grow-1">
         {/* NAVBAR */}
         <nav
           className="navbar d-flex justify-content-between align-items-center px-4 py-2 shadow-sm"
@@ -760,7 +731,7 @@ export default function GeneralUserProfile() {
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }

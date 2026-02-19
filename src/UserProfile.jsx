@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth, db } from "./firebase";
+import { collection, getDocs, addDoc, query, where, orderBy, serverTimestamp } from "firebase/firestore";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./styles.css";
 import {
@@ -30,35 +31,96 @@ import {
   FaBell,
 } from "react-icons/fa";
 
+// ===== UTILITY FUNCTIONS =====
+const load = (key, defaultValue) => {
+  try {
+    const item = localStorage.getItem(key);
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (e) {
+    console.error(`Failed to load ${key}:`, e);
+    return defaultValue;
+  }
+};
+
+const save = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (e) {
+    console.error(`Failed to save ${key}:`, e);
+  }
+};
+
 export default function UserProfile() {
   const navigate = useNavigate();
   const location = useLocation();
+  const mainContentRef = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Determine if professional or general user based on route
-  const isProfessional = location.pathname === "/professional/profile";
+  // Determine if professional or general user based on localStorage
+  const isProfessional = localStorage.getItem("userType") === "professional";
 
   // Auth check
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) navigate("/login");
+      if (!user) {
+        navigate("/login");
+      } else {
+        setCurrentUser(user);
+        fetchUserMessages(user);
+      }
     });
     return () => unsubscribe();
   }, [navigate]);
 
-  // ========== UTILITY FUNCTIONS ==========
-  const load = (key, fallback) => {
-    const v = JSON.parse(localStorage.getItem(key) || "null");
-    if (v) return v;
-    localStorage.setItem(key, JSON.stringify(fallback));
-    return fallback;
-  };
+  // Swipe gesture handler for mobile sidebar
+  const handleSwipe = useCallback((direction) => {
+    if (direction === "right") {
+      setSidebarVisible(true);
+    } else if (direction === "left") {
+      setSidebarVisible(false);
+    }
+  }, []);
 
-  const save = (key, value) => {
-    localStorage.setItem(key, JSON.stringify(value));
-  };
+  // Set up touch listeners for swipe on mobile
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+
+      // Only register as horizontal swipe if movement is more horizontal than vertical
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        const direction = diffX > 0 ? 'left' : 'right';
+        handleSwipe(direction);
+      }
+    };
+
+    const element = mainContentRef.current;
+    if (element) {
+      element.addEventListener('touchstart', handleTouchStart, false);
+      element.addEventListener('touchend', handleTouchEnd, false);
+    }
+
+    return () => {
+      if (element) {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, [handleSwipe]);
 
   // ========== GENERAL USER DATA ==========
   const [generalProfile] = useState({
@@ -139,6 +201,17 @@ export default function UserProfile() {
       timestamp: "1 day ago",
     },
   ]);
+
+  // ========== MESSAGING STATE ==========
+  const [messages, setMessages] = useState([]);
+  const [systemMessages, setSystemMessages] = useState([]);
+  const [showMessageComposer, setShowMessageComposer] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState("");
+  const [messageSubject, setMessageSubject] = useState("");
+  const [messageBody, setMessageBody] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [availableUsers, setAvailableUsers] = useState([]);
 
   // ========== PROFESSIONAL USER DATA ==========
   const [profProfile] = useState(() =>
@@ -293,6 +366,68 @@ export default function UserProfile() {
     return [];
   }, [activeTab, posts, reviews, bookmarks, searchQuery]);
 
+  // ========== MESSAGING FUNCTIONS ==========
+  const fetchUserMessages = async (user) => {
+    if (!user) return;
+    try {
+      setLoadingMessages(true);
+      // Fetch received messages
+      const q = query(collection(db, "messages"), where("receiverEmail", "==", user.email), orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setMessages(msgs);
+
+      // System messages are those with messageType = "system"
+      const systemMsgs = msgs.filter(m => m.messageType === "system");
+      setSystemMessages(systemMsgs);
+
+      // Fetch available users (excluding current user)
+      const usersSnapshot = await getDocs(collection(db, "users"));
+      const usersList = usersSnapshot.docs
+        .map(doc => ({ id: doc.id, email: doc.data().email, name: doc.data().name || doc.data().email }))
+        .filter(u => u.email !== user.email); // Exclude current user
+      setAvailableUsers(usersList);
+    } catch (err) {
+      console.error("Failed to fetch messages:", err);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!recipientEmail.trim() || !messageBody.trim() || !currentUser) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "messages"), {
+        senderId: currentUser.uid,
+        senderEmail: currentUser.email,
+        receiverEmail: recipientEmail,
+        subject: messageSubject || "No Subject",
+        message: messageBody,
+        read: false,
+        createdAt: serverTimestamp(),
+        messageType: "user_message"
+      });
+
+      alert("Message sent successfully!");
+      setShowMessageComposer(false);
+      setRecipientEmail("");
+      setMessageSubject("");
+      setMessageBody("");
+      
+      // Refresh messages
+      if (currentUser) {
+        fetchUserMessages(currentUser);
+      }
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      alert("Failed to send message");
+    }
+  };
+
   // ========== RENDER ==========
   return (
     <div className="d-flex" style={{ 
@@ -301,8 +436,14 @@ export default function UserProfile() {
       minHeight: "100vh",
       color: "var(--text-color)"
     }}>
+      {/* Sidebar Overlay for Mobile */}
+      <div 
+        className={`sidebar-overlay ${sidebarVisible ? 'visible' : ''}`}
+        onClick={() => setSidebarVisible(false)}
+      />
+
       {/* ========== UNIFIED SIDEBAR ========== */}
-      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''}`}
+      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''} ${sidebarVisible ? 'visible' : ''}`}
         style={!isProfessional ? {
           background: "linear-gradient(135deg, var(--secondary-color) 0%, var(--info-color-light) 100%)",
         } : {}}>
@@ -506,7 +647,7 @@ export default function UserProfile() {
       </div>
 
       {/* ========== UNIFIED MAIN CONTENT ========== */}
-      <div className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
+      <div ref={mainContentRef} className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
         <nav 
           className="navbar shadow-sm px-4"
           style={{
@@ -1034,31 +1175,169 @@ export default function UserProfile() {
 
           {/* SHARED MESSAGES TAB - Both Users */}
           {activeTab === "messages" && !isProfessional && (
-            <div 
-              className="card shadow-sm"
-              style={{
-                backgroundColor: "var(--secondary-color)",
-                border: `2px solid var(--accent-color)`,
-                color: "var(--text-color)"
-              }}
-            >
-              <div 
-                className="card-header"
+            <div>
+              {/* Compose Button */}
+              <button
+                className="btn mb-3"
+                onClick={() => setShowMessageComposer(true)}
                 style={{
                   backgroundColor: "var(--accent-color)",
-                  color: "var(--primary-color)"
+                  color: "var(--primary-color)",
+                  fontWeight: "600"
                 }}
               >
-                <h6 className="mb-0">Recent Conversations ({generalConversations.length})</h6>
+                <i className="fas fa-plus me-2"></i>
+                New Message
+              </button>
+
+              {/* System Messages Section */}
+              {systemMessages.length > 0 && (
+                <div className="mb-4">
+                  <h5 style={{ color: "var(--accent-color)" }}>
+                    <i className="fas fa-bell me-2"></i>
+                    System Notifications
+                  </h5>
+                  {systemMessages.map((msg) => (
+                    <div 
+                      key={msg.id} 
+                      className="alert" 
+                      style={{
+                        backgroundColor: "var(--secondary-color)",
+                        border: `2px solid var(--accent-color)`,
+                        color: "var(--text-color)",
+                        borderRadius: "8px"
+                      }}
+                    >
+                      <h6 style={{ color: "var(--accent-color)" }}>
+                        <i className="fas fa-star me-2"></i>
+                        {msg.subject}
+                      </h6>
+                      <p style={{ marginBottom: "0.5rem" }}>{msg.message}</p>
+                      <small style={{ opacity: 0.7 }}>
+                        {msg.createdAt?.toDate?.()?.toLocaleString() || new Date().toLocaleString()}
+                      </small>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Inbox Section */}
+              <div>
+                <h5 style={{ color: "var(--accent-color)" }}>
+                  <i className="fas fa-inbox me-2"></i>
+                  Inbox ({messages.filter(m => m.messageType !== "system").length})
+                </h5>
+                {loadingMessages ? (
+                  <p style={{ color: "var(--text-color)" }}>Loading messages...</p>
+                ) : messages.filter(m => m.messageType !== "system").length === 0 ? (
+                  <p style={{ color: "var(--text-color)", opacity: 0.7 }}>No messages yet</p>
+                ) : (
+                  messages.filter(m => m.messageType !== "system").map((msg) => (
+                    <div 
+                      key={msg.id} 
+                      className="card shadow-sm mb-3"
+                      style={{
+                        backgroundColor: "var(--secondary-color)",
+                        border: `2px solid var(--accent-color)`,
+                        color: "var(--text-color)"
+                      }}
+                    >
+                      <div className="card-header" style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}>
+                        <h6 className="mb-0">
+                          <strong>From:</strong> {msg.senderEmail}
+                        </h6>
+                      </div>
+                      <div className="card-body">
+                        <h6 style={{ color: "var(--text-color)" }}>{msg.subject}</h6>
+                        <p style={{ color: "var(--text-color)", marginBottom: "0.5rem" }}>{msg.message}</p>
+                        <small style={{ opacity: 0.7 }}>
+                          {msg.createdAt?.toDate?.()?.toLocaleString() || new Date().toLocaleString()}
+                        </small>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
-              <div className="card-body">
-                {generalConversations.map((conv) => (
-                  <div key={conv.id} className="mb-3 p-3" style={{backgroundColor: "var(--primary-color)", border: `1px solid var(--accent-color)`, borderRadius: "6px", cursor: "pointer"}}>
-                    <h6 style={{ color: "var(--text-color)", marginBottom: "4px" }}>{conv.name}</h6>
-                    <p style={{ color: "var(--text-color)", opacity: 0.7, marginBottom: "4px" }} className="small">{conv.lastMessage}</p>
-                    <small style={{ color: "var(--text-color)", opacity: 0.5 }}>{conv.timestamp}</small>
+            </div>
+          )}
+
+          {/* Message Composer Modal */}
+          {showMessageComposer && activeTab === "messages" && !isProfessional && (
+            <div 
+              className="modal show d-block" 
+              style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+              onClick={() => setShowMessageComposer(false)}
+            >
+              <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-content" style={{ backgroundColor: "var(--secondary-color)", border: "2px solid var(--accent-color)" }}>
+                  <div className="modal-header" style={{ borderBottom: "1px solid var(--accent-color)" }}>
+                    <h5 className="modal-title" style={{ color: "var(--text-color)" }}>
+                      <i className="fas fa-envelope me-2"></i>
+                      Compose Message
+                    </h5>
+                    <button type="button" className="btn-close btn-close-white" onClick={() => setShowMessageComposer(false)}></button>
                   </div>
-                ))}
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label className="form-label" style={{ color: "var(--text-color)" }}>Recipient *</label>
+                      <select
+                        className="form-select"
+                        value={recipientEmail}
+                        onChange={(e) => setRecipientEmail(e.target.value)}
+                        style={{ backgroundColor: "var(--primary-color)", borderColor: "var(--accent-color)", color: "var(--text-color)" }}
+                      >
+                        <option value="">Select a user...</option>
+                        {availableUsers.map((user) => (
+                          <option key={user.id} value={user.email}>
+                            {user.name} ({user.email})
+                          </option>
+                        ))}
+                      </select>
+                      {availableUsers.length === 0 && (
+                        <small style={{ color: "var(--info-color)" }}>Loading users...</small>
+                      )}
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label" style={{ color: "var(--text-color)" }}>Subject</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={messageSubject}
+                        onChange={(e) => setMessageSubject(e.target.value)}
+                        placeholder="Message subject"
+                        style={{ backgroundColor: "var(--primary-color)", borderColor: "var(--accent-color)", color: "var(--text-color)" }}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label" style={{ color: "var(--text-color)" }}>Message *</label>
+                      <textarea
+                        className="form-control"
+                        rows={5}
+                        value={messageBody}
+                        onChange={(e) => setMessageBody(e.target.value)}
+                        placeholder="Type your message..."
+                        style={{ backgroundColor: "var(--primary-color)", borderColor: "var(--accent-color)", color: "var(--text-color)" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="modal-footer" style={{ borderTop: "1px solid var(--accent-color)" }}>
+                    <button 
+                      className="btn"
+                      style={{ backgroundColor: "var(--primary-color)", color: "var(--text-color)", border: "1px solid var(--accent-color)" }}
+                      onClick={() => setShowMessageComposer(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className="btn"
+                      style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}
+                      onClick={handleSendMessage}
+                    >
+                      <i className="fas fa-paper-plane me-2"></i>
+                      Send Message
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}

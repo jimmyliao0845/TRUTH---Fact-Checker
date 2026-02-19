@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
@@ -16,7 +16,9 @@ import {
 export default function FeedbackPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const mainContentRef = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("pending");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFeedback, setSelectedFeedback] = useState(null);
@@ -29,6 +31,52 @@ export default function FeedbackPage() {
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Swipe gesture handler for mobile sidebar
+  const handleSwipe = useCallback((direction) => {
+    if (direction === "right") {
+      setSidebarVisible(true);
+    } else if (direction === "left") {
+      setSidebarVisible(false);
+    }
+  }, []);
+
+  // Set up touch listeners for swipe on mobile
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        const direction = diffX > 0 ? 'left' : 'right';
+        handleSwipe(direction);
+      }
+    };
+
+    const element = mainContentRef.current;
+    if (element) {
+      element.addEventListener('touchstart', handleTouchStart, false);
+      element.addEventListener('touchend', handleTouchEnd, false);
+    }
+
+    return () => {
+      if (element) {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, [handleSwipe]);
 
   // Pending feedback requests
   const [pendingFeedback] = useState([
@@ -138,9 +186,15 @@ export default function FeedbackPage() {
 
   return (
     <div className="d-flex" style={{ backgroundColor: "var(--secondary-color)", paddingTop: "56px" }}>
+      {/* Sidebar Overlay for Mobile */}
+      <div 
+        className={`sidebar-overlay ${sidebarVisible ? 'visible' : ''}`}
+        onClick={() => setSidebarVisible(false)}
+      />
+
       {/* SIDEBAR */}
       <div
-        className="d-flex flex-column p-3 border-end"
+        className={`d-flex flex-column p-3 border-end ${sidebarVisible ? 'visible' : ''}`}
         style={{
           width: collapsed ? "80px" : "250px",
           backgroundColor: "var(--sidebar-color)",
@@ -219,6 +273,7 @@ export default function FeedbackPage() {
 
       {/* MAIN CONTENT */}
       <div
+        ref={mainContentRef}
         className="flex-grow-1"
         style={{
           marginLeft: collapsed ? "80px" : "250px",

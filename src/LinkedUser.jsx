@@ -182,7 +182,7 @@ export default function LinkedUser() {
 
           <button
             className="app-sidebar-item"
-            onClick={() => navigate("/professional/profile")}
+            onClick={() => navigate("/user/profile")}
           >
             <FaUserCog size={20} />
             <span className="app-sidebar-label">Profile</span>

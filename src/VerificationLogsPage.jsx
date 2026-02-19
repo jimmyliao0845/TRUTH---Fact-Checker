@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
@@ -49,7 +49,9 @@ import {
 export default function VerificationLogsPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const mainContentRef = useRef(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   // Auth guard
   useEffect(() => {
@@ -58,6 +60,53 @@ export default function VerificationLogsPage() {
     });
     return () => unsub();
   }, [navigate]);
+
+  // Swipe gesture handler for mobile sidebar
+  const handleSwipe = useCallback((direction) => {
+    if (direction === "right") {
+      setSidebarVisible(true);
+    } else if (direction === "left") {
+      setSidebarVisible(false);
+    }
+  }, []);
+
+  // Set up touch listeners for swipe on mobile
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      
+      const diffX = touchStartX - touchEndX;
+      const diffY = touchStartY - touchEndY;
+
+      // Only register as horizontal swipe if movement is more horizontal than vertical
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+        const direction = diffX > 0 ? 'left' : 'right';
+        handleSwipe(direction);
+      }
+    };
+
+    const element = mainContentRef.current;
+    if (element) {
+      element.addEventListener('touchstart', handleTouchStart, false);
+      element.addEventListener('touchend', handleTouchEnd, false);
+    }
+
+    return () => {
+      if (element) {
+        element.removeEventListener('touchstart', handleTouchStart);
+        element.removeEventListener('touchend', handleTouchEnd);
+      }
+    };
+  }, [handleSwipe]);
 
   // Load or seed sample logs
   const loadLogs = () => {
@@ -233,8 +282,14 @@ export default function VerificationLogsPage() {
 
   return (
     <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", paddingTop: "56px", minHeight: "100vh" }}>
+      {/* Sidebar Overlay for Mobile */}
+      <div 
+        className={`sidebar-overlay ${sidebarVisible ? 'visible' : ''}`}
+        onClick={() => setSidebarVisible(false)}
+      />
+
       {/* Sidebar */}
-      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''}`}>
+      <div className={`app-sidebar ${collapsed ? 'collapsed' : ''} ${sidebarVisible ? 'visible' : ''}`}>
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
             className="app-sidebar-toggle"
@@ -322,7 +377,7 @@ export default function VerificationLogsPage() {
       </div>
 
       {/* Main content */}
-      <div className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
+      <div ref={mainContentRef} className={`app-main-content ${collapsed ? 'with-collapsed-sidebar' : ''}`}>
         {/* Navbar */}
         <nav
           className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"

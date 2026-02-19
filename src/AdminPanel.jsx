@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Bar, Line } from "react-chartjs-2";
 import {
@@ -53,6 +53,11 @@ export default function AdminPanel() {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentUserRole, setCurrentUserRole] = useState("");
   
+  // Responsive sidebar state
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const mainContentRef = useRef(null);
+  const touchStartX = useRef(0);
+  
   // Dashboard state
   const [users, setUsers] = useState([]);
   const [growthLabels, setGrowthLabels] = useState([]);
@@ -85,6 +90,11 @@ export default function AdminPanel() {
     excerpt: "",
     slug: ""
   });
+
+  // Message state
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [selectedCreator, setSelectedCreator] = useState(null);
+  const [messageText, setMessageText] = useState("");
 
   // Content type configurations
   const CONTENT_TYPES = {
@@ -175,6 +185,47 @@ export default function AdminPanel() {
   useEffect(() => {
     window.location.hash = activeTab;
   }, [activeTab]);
+
+  // Swipe handler for mobile sidebar
+  const handleSwipe = useCallback((direction) => {
+    if (direction === "right") {
+      setSidebarVisible(true);
+    } else if (direction === "left") {
+      setSidebarVisible(false);
+    }
+  }, []);
+
+  // Touch event listeners for swipe detection
+  useEffect(() => {
+    const handleTouchStart = (e) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = (e) => {
+      if (!touchStartX.current) return;
+      
+      const touchEndX = e.changedTouches[0].clientX;
+      const diff = touchEndX - touchStartX.current;
+      
+      // Only register swipe if horizontal movement > 50px and greater than vertical
+      if (Math.abs(diff) > 50) {
+        handleSwipe(diff > 0 ? "right" : "left");
+      }
+    };
+
+    const mainContent = mainContentRef.current;
+    if (mainContent) {
+      mainContent.addEventListener("touchstart", handleTouchStart);
+      mainContent.addEventListener("touchend", handleTouchEnd);
+    }
+
+    return () => {
+      if (mainContent) {
+        mainContent.removeEventListener("touchstart", handleTouchStart);
+        mainContent.removeEventListener("touchend", handleTouchEnd);
+      }
+    };
+  }, [handleSwipe]);
 
   // Fetch all data
   const fetchAllData = async () => {
@@ -346,6 +397,36 @@ export default function AdminPanel() {
     }
   };
 
+  // Send message to creator
+  const handleSendMessage = async () => {
+    if (!messageText.trim() || !selectedCreator) return;
+
+    try {
+      await addDoc(collection(db, "messages"), {
+        senderId: currentUser.uid,
+        senderEmail: currentUser.email,
+        senderName: currentUserRole,
+        receiverId: selectedCreator.creatorId,
+        receiverEmail: selectedCreator.creatorEmail,
+        subject: `Message about: ${selectedCreator.itemTitle}`,
+        message: messageText,
+        itemId: selectedCreator.itemId,
+        itemType: "tutorial",
+        read: false,
+        createdAt: serverTimestamp(),
+        messageType: "admin_contact"
+      });
+      
+      setShowMessageModal(false);
+      setMessageText("");
+      setSelectedCreator(null);
+      alert("Message sent successfully!");
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      alert("Failed to send message");
+    }
+  };
+
   const openEditContent = (item) => {
     setEditingItem(item);
     setFormData({
@@ -390,21 +471,9 @@ export default function AdminPanel() {
     return 0;
   });
 
-  // Render sidebar
+  // Render sidebar content
   const renderSidebar = () => (
-    <div
-      className="d-flex flex-column p-3"
-      style={{
-        width: "240px",
-        height: "100vh",
-        overflow: "hidden",
-        backgroundColor: "var(--secondary-color)",
-        borderRight: "2px solid var(--accent-color)",
-        boxShadow: "2px 0 10px rgba(0,0,0,0.3)",
-        position: "sticky",
-        top: 0,
-      }}
-    >
+    <>
       <h4 className="text-center mb-4 fw-semibold" style={{ color: "var(--text-color)" }}>
         <i className="fas fa-shield-alt me-2" style={{ color: "var(--accent-color)" }}></i>
         Admin Panel
@@ -423,7 +492,10 @@ export default function AdminPanel() {
                 borderLeft: activeTab === item.id ? "3px solid var(--accent-color)" : "3px solid transparent",
                 transition: "all 0.2s ease",
               }}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                setActiveTab(item.id);
+                setSidebarVisible(false); // Close sidebar on mobile after selection
+              }}
             >
               <i className={`fas fa-${item.icon} me-2`} style={{ color: activeTab === item.id ? "var(--accent-color)" : "var(--text-color)" }}></i>
               {item.label}
@@ -458,7 +530,7 @@ export default function AdminPanel() {
         <i className="fas fa-home me-2"></i>
         Back to Home
       </button>
-    </div>
+    </>
   );
 
   // Render Dashboard
@@ -551,10 +623,100 @@ export default function AdminPanel() {
     </div>
   );
 
+  // Helper: Calculate user credentials for professional promotion
+  const checkUserCredentials = (user) => {
+    if (user.role !== "user" && user.role !== "general") return { verified: true, status: "Already Professional" };
+    
+    const hasName = user.name && user.name.trim().length > 2;
+    const hasEmail = user.email && user.email.includes("@");
+    const hasProfile = user.bio && user.bio.trim().length > 10;
+    
+    const credentials = [];
+    const missing = [];
+    
+    if (hasName) credentials.push("Name"); else missing.push("Complete Name");
+    if (hasEmail) credentials.push("Email"); else missing.push("Valid Email");
+    if (hasProfile) credentials.push("Bio/Profile"); else missing.push("Bio (10+ chars)");
+    
+    const verified = missing.length === 0 && credentials.length >= 2;
+    
+    return {
+      verified,
+      credentials,
+      missing,
+      status: verified ? "Ready" : `${missing.length} missing`,
+      credentialsList: [
+        { label: "Complete Name", met: hasName },
+        { label: "Valid Email", met: hasEmail },
+        { label: "Bio/Profile", met: hasProfile }
+      ]
+    };
+  };
+
   // Render Users
-  const renderUsers = () => (
+  const renderUsers = () => {
+    const totalUsers = users.length;
+    const generalUsers = users.filter(u => u.role === "user" || u.role === "general").length;
+    const professionals = users.filter(u => u.role === "professional").length;
+    const admins = users.filter(u => u.role === "admin" || u.role === "superadmin").length;
+
+    return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      {/* Summary Section - 4 Cards in One Line */}
+      <div style={{ 
+        display: "flex", 
+        gap: "1rem", 
+        marginBottom: "2rem", 
+        justifyContent: "space-between",
+        flexWrap: "wrap"
+      }}>
+        <div style={{ 
+          flex: 1, 
+          minWidth: "200px",
+          padding: "1rem",
+          borderRadius: "8px",
+          backgroundColor: "var(--secondary-color)", 
+          border: "2px solid var(--accent-color)"
+        }}>
+          <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem" }}>Total Users</h6>
+          <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{totalUsers}</h2>
+        </div>
+        <div style={{ 
+          flex: 1, 
+          minWidth: "200px",
+          padding: "1rem",
+          borderRadius: "8px",
+          backgroundColor: "var(--secondary-color)", 
+          border: "1px solid #6c757d"
+        }}>
+          <h6 style={{ color: "var(--text-color)", marginBottom: "0.5rem" }}>General Users</h6>
+          <h2 style={{ color: "#6c757d", marginBottom: "0" }}>{generalUsers}</h2>
+        </div>
+        <div style={{ 
+          flex: 1, 
+          minWidth: "200px",
+          padding: "1rem",
+          borderRadius: "8px",
+          backgroundColor: "var(--secondary-color)", 
+          border: "1px solid var(--info-color)"
+        }}>
+          <h6 style={{ color: "var(--info-color)", marginBottom: "0.5rem" }}>Professionals</h6>
+          <h2 style={{ color: "var(--info-color)", marginBottom: "0" }}>{professionals}</h2>
+        </div>
+        <div style={{ 
+          flex: 1, 
+          minWidth: "200px",
+          padding: "1rem",
+          borderRadius: "8px",
+          backgroundColor: "var(--secondary-color)", 
+          border: "1px solid #ffc107"
+        }}>
+          <h6 style={{ color: "#ffc107", marginBottom: "0.5rem" }}>Admins</h6>
+          <h2 style={{ color: "#ffc107", marginBottom: "0" }}>{admins}</h2>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <h2 className="fw-bold mb-0" style={{ color: "var(--text-color)" }}>
           <i className="fas fa-users me-2" style={{ color: "var(--accent-color)" }}></i>
           User Management
@@ -579,6 +741,7 @@ export default function AdminPanel() {
               <th style={{ color: "var(--primary-color)", padding: "12px" }}>Email</th>
               <th style={{ color: "var(--primary-color)", padding: "12px" }}>Role</th>
               <th style={{ color: "var(--primary-color)", padding: "12px" }}>Provider</th>
+              <th style={{ color: "var(--primary-color)", padding: "12px" }}>Credentials</th>
               <th style={{ color: "var(--primary-color)", padding: "12px" }}>Created</th>
               <th style={{ color: "var(--primary-color)", padding: "12px" }}>Action</th>
             </tr>
@@ -590,6 +753,7 @@ export default function AdminPanel() {
                 user.role === "superadmin" || 
                 (user.role === "admin" && currentUserRole !== "superadmin");
               const buttonLabel = user.role === "user" ? "Promote" : "Demote";
+              const creds = checkUserCredentials(user);
 
               return (
                 <tr key={user.id} style={{ borderBottom: "1px solid var(--accent-color)" }}>
@@ -612,6 +776,22 @@ export default function AdminPanel() {
                     </span>
                   </td>
                   <td style={{ color: "var(--text-color)", padding: "12px" }}>{user.provider || "Email"}</td>
+                  <td style={{ padding: "12px" }}>
+                    <div 
+                      className="badge" 
+                      style={{
+                        backgroundColor: creds.verified ? "#28a745" : creds.status === "Already Professional" ? "var(--accent-color)" : "#ffc107",
+                        color: creds.verified || creds.status === "Already Professional" ? "white" : "#000",
+                        padding: "8px 10px",
+                        cursor: "pointer",
+                        display: "inline-block"
+                      }}
+                      title={creds.missing.length > 0 ? `Missing: ${creds.missing.join(", ")}` : creds.status}
+                    >
+                      <i className={`fas fa-${creds.verified ? "check-circle" : "info-circle"} me-1`}></i>
+                      {creds.status}
+                    </div>
+                  </td>
                   <td style={{ color: "var(--text-color)", padding: "12px" }}>
                     {user.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}
                   </td>
@@ -644,16 +824,20 @@ export default function AdminPanel() {
         </table>
       </div>
     </div>
-  );
+    );
+  };
 
   // Render Content (Tutorials/Announcements/Pages)
   const renderContent = () => {
     const config = CONTENT_TYPES[activeTab];
     const content = getCurrentContent();
+    const publishedCount = content.filter(c => c.status === "published").length;
+    const draftCount = content.filter(c => c.status === "draft").length;
+    const featuredCount = content.filter(c => c.featured).length;
 
     return (
       <div>
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
           <h2 className="fw-bold mb-0" style={{ color: "var(--text-color)" }}>
             <i className={`fas fa-${config.icon} me-2`} style={{ color: "var(--accent-color)" }}></i>
             {config.label}
@@ -668,26 +852,60 @@ export default function AdminPanel() {
           </button>
         </div>
 
-        {/* Stats */}
-        <div className="row mb-4">
-          <div className="col-md-4">
-            <div className="p-3 rounded" style={{ backgroundColor: "var(--secondary-color)", border: "1px solid var(--accent-color)" }}>
-              <h5 style={{ color: "var(--text-color)" }}>Total</h5>
-              <h2 style={{ color: "var(--accent-color)" }}>{content.length}</h2>
-            </div>
+        {/* Stats - 4 Cards on One Line */}
+        <div style={{ 
+          display: "flex", 
+          gap: "1rem", 
+          marginBottom: "2rem", 
+          justifyContent: "space-between",
+          flexWrap: "wrap"
+        }}>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "2px solid var(--accent-color)"
+          }}>
+            <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem" }}>Total</h6>
+            <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{content.length}</h2>
           </div>
-          <div className="col-md-4">
-            <div className="p-3 rounded" style={{ backgroundColor: "var(--secondary-color)", border: "1px solid var(--accent-color)" }}>
-              <h5 style={{ color: "var(--text-color)" }}>Published</h5>
-              <h2 style={{ color: "var(--success-color)" }}>{content.filter(c => c.status === "published").length}</h2>
-            </div>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid var(--success-color)"
+          }}>
+            <h6 style={{ color: "var(--success-color)", marginBottom: "0.5rem" }}>Published</h6>
+            <h2 style={{ color: "var(--success-color)", marginBottom: "0" }}>{publishedCount}</h2>
           </div>
-          <div className="col-md-4">
-            <div className="p-3 rounded" style={{ backgroundColor: "var(--secondary-color)", border: "1px solid var(--accent-color)" }}>
-              <h5 style={{ color: "var(--text-color)" }}>Drafts</h5>
-              <h2 style={{ color: "var(--neutral-color)" }}>{content.filter(c => c.status === "draft").length}</h2>
-            </div>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid var(--neutral-color)"
+          }}>
+            <h6 style={{ color: "var(--neutral-color)", marginBottom: "0.5rem" }}>Drafts</h6>
+            <h2 style={{ color: "var(--neutral-color)", marginBottom: "0" }}>{draftCount}</h2>
           </div>
+          {(activeTab === "tutorials" || activeTab === "announcements") && (
+            <div style={{ 
+              flex: 1, 
+              minWidth: "180px",
+              padding: "1rem",
+              borderRadius: "8px",
+              backgroundColor: "var(--secondary-color)", 
+              border: "1px solid #ffc107"
+            }}>
+              <h6 style={{ color: "#ffc107", marginBottom: "0.5rem" }}>Featured</h6>
+              <h2 style={{ color: "#ffc107", marginBottom: "0" }}>{featuredCount}</h2>
+            </div>
+          )}
         </div>
 
         {/* Content Table */}
@@ -704,6 +922,7 @@ export default function AdminPanel() {
                   <tr>
                     <th style={{ color: "var(--primary-color)", padding: "12px" }}>Title</th>
                     {activeTab === "tutorials" && <th style={{ color: "var(--primary-color)", padding: "12px" }}>Category</th>}
+                    {activeTab === "tutorials" && <th style={{ color: "var(--primary-color)", padding: "12px" }}>Creator</th>}
                     {activeTab === "pages" && <th style={{ color: "var(--primary-color)", padding: "12px" }}>Slug</th>}
                     <th style={{ color: "var(--primary-color)", padding: "12px" }}>Status</th>
                     <th style={{ color: "var(--primary-color)", padding: "12px" }}>Created</th>
@@ -718,6 +937,11 @@ export default function AdminPanel() {
                         {item.featured && <span className="badge bg-warning ms-2">Featured</span>}
                       </td>
                       {activeTab === "tutorials" && <td style={{ color: "var(--text-color)", padding: "12px" }}>{item.category}</td>}
+                      {activeTab === "tutorials" && (
+                        <td style={{ color: "var(--text-color)", padding: "12px" }}>
+                          <small>{item.creatorEmail || "N/A"}</small>
+                        </td>
+                      )}
                       {activeTab === "pages" && <td style={{ color: "var(--text-color)", padding: "12px" }}>/page/{item.slug}</td>}
                       <td style={{ padding: "12px" }}>
                         <span 
@@ -736,12 +960,32 @@ export default function AdminPanel() {
                           className="btn btn-sm me-2"
                           style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}
                           onClick={() => openEditContent(item)}
+                          title="Edit"
                         >
                           <i className="fas fa-edit"></i>
                         </button>
+                        {activeTab === "tutorials" && (
+                          <button 
+                            className="btn btn-sm me-2"
+                            style={{ backgroundColor: "var(--info-color)", color: "var(--white-color)" }}
+                            onClick={() => {
+                              setSelectedCreator({
+                                creatorId: item.creatorId,
+                                creatorEmail: item.creatorEmail,
+                                itemTitle: item.title,
+                                itemId: item.id
+                              });
+                              setShowMessageModal(true);
+                            }}
+                            title="Message Creator"
+                          >
+                            <i className="fas fa-envelope"></i>
+                          </button>
+                        )}
                         <button 
                           className="btn btn-sm btn-danger"
                           onClick={() => handleDeleteContent(item)}
+                          title="Delete"
                         >
                           <i className="fas fa-trash"></i>
                         </button>
@@ -757,61 +1001,358 @@ export default function AdminPanel() {
     );
   };
 
-  // Render Reviews
-  const renderReviews = () => (
-    <div>
-      <h2 className="fw-bold mb-4" style={{ color: "var(--text-color)" }}>
-        <i className="fas fa-star me-2" style={{ color: "var(--accent-color)" }}></i>
-        User Reviews
-      </h2>
+  // Render Announcements (System Communications)
+  const renderAnnouncements = () => {
+    const totalAnnouncements = announcements.length;
+    const publishedCount = announcements.filter(a => a.status === "published").length;
+    const draftCount = announcements.filter(a => a.status === "draft").length;
+    const featuredCount = announcements.filter(a => a.featured).length;
 
-      <div className="rounded" style={{ backgroundColor: "var(--secondary-color)", border: "2px solid var(--accent-color)", overflow: "hidden" }}>
-        {reviews.length === 0 ? (
-          <div className="text-center py-5">
-            <i className="fas fa-star fa-3x mb-3" style={{ color: "var(--accent-color)", opacity: 0.5 }}></i>
-            <p style={{ color: "var(--text-color)" }}>No reviews yet.</p>
+    return (
+      <div style={{
+        marginLeft: 0,
+        padding: "2%",
+        background: "var(--background-color)",
+        minHeight: "100vh",
+        width: "100%",
+        color: "var(--text-color)",
+        display: "block",
+        textAlign: "left"
+      }}>
+        {/* Summary Section */}
+        <div style={{ 
+          display: "flex", 
+          gap: "1rem", 
+          marginBottom: "2rem", 
+          justifyContent: "space-between",
+          flexWrap: "wrap"
+        }}>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "2px solid var(--accent-color)"
+          }}>
+            <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem" }}>Total</h6>
+            <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{totalAnnouncements}</h2>
           </div>
-        ) : (
-          <div className="table-responsive">
-            <table className="table mb-0" style={{ backgroundColor: "var(--secondary-color)" }}>
-              <thead style={{ backgroundColor: "var(--accent-color)" }}>
-                <tr>
-                  <th style={{ color: "var(--primary-color)", padding: "12px" }}>#</th>
-                  <th style={{ color: "var(--primary-color)", padding: "12px" }}>User</th>
-                  <th style={{ color: "var(--primary-color)", padding: "12px" }}>Content</th>
-                  <th style={{ color: "var(--primary-color)", padding: "12px" }}>Rating</th>
-                  <th style={{ color: "var(--primary-color)", padding: "12px" }}>Feedback</th>
-                  <th style={{ color: "var(--primary-color)", padding: "12px" }}>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reviews.map((review, idx) => (
-                  <tr key={review.id} style={{ borderBottom: "1px solid var(--accent-color)" }}>
-                    <td style={{ color: "var(--text-color)", padding: "12px" }}>{idx + 1}</td>
-                    <td style={{ color: "var(--text-color)", padding: "12px" }}>{review.userName || review.userEmail || "Anonymous"}</td>
-                    <td style={{ color: "var(--text-color)", padding: "12px" }}>{review.contentTitle || "N/A"}</td>
-                    <td style={{ padding: "12px" }}>
-                      {[...Array(5)].map((_, i) => (
-                        <i 
-                          key={i} 
-                          className={`fas fa-star ${i < review.rating ? "" : "text-muted"}`}
-                          style={{ color: i < review.rating ? "var(--accent-color)" : undefined }}
-                        ></i>
-                      ))}
-                    </td>
-                    <td style={{ color: "var(--text-color)", padding: "12px", maxWidth: "300px" }}>{review.feedback}</td>
-                    <td style={{ color: "var(--text-color)", padding: "12px" }}>
-                      {review.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"}
-                    </td>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid var(--success-color)"
+          }}>
+            <h6 style={{ color: "var(--success-color)", marginBottom: "0.5rem" }}>Published</h6>
+            <h2 style={{ color: "var(--success-color)", marginBottom: "0" }}>{publishedCount}</h2>
+          </div>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid var(--neutral-color)"
+          }}>
+            <h6 style={{ color: "var(--neutral-color)", marginBottom: "0.5rem" }}>Drafts</h6>
+            <h2 style={{ color: "var(--neutral-color)", marginBottom: "0" }}>{draftCount}</h2>
+          </div>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid #ffc107"
+          }}>
+            <h6 style={{ color: "#ffc107", marginBottom: "0.5rem" }}>Featured</h6>
+            <h2 style={{ color: "#ffc107", marginBottom: "0" }}>{featuredCount}</h2>
+          </div>
+        </div>
+
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+          <h2 className="fw-bold mb-0" style={{ color: "var(--text-color)" }}>
+            <i className="fas fa-bullhorn me-2" style={{ color: "var(--accent-color)" }}></i>
+            System Announcements
+          </h2>
+          <button
+            className="btn"
+            style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}
+            onClick={openCreateContent}
+          >
+            <i className="fas fa-plus me-2"></i>
+            New Announcement
+          </button>
+        </div>
+
+        {/* Announcements Table */}
+        <div className="rounded" style={{ backgroundColor: "var(--secondary-color)", border: "2px solid var(--accent-color)", overflow: "hidden" }}>
+          {announcements.length === 0 ? (
+            <div className="text-center py-5">
+              <i className="fas fa-bullhorn fa-3x mb-3" style={{ color: "var(--accent-color)", opacity: 0.5 }}></i>
+              <p style={{ color: "var(--text-color)" }}>No announcements yet. Create one to notify users!</p>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table mb-0" style={{ backgroundColor: "var(--secondary-color)" }}>
+                <thead style={{ backgroundColor: "var(--accent-color)" }}>
+                  <tr>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Title</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Featured</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Status</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Created</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {announcements.map((item) => (
+                    <tr key={item.id} style={{ borderBottom: "1px solid var(--accent-color)" }}>
+                      <td style={{ color: "var(--text-color)", padding: "12px" }}>
+                        <strong>{item.title}</strong>
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <span 
+                          className="badge"
+                          style={{
+                            backgroundColor: item.featured ? "#ffc107" : "#555",
+                            color: item.featured ? "#000" : "#fff"
+                          }}
+                        >
+                          {item.featured ? "Yes" : "No"}
+                        </span>
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <span 
+                          className="badge"
+                          style={{
+                            backgroundColor: item.status === "published" ? "#28a745" : "#6c757d",
+                            color: "white",
+                            cursor: "pointer"
+                          }}
+                          onClick={() => toggleContentStatus(item)}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
+                      <td style={{ color: "var(--text-color)", padding: "12px" }}>
+                        {item.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"}
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <button 
+                          className="btn btn-sm me-2"
+                          style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}
+                          onClick={() => openEditContent(item)}
+                          title="Edit"
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button 
+                          className="btn btn-sm me-2"
+                          style={{ 
+                            backgroundColor: item.featured ? "#dc3545" : "#ffc107", 
+                            color: "#000",
+                            border: "none"
+                          }}
+                          title={item.featured ? "Unfeatured" : "Feature"}
+                        >
+                          <i className={`fas fa-${item.featured ? "star" : "star"}`}></i>
+                        </button>
+                        <button 
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDeleteContent(item)}
+                          title="Delete"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
+
+  // Render Reviews (Quality Control & Moderation)
+  const renderReviews = () => {
+    const totalReviews = reviews.length;
+    const fiveStarCount = reviews.filter(r => r.rating === 5).length;
+    const averageRating = totalReviews > 0 ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / totalReviews).toFixed(1) : 0;
+    const pendingReviews = reviews.filter(r => !r.approved).length;
+
+    return (
+      <div style={{
+        marginLeft: 0,
+        padding: "2%",
+        background: "var(--background-color)",
+        minHeight: "100vh",
+        width: "100%",
+        color: "var(--text-color)",
+        display: "block",
+        textAlign: "left"
+      }}>
+        {/* Summary Section - 4 Cards */}
+        <div style={{ 
+          display: "flex", 
+          gap: "1rem", 
+          marginBottom: "2rem", 
+          justifyContent: "space-between",
+          flexWrap: "wrap"
+        }}>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "2px solid var(--accent-color)"
+          }}>
+            <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem" }}>Total Reviews</h6>
+            <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{totalReviews}</h2>
+          </div>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid #ffc107"
+          }}>
+            <h6 style={{ color: "#ffc107", marginBottom: "0.5rem" }}>Avg Rating</h6>
+            <h2 style={{ color: "#ffc107", marginBottom: "0" }}>{averageRating} ⭐</h2>
+          </div>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid #28a745"
+          }}>
+            <h6 style={{ color: "#28a745", marginBottom: "0.5rem" }}>5-Star Reviews</h6>
+            <h2 style={{ color: "#28a745", marginBottom: "0" }}>{fiveStarCount}</h2>
+          </div>
+          <div style={{ 
+            flex: 1, 
+            minWidth: "180px",
+            padding: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--secondary-color)", 
+            border: "1px solid var(--info-color)"
+          }}>
+            <h6 style={{ color: "var(--info-color)", marginBottom: "0.5rem" }}>Pending Review</h6>
+            <h2 style={{ color: "var(--info-color)", marginBottom: "0" }}>{pendingReviews}</h2>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h2 className="fw-bold mb-4" style={{ color: "var(--text-color)" }}>
+          <i className="fas fa-star me-2" style={{ color: "var(--accent-color)" }}></i>
+          User Reviews & Feedback
+        </h2>
+
+        {/* Reviews Table */}
+        <div className="rounded" style={{ backgroundColor: "var(--secondary-color)", border: "2px solid var(--accent-color)", overflow: "hidden" }}>
+          {reviews.length === 0 ? (
+            <div className="text-center py-5">
+              <i className="fas fa-star fa-3x mb-3" style={{ color: "var(--accent-color)", opacity: 0.5 }}></i>
+              <p style={{ color: "var(--text-color)" }}>No reviews yet.</p>
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table mb-0" style={{ backgroundColor: "var(--secondary-color)" }}>
+                <thead style={{ backgroundColor: "var(--accent-color)" }}>
+                  <tr>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>User</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Content</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Rating</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Feedback</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Date</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Status</th>
+                    <th style={{ color: "var(--primary-color)", padding: "12px" }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reviews.map((review) => (
+                    <tr key={review.id} style={{ borderBottom: "1px solid var(--accent-color)" }}>
+                      <td style={{ color: "var(--text-color)", padding: "12px" }}>
+                        {review.userName || review.userEmail || "Anonymous"}
+                      </td>
+                      <td style={{ color: "var(--text-color)", padding: "12px" }}>
+                        {review.contentTitle || "N/A"}
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <div style={{ display: "flex", gap: "2px" }}>
+                          {[...Array(5)].map((_, i) => (
+                            <i 
+                              key={i} 
+                              className="fas fa-star"
+                              style={{ color: i < review.rating ? "var(--accent-color)" : "#555" }}
+                            ></i>
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ color: "var(--text-color)", padding: "12px", maxWidth: "250px" }}>
+                        <small>{review.feedback?.slice(0, 50)}...</small>
+                      </td>
+                      <td style={{ color: "var(--text-color)", padding: "12px" }}>
+                        {review.createdAt?.toDate?.()?.toLocaleDateString() || "N/A"}
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <span 
+                          className="badge"
+                          style={{
+                            backgroundColor: review.approved ? "#28a745" : "var(--neutral-color)",
+                            color: "white",
+                            padding: "6px 10px"
+                          }}
+                        >
+                          {review.approved ? "Approved" : "Pending"}
+                        </span>
+                      </td>
+                      <td style={{ padding: "12px" }}>
+                        <button 
+                          className="btn btn-sm me-2"
+                          title="View Full Review"
+                          style={{ backgroundColor: "var(--info-color)", color: "white", border: "none" }}
+                        >
+                          <i className="fas fa-eye"></i>
+                        </button>
+                        <button 
+                          className="btn btn-sm me-2"
+                          title={review.approved ? "Unapprove" : "Approve"}
+                          style={{ 
+                            backgroundColor: review.approved ? "#dc3545" : "#28a745", 
+                            color: "white",
+                            border: "none"
+                          }}
+                        >
+                          <i className={`fas fa-${review.approved ? "ban" : "check"}`}></i>
+                        </button>
+                        <button 
+                          className="btn btn-sm btn-danger"
+                          title="Delete"
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   // Content Editor Modal
   const renderContentModal = () => {
@@ -1064,6 +1605,67 @@ export default function AdminPanel() {
     );
   };
 
+  // Message Modal
+  const renderMessageModal = () => {
+    if (!showMessageModal || !selectedCreator) return null;
+
+    return (
+      <div 
+        className="modal show d-block" 
+        style={{ backgroundColor: "rgba(0,0,0,0.7)" }}
+        onClick={(e) => e.target === e.currentTarget && setShowMessageModal(false)}
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content" style={{ backgroundColor: "var(--secondary-color)", border: "2px solid var(--accent-color)" }}>
+            <div className="modal-header" style={{ borderBottom: "1px solid var(--accent-color)" }}>
+              <h5 className="modal-title" style={{ color: "var(--text-color)" }}>
+                <i className="fas fa-envelope me-2"></i>
+                Message Creator
+              </h5>
+              <button type="button" className="btn-close btn-close-white" onClick={() => setShowMessageModal(false)}></button>
+            </div>
+            <div className="modal-body">
+              <p style={{ color: "var(--text-color)", marginBottom: "1rem" }}>
+                <strong>To:</strong> {selectedCreator.creatorEmail}
+              </p>
+              <p style={{ color: "var(--text-color)", marginBottom: "1rem" }}>
+                <strong>Tutorial:</strong> {selectedCreator.itemTitle}
+              </p>
+              <div className="mb-3">
+                <label className="form-label" style={{ color: "var(--text-color)" }}>Message</label>
+                <textarea
+                  className="form-control"
+                  rows={5}
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  placeholder="Type your message here..."
+                  style={{ backgroundColor: "var(--primary-color)", borderColor: "var(--accent-color)", color: "var(--text-color)" }}
+                />
+              </div>
+            </div>
+            <div className="modal-footer" style={{ borderTop: "1px solid var(--accent-color)" }}>
+              <button 
+                className="btn"
+                style={{ backgroundColor: "var(--primary-color)", color: "var(--text-color)", border: "1px solid var(--accent-color)" }}
+                onClick={() => setShowMessageModal(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn"
+                style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)" }}
+                onClick={handleSendMessage}
+              >
+                <i className="fas fa-paper-plane me-2"></i>
+                Send Message
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   // Main render
   const renderMainContent = () => {
     if (loading) {
@@ -1077,27 +1679,91 @@ export default function AdminPanel() {
       );
     }
 
-    switch (activeTab) {
-      case "dashboard": return renderDashboard();
-      case "users": return renderUsers();
-      case "tutorials":
-      case "announcements":
-      case "pages": return renderContent();
-      case "reviews": return renderReviews();
-      default: return renderDashboard();
-    }
+    return (
+      (() => {
+        switch (activeTab) {
+          case "dashboard": return renderDashboard();
+          case "users": return renderUsers();
+          case "tutorials": return renderContent();
+          case "announcements": return renderAnnouncements();
+          case "pages": return renderContent();
+          case "reviews": return renderReviews();
+          default: return renderDashboard();
+        }
+      })()
+    );
   };
 
   return (
-    <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", minHeight: "100vh" }}>
-      {renderSidebar()}
-      
-      <main className="flex-grow-1 p-4" style={{ marginTop: "4rem" }}>
+    <div className="d-flex" style={{ backgroundColor: "var(--primary-color)", minHeight: "100vh", position: "relative", paddingTop: "3.5rem" }}>
+      {/* Mobile sidebar overlay */}
+      {sidebarVisible && (
+        <div 
+          className="sidebar-overlay visible d-md-none"
+          onClick={() => setSidebarVisible(false)}
+        />
+      )}
+
+      {/* Desktop Sidebar - Fixed position */}
+      <div
+        className="app-sidebar d-none d-md-flex flex-column p-3"
+      >
+        {renderSidebar()}
+      </div>
+
+      {/* Mobile Sidebar - Slides in from left */}
+      <div
+        className={`app-sidebar d-md-none ${sidebarVisible ? 'visible' : ''}`}
+      >
+        <button
+          onClick={() => setSidebarVisible(false)}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            background: "none",
+            border: "none",
+            fontSize: "1.5rem",
+            color: "var(--text-color)",
+            cursor: "pointer",
+            zIndex: 1002
+          }}
+        >
+          <i className="fas fa-times"></i>
+        </button>
+        <div className="mt-3">
+          {renderSidebar()}
+        </div>
+      </div>
+
+      {/* Main Content - Adjusted for fixed sidebar */}
+      <main 
+        ref={mainContentRef}
+        className="app-main-content flex-grow-1 p-3 p-md-4"
+      >
+        {/* Mobile menu button */}
+        <button
+          onClick={() => setSidebarVisible(!sidebarVisible)}
+          className="d-md-none btn mb-3"
+          style={{
+            backgroundColor: "var(--accent-color)",
+            color: "var(--primary-color)",
+            padding: "8px 12px",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer"
+          }}
+        >
+          <i className="fas fa-bars me-2"></i>
+          Menu
+        </button>
+        
         {renderMainContent()}
       </main>
 
       {renderContentModal()}
       {renderUserModal()}
+      {renderMessageModal()}
     </div>
   );
 }

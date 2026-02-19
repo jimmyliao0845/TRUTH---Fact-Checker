@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { ColorThemeManager } from "./ColorManager/Marketplace";
+import { InstallButton } from "./components/InstallButton";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -58,6 +59,9 @@ export default function Navbar() {
 
         {/* Right Side: Buttons / Profile */}
         <div className="d-flex align-items-center" style={{ gap: "0.5rem", flexWrap: "wrap", justifyContent: "flex-end", flex: 1 }}>
+          {/* Install Button */}
+          <InstallButton variant="compact" />
+          
           {/* Auth Buttons or Profile */}
           {!user ? (
             <>

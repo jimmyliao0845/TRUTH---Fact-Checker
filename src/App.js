@@ -108,9 +108,9 @@ function AppContent() {
         <Route path="/professional/verification-logs" element={<VerificationLogsPage />} />
         <Route path="/professional/user-feedback" element={<UserFeedbackPage />} />
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
-        <Route path="/professional/profile" element={<UserProfile />} />
         <Route path="/professional/linked-users" element={<LinkedUser />} />
-        <Route path="/general-user-profile" element={<UserProfile />} />
+        
+        {/* User Profile - Unified Route */}
         <Route path="/user/profile" element={<UserProfile />} />
 
         {/* Settings - Marketplace & Theme Manager */}
@@ -125,7 +125,6 @@ function AppContent() {
 
         {/* ✅ Unified Admin Panel */}
         <Route path="/admin" element={<AdminPanel />} />
-        <Route path="/admin-dashboard" element={<AdminPanel />} />
 
         {/* ✅ CMS Content Pages (Frontend) */}
         <Route path="/tutorials" element={<TutorialList />} />
