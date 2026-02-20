@@ -148,7 +148,7 @@ export default function GamePage() {
 
   // Calculate game points based on difficulty, correct answers, and time
   const calculateGamePoints = (finalScore, finalTiming) => {
-    const difficulty = selectedGame.difficulty;
+    const { difficulty } = selectedGame;
     const totalQuestions = selectedGame.questions.length;
     
     // Difficulty multiplier: easy=1, medium=3, hard=5

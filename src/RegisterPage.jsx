@@ -13,7 +13,7 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { ColorThemeManager } from "./ColorManager/Marketplace";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./styles.css";
@@ -226,7 +226,7 @@ export default function RegisterPage() {
     try {
       const result = await signInWithPopup(auth, provider);
       console.log("OAuth sign-in successful:", result.user.email);
-      const user = result.user;
+      const { user } = result;
 
       const providerName = provider.providerId.includes("google") ? "google" : "github";
 
@@ -311,7 +311,75 @@ export default function RegisterPage() {
                       </div>
                     </div>
 
-                    {!awaitingVerification ? (
+                    {awaitingVerification ? (
+                      /* VERIFICATION WAITING SCREEN */
+                      <div className="text-center py-4">
+                        <div className="mb-4">
+                          <i className="bi bi-envelope-check" style={{ fontSize: "4rem", color: "var(--accent-color)" }}></i>
+                        </div>
+                        <h5 className="mb-3">Verify Your Email</h5>
+                        <p className="mb-3">
+                          We've sent a verification link to:<br />
+                          <strong>{userEmail}</strong>
+                        </p>
+                        <p className="text-muted mb-4">
+                          Please check your inbox and click the verification link to continue.
+                        </p>
+
+                        {errorMsg && (
+                          <div
+                            className={`alert alert-danger py-2 text-center fade-alert ${
+                              fadeOut ? "hide" : ""
+                            }`}
+                            role="alert"
+                          >
+                            {errorMsg}
+                          </div>
+                        )}
+                        {successMsg && (
+                          <div
+                            className={`alert alert-success py-2 text-center fade-alert ${
+                              fadeOut ? "hide" : ""
+                            }`}
+                            role="alert"
+                          >
+                            {successMsg}
+                          </div>
+                        )}
+
+                        <button
+                          type="button"
+                          className="btn btn-primary w-100 mb-2"
+                          onClick={handleCheckVerification}
+                        >
+                          I've Verified My Email
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary w-100"
+                          onClick={handleResendVerification}
+                        >
+                          Resend Verification Email
+                        </button>
+
+                        <div className="text-center pt-3">
+                          <h6 className="fw-normal fs-14 mb-0">
+                            Wrong email?
+                            <button
+                              className="btn btn-link p-0 ms-1 hover-a"
+                              style={{ textDecoration: "none" }}
+                              onClick={() => {
+                                setAwaitingVerification(false);
+                                auth.signOut();
+                              }}
+                            >
+                              Sign up again
+                            </button>
+                          </h6>
+                        </div>
+                      </div>
+                    ) : (
                       <>
                         <div className="text-center mb-3">
                           <h5 className="mb-2">Sign Up</h5>
@@ -493,77 +561,6 @@ export default function RegisterPage() {
                           </h6>
                         </div>
                       </>
-                    ) : (
-                      /* VERIFICATION WAITING SCREEN */
-                      <div className="text-center py-4">
-                        <div className="mb-4">
-                          <i className="bi bi-envelope-check" style={{ fontSize: "4rem", color: "var(--accent-color)" }}></i>
-                        </div>
-                        <h5 className="mb-3">Verify Your Email</h5>
-                        <p className="mb-3">
-                          We've sent a verification link to:<br />
-                          <strong>{userEmail}</strong>
-                        </p>
-                        <p className="text-muted mb-4">
-                          Please check your inbox and click the verification link to continue.
-                        </p>
-
-                        {errorMsg && (
-                          <div
-                            className={`alert alert-danger py-2 text-center fade-alert ${
-                              fadeOut ? "hide" : ""
-                            }`}
-                            role="alert"
-                          >
-                            {errorMsg}
-                          </div>
-                        )}
-                        {successMsg && (
-                          <div
-                            className={`alert alert-success py-2 text-center fade-alert ${
-                              fadeOut ? "hide" : ""
-                            }`}
-                            role="alert"
-                          >
-                            {successMsg}
-                          </div>
-                        )}
-
-                        <button
-                          type="button"
-                          className="btn btn-primary w-100 mb-2"
-                          onClick={handleCheckVerification}
-                        >
-                          I've Verified My Email
-                        </button>
-
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary w-100"
-                          onClick={handleResendVerification}
-                        >
-                          Resend Verification Email
-                        </button>
-
-                        <div className="text-center pt-3">
-                          <h6 className="fw-normal fs-14 mb-0">
-                            Wrong email?
-                            <button
-                              className="btn btn-link p-0 ms-1 hover-a"
-                              style={{ textDecoration: "none" }}
-                              onClick={() => {
-                                // Reset theme to default (Black) on logout
-                                ColorThemeManager.resetToDefault();
-                                
-                                setAwaitingVerification(false);
-                                auth.signOut();
-                              }}
-                            >
-                              Sign up again
-                            </button>
-                          </h6>
-                        </div>
-                      </div>
                     )}
                   </div>
                 </div>

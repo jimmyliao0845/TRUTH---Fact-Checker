@@ -266,27 +266,7 @@ const handleFileUpload = (event) => {
                   {!collapsed && <span className="ms-3">Find and Play Game</span>}
                 </button>
       
-                <button 
-                  className="btn btn-link text-decoration-none d-flex align-items-center p-2"
-                  onClick={() => navigate("/professional/user-feedback")}
-                  style={{ 
-                    color: "var(--text-color)",
-                    borderRadius: "6px",
-                    fontSize: "0.95rem",
-                    fontWeight: "500"
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                    e.currentTarget.style.color = "var(--primary-color)";
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "var(--text-color)";
-                  }}
-                >
-                  <FaCommentAlt size={18} />
-                  {!collapsed && <span className="ms-3">User Feedback</span>}
-                </button>
+
 
                 {/* UPDATED BUTTON ROUTE */}
                 <button 

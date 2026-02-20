@@ -43,15 +43,20 @@ export default function CreateTutorialFull() {
   const DIFFICULTY_LEVELS = ["beginner", "intermediate", "advanced"];
 
   // Auth guard and get user info
+  const [currentUser, setCurrentUser] = useState(null);
+  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
         navigate("/login");
       } else {
+        setCurrentUser(user);
         // Auto-populate maker field with user's display name or email
         setGame(prev => ({
           ...prev,
-          maker: user.displayName || user.email || "Anonymous Creator"
+          maker: user.displayName || user.email || "Anonymous Creator",
+          creatorId: user.uid,
+          creatorEmail: user.email
         }));
       }
     });
@@ -68,6 +73,8 @@ export default function CreateTutorialFull() {
     duration: "15 mins",
     thumbnail: "📚",
     maker: "",
+    creatorId: null,
+    creatorEmail: null,
     questions: Array.from({ length: 10 }).map(() => ({
       contentType: "text",
       text: "",
@@ -156,8 +163,10 @@ export default function CreateTutorialFull() {
     }
 
     const createdDateTime = new Date();
+    const gameId = `game-${Date.now()}`;
+    
     const publishPayload = {
-      id: `game-${Date.now()}`,
+      id: gameId,
       title: game.title,
       description: game.description,
       category: game.category,
@@ -165,6 +174,8 @@ export default function CreateTutorialFull() {
       duration: game.duration,
       thumbnail: game.thumbnail,
       maker: game.maker,
+      creatorId: currentUser?.uid,
+      creatorEmail: currentUser?.email,
       questions: game.questions.map((q) => ({
         text: q.text,
         image: q.image,
@@ -180,41 +191,47 @@ export default function CreateTutorialFull() {
       rating: 4.5,
       players: 0,
       views: 0,
+      featured: false
     };
 
-    // Save to published games in localStorage
+    // Save to published games in localStorage (for GameFinder)
     const existing = JSON.parse(localStorage.getItem("published_games_v1") || "[]");
     existing.unshift(publishPayload);
     localStorage.setItem("published_games_v1", JSON.stringify(existing));
     
+    // Save to admin games Created (for ManageTutorial with creator info)
+    const adminGames = JSON.parse(localStorage.getItem("admin_games_created") || "[]");
+    adminGames.unshift(publishPayload);
+    localStorage.setItem("admin_games_created", JSON.stringify(adminGames));
+    
     // Clear draft
     localStorage.removeItem("game_draft_v1");
     
-    alert(`✅ Game "${game.title}" published successfully!\nIt will appear in the ${game.category} category on GameFinder.`);
+    alert(`✅ Game "${game.title}" published successfully!\nIt will appear in the ${game.category} category on GameFinder and in Manage Games.`);
     
     // Reset form
-    onAuthStateChanged(auth, (user) => {
-      setGame({
-        id: null,
-        title: "",
-        description: "",
-        category: "text",
-        difficulty: "beginner",
-        duration: "15 mins",
-        thumbnail: "📚",
-        maker: user?.displayName || user?.email || "Anonymous Creator",
-        questions: Array.from({ length: 10 }).map(() => ({
-          contentType: "text",
-          text: "",
-          image: null,
-          imageUrl: "",
-          options: ["", "", "", ""],
-          correct: 0,
-          explanation: "",
-        })),
-        status: "draft",
-        createdAt: new Date().toISOString(),
-      });
+    setGame({
+      id: null,
+      title: "",
+      description: "",
+      category: "text",
+      difficulty: "beginner",
+      duration: "15 mins",
+      thumbnail: "📚",
+      maker: currentUser?.displayName || currentUser?.email || "Anonymous Creator",
+      creatorId: currentUser?.uid,
+      creatorEmail: currentUser?.email,
+      questions: Array.from({ length: 10 }).map(() => ({
+        contentType: "text",
+        text: "",
+        image: null,
+        imageUrl: "",
+        options: ["", "", "", ""],
+        correct: 0,
+        explanation: "",
+      })),
+      status: "draft",
+      createdAt: new Date().toISOString(),
     });
   };
 
@@ -273,14 +290,6 @@ export default function CreateTutorialFull() {
           >
             <FaUsers size={20} />
             <span className="app-sidebar-label">Linked Users</span>
-          </button>
-
-          <button
-            className="app-sidebar-item"
-            onClick={() => navigate("/professional/user-feedback")}
-          >
-            <FaCommentDots size={20} />
-            <span className="app-sidebar-label">User Feedback</span>
           </button>
 
           <button

@@ -335,13 +335,7 @@ export default function FactCheckerDashboard() {
             <span className="app-sidebar-label">Linked Users</span>
           </button>
 
-          <button
-            className="app-sidebar-item"
-            onClick={() => navigate("/professional/user-feedback")}
-          >
-            <FaCommentDots size={20} />
-            <span className="app-sidebar-label">User Feedback</span>
-          </button>
+
 
           <button
             className="app-sidebar-item"
@@ -375,7 +369,7 @@ export default function FactCheckerDashboard() {
         <nav
           className="navbar d-flex justify-content-end align-items-center px-4 py-2 shadow-sm"
           style={{
-            position: "sticky",
+            position: "relative",
             top: 0,
             zIndex: 1000,
             backgroundColor: "var(--primary-color)",

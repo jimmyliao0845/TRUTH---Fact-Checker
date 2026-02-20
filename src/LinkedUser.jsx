@@ -166,14 +166,6 @@ export default function LinkedUser() {
 
           <button
             className="app-sidebar-item"
-            onClick={() => navigate("/professional/user-feedback")}
-          >
-            <FaCommentDots size={20} />
-            <span className="app-sidebar-label">User Feedback</span>
-          </button>
-
-          <button
-            className="app-sidebar-item"
             onClick={() => navigate("/professional/verification-logs")}
           >
             <FaClipboardList size={20} />

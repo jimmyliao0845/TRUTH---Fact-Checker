@@ -213,6 +213,128 @@ export default function UserProfile() {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [availableUsers, setAvailableUsers] = useState([]);
 
+  // ========== THEME & SHOP STATE ==========
+  const [coinBalance, setCoinBalance] = useState(1000); // Default coin balance
+  const [purchasedThemes, setPurchasedThemes] = useState([
+    { id: "black", name: "Black" }, // Default theme
+    { id: "white", name: "White" }   // Another free theme
+  ]);
+  
+  // ========== PASSES STATE ==========
+  const [purchasedPasses, setPurchasedPasses] = useState([
+    // Can have multiple text entry passes
+    // Professional pass is single upgrade
+  ]);
+  const [textEntryPassCount, setTextEntryPassCount] = useState(0); // Number of text entry passes purchased
+  const [hasProfessionalPass, setHasProfessionalPass] = useState(false); // User's professional status via pass
+  const [showCredentialForm, setShowCredentialForm] = useState(false); // For professional pass credential submission
+  const [credentialData, setCredentialData] = useState({
+    fullName: "",
+    professionalTitle: "",
+    organization: "",
+    credentials: "",
+    verificationDocument: "",
+  });
+  const [allThemes, setAllThemes] = useState([
+    {
+      id: "black",
+      name: "Black",
+      description: "Classic dark theme",
+      price: 0,
+      colors: {
+        primary: "#09090d",
+        secondary: "#1a1a23",
+        navbar: "#09090d",
+        sidebar: "#1a1a23",
+        background: "#0f0f14",
+        button: "#3a305033",
+        text: "#ffffff",
+        accent: "#ff6b6b",
+      },
+    },
+    {
+      id: "white",
+      name: "White",
+      description: "Clean light theme",
+      price: 0,
+      colors: {
+        primary: "#ffffff",
+        secondary: "#f5f5f5",
+        navbar: "#ffffff",
+        sidebar: "#f5f5f5",
+        background: "#fafafa",
+        button: "#e8e8e8",
+        text: "#000000",
+        accent: "#0066cc",
+      },
+    },
+    {
+      id: "ocean",
+      name: "Ocean",
+      description: "Cool blue theme",
+      price: 500,
+      colors: {
+        primary: "#0a4a6e",
+        secondary: "#0d6a94",
+        navbar: "#0a4a6e",
+        sidebar: "#0d6a94",
+        background: "#1a5276",
+        button: "#2874a6",
+        text: "#ffffff",
+        accent: "#5dade2",
+      },
+    },
+    {
+      id: "forest",
+      name: "Forest",
+      description: "Nature-inspired green theme",
+      price: 500,
+      colors: {
+        primary: "#1b4620",
+        secondary: "#2d5a3d",
+        navbar: "#1b4620",
+        sidebar: "#2d5a3d",
+        background: "#3a6b52",
+        button: "#4a8a6f",
+        text: "#ffffff",
+        accent: "#52d96b",
+      },
+    },
+    {
+      id: "sunset",
+      name: "Sunset",
+      description: "Warm orange & pink theme",
+      price: 500,
+      colors: {
+        primary: "#8b4513",
+        secondary: "#c7522a",
+        navbar: "#8b4513",
+        sidebar: "#c7522a",
+        background: "#ff8c42",
+        button: "#ff6b6b",
+        text: "#ffffff",
+        accent: "#ffd93d",
+      },
+    },
+    {
+      id: "purple",
+      name: "Purple",
+      description: "Royal purple theme",
+      price: 750,
+      colors: {
+        primary: "#4a148c",
+        secondary: "#6a1b9a",
+        navbar: "#4a148c",
+        sidebar: "#6a1b9a",
+        background: "#7b1fa2",
+        button: "#9c27b0",
+        text: "#ffffff",
+        accent: "#ce93d8",
+      },
+    },
+  ]);
+  const [selectedTheme, setSelectedTheme] = useState("black");
+
   // ========== PROFESSIONAL USER DATA ==========
   const [profProfile] = useState(() =>
     load("pro_profile_v4", {
@@ -444,9 +566,9 @@ export default function UserProfile() {
 
       {/* ========== UNIFIED SIDEBAR ========== */}
       <div className={`app-sidebar ${collapsed ? 'collapsed' : ''} ${sidebarVisible ? 'visible' : ''}`}
-        style={!isProfessional ? {
+        style={isProfessional ? {} : {
           background: "linear-gradient(135deg, var(--secondary-color) 0%, var(--info-color-light) 100%)",
-        } : {}}>
+        }}>
         <div className="d-flex align-items-center justify-content-between mb-3">
           <button
             className="app-sidebar-toggle"
@@ -589,6 +711,24 @@ export default function UserProfile() {
               ))}
 
               <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-color)", opacity: 0.5, paddingLeft: "12px", textTransform: "uppercase", marginTop: "1rem" }}>
+                {!collapsed && "Shop"}
+              </div>
+              {[
+                { id: "themes", label: "Themes", icon: FaUser },
+                { id: "passes", label: "Passes", icon: FaTrophy },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  className={`app-sidebar-item ${activeTab === tab.id ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                  disabled={activeTab === tab.id}
+                >
+                  <tab.icon size={20} />
+                  <span className="app-sidebar-label">{tab.label}</span>
+                </button>
+              ))}
+
+              <div style={{ fontSize: "11px", fontWeight: "700", color: "var(--text-color)", opacity: 0.5, paddingLeft: "12px", textTransform: "uppercase", marginTop: "1rem" }}>
                 {!collapsed && "Social"}
               </div>
               {[
@@ -682,6 +822,8 @@ export default function UserProfile() {
                 {activeTab === "notifications" && "Notifications"}
                 {activeTab === "tutorials" && "Learning Tutorials"}
                 {activeTab === "learning-path" && "Your Learning Path"}
+                {activeTab === "themes" && "Theme Shop"}
+                {activeTab === "passes" && "Passes Shop"}
               </>
             )}
           </h5>
@@ -1593,6 +1735,595 @@ export default function UserProfile() {
               </div>
               <div className="card-body">
                 <p style={{ color: "var(--text-color)" }}>Settings management coming soon...</p>
+              </div>
+            </div>
+          )}
+
+          {/* THEME SHOP TAB */}
+          {activeTab === "themes" && !isProfessional && (
+            <div>
+              {/* Info Box */}
+              <div style={{
+                backgroundColor: "rgba(255, 107, 107, 0.1)",
+                border: "2px solid #ff6b6b",
+                borderRadius: "8px",
+                padding: "1rem",
+                marginBottom: "2rem"
+              }}>
+                <i className="fas fa-lock" style={{ color: "#ff6b6b", marginRight: "0.5rem" }}></i>
+                <span style={{ color: "var(--text-color)" }}>
+                  Your theme preference is saved and will persist across sessions. You can change themes anytime.
+                </span>
+              </div>
+
+              {/* Header with Stats */}
+              <div className="row mb-4">
+                <div className="col-12 col-md-6">
+                  <div
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "2px solid var(--accent-color)",
+                      borderRadius: "8px",
+                      padding: "1.5rem",
+                      marginBottom: "1rem"
+                    }}
+                  >
+                    <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem", fontWeight: "bold" }}>
+                      <i className="fas fa-coins me-2"></i>Coin Balance
+                    </h6>
+                    <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{coinBalance} coins</h2>
+                  </div>
+                </div>
+                <div className="col-12 col-md-6">
+                  <div
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "2px solid var(--accent-color)",
+                      borderRadius: "8px",
+                      padding: "1.5rem",
+                      marginBottom: "1rem"
+                    }}
+                  >
+                    <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem", fontWeight: "bold" }}>
+                      <i className="fas fa-palette me-2"></i>Themes Owned
+                    </h6>
+                    <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{purchasedThemes.length}</h2>
+                  </div>
+                </div>
+              </div>
+
+              {/* Themes Grid */}
+              <h4 style={{ color: "var(--accent-color)", marginBottom: "1.5rem", fontWeight: "bold" }}>
+                <i className="fas fa-shopping-bag me-2"></i>Available Themes
+              </h4>
+              <div className="row g-3">
+                {allThemes.map((theme) => {
+                  const isOwned = purchasedThemes.some(t => t.id === theme.id);
+                  const canAfford = coinBalance >= theme.price || theme.price === 0;
+
+                  const handlePurchaseTheme = () => {
+                    if (isOwned) {
+                      // Apply theme
+                      setSelectedTheme(theme.id);
+                      localStorage.setItem("selectedTheme", theme.id);
+                      // Apply CSS variables immediately
+                      const root = document.documentElement;
+                      Object.entries(theme.colors).forEach(([key, value]) => {
+                        root.style.setProperty(`--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}-color`, value);
+                      });
+                      alert(`Theme "${theme.name}" applied!`);
+                    } else if (coinBalance >= theme.price) {
+                      setCoinBalance(coinBalance - theme.price);
+                      setPurchasedThemes([...purchasedThemes, { id: theme.id, name: theme.name }]);
+                      setSelectedTheme(theme.id);
+                      localStorage.setItem("selectedTheme", theme.id);
+                      // Apply CSS variables immediately
+                      const root = document.documentElement;
+                      Object.entries(theme.colors).forEach(([key, value]) => {
+                        root.style.setProperty(`--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}-color`, value);
+                      });
+                      alert(`Theme "${theme.name}" purchased and applied! You now have ${coinBalance - theme.price} coins.`);
+                    } else {
+                      alert(`Not enough coins! You need ${theme.price - coinBalance} more coins.`);
+                    }
+                  };
+
+                  return (
+                    <div key={theme.id} className="col-12 col-sm-6 col-lg-4">
+                      <div
+                        style={{
+                          backgroundColor: "var(--secondary-color)",
+                          border: selectedTheme === theme.id ? "3px solid var(--accent-color)" : "2px solid #555",
+                          borderRadius: "8px",
+                          padding: "1rem",
+                          position: "relative",
+                          transition: "all 0.3s ease",
+                          height: "100%",
+                          display: "flex",
+                          flexDirection: "column"
+                        }}
+                      >
+                        {/* Badge */}
+                        {isOwned && (
+                          <div style={{
+                            position: "absolute",
+                            top: "10px",
+                            right: "10px",
+                            backgroundColor: "var(--accent-color)",
+                            color: "var(--primary-color)",
+                            padding: "0.3rem 0.7rem",
+                            borderRadius: "20px",
+                            fontSize: "0.75rem",
+                            fontWeight: "bold"
+                          }}>
+                            ✓ OWNED
+                          </div>
+                        )}
+
+                        {/* Color Preview */}
+                        <div style={{
+                          display: "flex",
+                          gap: "6px",
+                          marginBottom: "1rem",
+                          height: "50px"
+                        }}>
+                          {Object.entries(theme.colors).slice(0, 8).map(([key, color]) => (
+                            <div
+                              key={key}
+                              style={{
+                                flex: 1,
+                                backgroundColor: color,
+                                borderRadius: "4px",
+                                border: "1px solid #555",
+                                cursor: "pointer",
+                                transition: "transform 0.2s"
+                              }}
+                              title={key}
+                              onMouseOver={(e) => e.target.style.transform = "scaleY(1.1)"}
+                              onMouseOut={(e) => e.target.style.transform = "scaleY(1)"}
+                            />
+                          ))}
+                        </div>
+
+                        {/* Theme Info */}
+                        <h6 style={{ color: "var(--accent-color)", marginBottom: "0.3rem", fontWeight: "bold" }}>
+                          {theme.name}
+                        </h6>
+                        <p style={{ color: "var(--text-color)", fontSize: "0.9rem", marginBottom: "1rem", opacity: 0.8, flex: 1 }}>
+                          {theme.description}
+                        </p>
+
+                        {/* Price */}
+                        <p style={{ color: "var(--accent-color)", fontSize: "1rem", marginBottom: "1rem", fontWeight: "bold" }}>
+                          {theme.price === 0 ? "FREE" : `${theme.price} coins`}
+                        </p>
+
+                        {/* Purchase/Apply Button */}
+                        <button
+                          onClick={handlePurchaseTheme}
+                          style={{
+                            backgroundColor: isOwned ? "var(--accent-color)" : (canAfford ? "var(--accent-color)" : "#666"),
+                            color: isOwned || canAfford ? "var(--primary-color)" : "gray",
+                            border: "none",
+                            padding: "0.7rem",
+                            borderRadius: "4px",
+                            fontWeight: "bold",
+                            cursor: isOwned || canAfford ? "pointer" : "not-allowed",
+                            transition: "all 0.3s",
+                            width: "100%"
+                          }}
+                          disabled={!isOwned && !canAfford}
+                          onMouseOver={(e) => {
+                            if (isOwned || canAfford) {
+                              e.target.style.opacity = "0.8";
+                            }
+                          }}
+                          onMouseOut={(e) => {
+                            e.target.style.opacity = "1";
+                          }}
+                        >
+                          <i className={`fas ${isOwned ? "fa-check" : "fa-shopping-cart"} me-2`}></i>
+                          {isOwned ? "Apply Theme" : (canAfford ? "Buy Theme" : "Not Enough Coins")}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* PASSES SHOP TAB */}
+          {activeTab === "passes" && !isProfessional && (
+            <div>
+              {/* Header with Stats */}
+              <div className="row mb-4">
+                <div className="col-12 col-md-6">
+                  <div
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "2px solid var(--accent-color)",
+                      borderRadius: "8px",
+                      padding: "1.5rem",
+                      marginBottom: "1rem"
+                    }}
+                  >
+                    <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem", fontWeight: "bold" }}>
+                      <i className="fas fa-coins me-2"></i>Coin Balance
+                    </h6>
+                    <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{coinBalance} coins</h2>
+                  </div>
+                </div>
+                <div className="col-12 col-md-6">
+                  <div
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "2px solid var(--accent-color)",
+                      borderRadius: "8px",
+                      padding: "1.5rem",
+                      marginBottom: "1rem"
+                    }}
+                  >
+                    <h6 style={{ color: "var(--accent-color)", marginBottom: "0.5rem", fontWeight: "bold" }}>
+                      <i className="fas fa-file-contract me-2"></i>Text Entry Passes
+                    </h6>
+                    <h2 style={{ color: "var(--text-color)", marginBottom: "0" }}>{textEntryPassCount}</h2>
+                  </div>
+                </div>
+              </div>
+
+              {/* Passes Grid */}
+              <h4 style={{ color: "var(--accent-color)", marginBottom: "1.5rem", fontWeight: "bold" }}>
+                <i className="fas fa-ticket-alt me-2"></i>Available Passes
+              </h4>
+              <div className="row g-3">
+                {/* Text Entry Pass */}
+                <div className="col-12 col-sm-6 col-lg-4">
+                  <div
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "2px solid #5dade2",
+                      borderRadius: "8px",
+                      padding: "1.5rem",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column"
+                    }}
+                  >
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "1rem"
+                    }}>
+                      <i className="fas fa-edit fa-2x" style={{ color: "#5dade2", marginRight: "1rem" }}></i>
+                      <div>
+                        <h6 style={{ color: "var(--accent-color)", marginBottom: "0.3rem", fontWeight: "bold" }}>
+                          Text Entry Pass
+                        </h6>
+                        <small style={{ color: "var(--text-color)", opacity: 0.8 }}>Stackable</small>
+                      </div>
+                    </div>
+
+                    <p style={{ color: "var(--text-color)", fontSize: "0.95rem", marginBottom: "1rem", flex: 1 }}>
+                      Unlock 5 additional text verifications per day. You can stack multiple passes to increase your daily limit further.
+                    </p>
+
+                    <div style={{ marginBottom: "1rem" }}>
+                      <p style={{ color: "var(--text-color)", fontSize: "0.85rem", marginBottom: "0.5rem" }}>
+                        <strong>Current Usage:</strong> You have used X/5 text verifications today
+                      </p>
+                      <div style={{ height: "8px", backgroundColor: "var(--primary-color)", borderRadius: "4px", overflow: "hidden" }}>
+                        <div style={{height: "100%", width: "40%", backgroundColor: "#5dade2"}} />
+                      </div>
+                    </div>
+
+                    <p style={{ color: "var(--accent-color)", fontSize: "1rem", marginBottom: "1rem", fontWeight: "bold" }}>
+                      300 coins
+                    </p>
+
+                    <button
+                      onClick={() => {
+                        if (coinBalance >= 300) {
+                          setCoinBalance(coinBalance - 300);
+                          setTextEntryPassCount(textEntryPassCount + 1);
+                          setPurchasedPasses([...purchasedPasses, { id: `text-entry-${Date.now()}`, type: "text-entry", purchaseDate: new Date().toLocaleDateString() }]);
+                          alert(`Text Entry Pass purchased! You now have ${textEntryPassCount + 1} pass(es). Your daily text verification limit has been increased.`);
+                        } else {
+                          alert(`Not enough coins! You need ${300 - coinBalance} more coins.`);
+                        }
+                      }}
+                      style={{
+                        backgroundColor: coinBalance >= 300 ? "var(--accent-color)" : "#666",
+                        color: coinBalance >= 300 ? "var(--primary-color)" : "gray",
+                        border: "none",
+                        padding: "0.8rem",
+                        borderRadius: "4px",
+                        fontWeight: "bold",
+                        cursor: coinBalance >= 300 ? "pointer" : "not-allowed",
+                        transition: "all 0.3s",
+                        width: "100%"
+                      }}
+                      disabled={coinBalance < 300}
+                      onMouseOver={(e) => {
+                        if (coinBalance >= 300) {
+                          e.target.style.opacity = "0.8";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.opacity = "1";
+                      }}
+                    >
+                      <i className="fas fa-shopping-cart me-2"></i>Buy Pass
+                    </button>
+                  </div>
+                </div>
+
+                {/* Professional Pass */}
+                <div className="col-12 col-sm-6 col-lg-4">
+                  <div
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      border: "2px solid #ffd93d",
+                      borderRadius: "8px",
+                      padding: "1.5rem",
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                      position: "relative"
+                    }}
+                  >
+                    <div style={{
+                      position: "absolute",
+                      top: "15px",
+                      right: "15px",
+                      backgroundColor: "#ffd93d",
+                      color: "#000",
+                      padding: "0.4rem 0.8rem",
+                      borderRadius: "20px",
+                      fontSize: "0.75rem",
+                      fontWeight: "bold"
+                    }}>
+                      PREMIUM
+                    </div>
+
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: "1rem"
+                    }}>
+                      <i className="fas fa-crown fa-2x" style={{ color: "#ffd93d", marginRight: "1rem" }}></i>
+                      <div>
+                        <h6 style={{ color: "var(--accent-color)", marginBottom: "0.3rem", fontWeight: "bold" }}>
+                          Professional Pass
+                        </h6>
+                        <small style={{ color: "var(--text-color)", opacity: 0.8 }}>One-time upgrade</small>
+                      </div>
+                    </div>
+
+                    <p style={{ color: "var(--text-color)", fontSize: "0.95rem", marginBottom: "1rem", flex: 1 }}>
+                      Upgrade your account to Professional status. Submit credentials for verification by admins to unlock professional tools and features.
+                    </p>
+
+                    <div style={{
+                      backgroundColor: "rgba(255, 217, 61, 0.1)",
+                      border: "1px solid #ffd93d",
+                      borderRadius: "4px",
+                      padding: "0.8rem",
+                      marginBottom: "1rem"
+                    }}>
+                      <p style={{ color: "var(--text-color)", fontSize: "0.85rem", marginBottom: "0" }}>
+                        <strong>What you'll get:</strong>
+                      </p>
+                      <ul style={{ color: "var(--text-color)", fontSize: "0.85rem", marginBottom: "0", paddingLeft: "1.2rem" }}>
+                        <li>Professional role on your account</li>
+                        <li>Access to professional dashboard</li>
+                        <li>Ability to create and publish tutorials</li>
+                        <li>Professional analytics and insights</li>
+                      </ul>
+                    </div>
+
+                    <p style={{ color: "var(--accent-color)", fontSize: "1rem", marginBottom: "1rem", fontWeight: "bold" }}>
+                      1500 coins
+                    </p>
+
+                    <button
+                      onClick={() => {
+                        if (coinBalance >= 1500) {
+                          setCoinBalance(coinBalance - 1500);
+                          setHasProfessionalPass(true);
+                          setShowCredentialForm(true);
+                          setPurchasedPasses([...purchasedPasses, { id: "professional", type: "professional", purchaseDate: new Date().toLocaleDateString() }]);
+                        } else {
+                          alert(`Not enough coins! You need ${1500 - coinBalance} more coins.`);
+                        }
+                      }}
+                      style={{
+                        backgroundColor: coinBalance >= 1500 ? "#ffd93d" : "#666",
+                        color: coinBalance >= 1500 ? "#000" : "gray",
+                        border: "none",
+                        padding: "0.8rem",
+                        borderRadius: "4px",
+                        fontWeight: "bold",
+                        cursor: coinBalance >= 1500 ? "pointer" : "not-allowed",
+                        transition: "all 0.3s",
+                        width: "100%"
+                      }}
+                      disabled={coinBalance < 1500}
+                      onMouseOver={(e) => {
+                        if (coinBalance >= 1500) {
+                          e.target.style.opacity = "0.8";
+                        }
+                      }}
+                      onMouseOut={(e) => {
+                        e.target.style.opacity = "1";
+                      }}
+                    >
+                      <i className="fas fa-shopping-cart me-2"></i>Upgrade Now
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* PROFESSIONAL CREDENTIAL FORM - MODAL */}
+          {showCredentialForm && (
+            <div style={{
+              position: "fixed",
+              top: "0",
+              left: "0",
+              right: "0",
+              bottom: "0",
+              backgroundColor: "rgba(0, 0, 0, 0.7)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: "1100"
+            }} onClick={() => setShowCredentialForm(false)}>
+              <div style={{
+                backgroundColor: "var(--secondary-color)",
+                borderRadius: "8px",
+                padding: "2rem",
+                maxWidth: "600px",
+                width: "90%",
+                maxHeight: "80vh",
+                overflowY: "auto",
+                border: "2px solid var(--accent-color)",
+                boxShadow: "0 10px 40px rgba(0, 0, 0, 0.5)"
+              }} onClick={(e) => e.stopPropagation()}>
+                {/* Modal Header */}
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <h4 style={{ color: "var(--accent-color)", marginBottom: "0", fontWeight: "bold" }}>
+                    <i className="fas fa-crown me-2"></i>Professional Credentials
+                  </h4>
+                  <button
+                    className="btn-close"
+                    onClick={() => setShowCredentialForm(false)}
+                    style={{ filter: "invert(1)" }}
+                  />
+                </div>
+
+                <p style={{ color: "var(--text-color)", marginBottom: "1.5rem" }}>
+                  Please provide your professional credentials for admin verification. Your information will be reviewed before your professional status is activated.
+                </p>
+
+                {/* Form Fields */}
+                <div className="mb-3">
+                  <label style={{ color: "var(--text-color)", fontWeight: "bold", marginBottom: "0.5rem", display: "block" }}>
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={credentialData.fullName}
+                    onChange={(e) => setCredentialData({ ...credentialData, fullName: e.target.value })}
+                    placeholder="Your full name"
+                    style={{
+                      backgroundColor: "var(--primary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid var(--accent-color)"
+                    }}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label style={{ color: "var(--text-color)", fontWeight: "bold", marginBottom: "0.5rem", display: "block" }}>
+                    Professional Title *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={credentialData.professionalTitle}
+                    onChange={(e) => setCredentialData({ ...credentialData, professionalTitle: e.target.value })}
+                    placeholder="e.g., Journalist, Fact-Checker, Media Analyst"
+                    style={{
+                      backgroundColor: "var(--primary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid var(--accent-color)"
+                    }}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label style={{ color: "var(--text-color)", fontWeight: "bold", marginBottom: "0.5rem", display: "block" }}>
+                    Organization *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={credentialData.organization}
+                    onChange={(e) => setCredentialData({ ...credentialData, organization: e.target.value })}
+                    placeholder="Your organization or company"
+                    style={{
+                      backgroundColor: "var(--primary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid var(--accent-color)"
+                    }}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label style={{ color: "var(--text-color)", fontWeight: "bold", marginBottom: "0.5rem", display: "block" }}>
+                    Credentials & Experience
+                  </label>
+                  <textarea
+                    className="form-control"
+                    value={credentialData.credentials}
+                    onChange={(e) => setCredentialData({ ...credentialData, credentials: e.target.value })}
+                    placeholder="Describe your professional background, expertise, and relevant experience..."
+                    rows="4"
+                    style={{
+                      backgroundColor: "var(--primary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid var(--accent-color)",
+                      minHeight: "120px"
+                    }}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label style={{ color: "var(--text-color)", fontWeight: "bold", marginBottom: "0.5rem", display: "block" }}>
+                    Verification Document *
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={credentialData.verificationDocument}
+                    onChange={(e) => setCredentialData({ ...credentialData, verificationDocument: e.target.value })}
+                    placeholder="Upload document link or reference (e.g., LinkedIn profile, professional ID, certificate)"
+                    style={{
+                      backgroundColor: "var(--primary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid var(--accent-color)"
+                    }}
+                  />
+                </div>
+
+                {/* Modal Footer */}
+                <div className="d-flex gap-2 mt-4">
+                  <button
+                    className="btn flex-grow-1"
+                    onClick={() => setShowCredentialForm(false)}
+                    style={{ backgroundColor: "#555", color: "white", fontWeight: "bold" }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="btn flex-grow-1"
+                    onClick={() => {
+                      if (!credentialData.fullName.trim() || !credentialData.professionalTitle.trim() || !credentialData.organization.trim() || !credentialData.verificationDocument.trim()) {
+                        alert("Please fill in all required fields");
+                        return;
+                      }
+                      alert("Professional credentials submitted! Admins will review your application. You'll be notified when your account is verified.");
+                      setShowCredentialForm(false);
+                      // Here you would send credential data to Firestore for admin review
+                    }}
+                    style={{ backgroundColor: "var(--accent-color)", color: "var(--primary-color)", fontWeight: "bold" }}
+                  >
+                    <i className="fas fa-check me-2"></i>Submit Credentials
+                  </button>
+                </div>
               </div>
             </div>
           )}

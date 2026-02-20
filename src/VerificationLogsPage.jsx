@@ -341,13 +341,7 @@ export default function VerificationLogsPage() {
             <span className="app-sidebar-label">Linked Users</span>
           </button>
 
-          <button 
-            className="app-sidebar-item"
-            onClick={() => navigate("/professional/user-feedback")}
-          >
-            <FaCommentDots size={20} />
-            <span className="app-sidebar-label">User Feedback</span>
-          </button>
+
 
           <button 
             className={`app-sidebar-item ${location.pathname === "/professional/verification-logs" ? 'active' : ''}`}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { auth } from "./firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { ColorThemeManager } from "./ColorManager/Marketplace";
+
 import { InstallButton } from "./components/InstallButton";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -28,9 +28,6 @@ export default function Navbar() {
 
   const handleSignOut = async () => {
     try {
-      // Reset theme to default (Black) on logout
-      ColorThemeManager.resetToDefault();
-      
       await signOut(auth);
       alert("Signed out successfully");
     } catch (error) {
@@ -63,7 +60,79 @@ export default function Navbar() {
           <InstallButton variant="compact" />
           
           {/* Auth Buttons or Profile */}
-          {!user ? (
+          {user ? (
+            <div className="dropdown">
+              <img
+                src={user?.avatar || "/assets/default-avatar.png"}
+                alt="Profile"
+                className="rounded-circle"
+                width="42"
+                height="42"
+                style={{
+                  cursor: "pointer",
+                  objectFit: "cover",
+                  border: "2px solid var(--text-color)",
+                }}
+                data-bs-toggle="dropdown"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/assets/default-avatar.png";
+                }}
+              />
+              <ul
+                className="dropdown-menu dropdown-menu-end p-3 shadow-lg"
+                style={{
+                  backgroundColor: "var(--primary-color)",
+                  borderRadius: "10px",
+                  border: "2px solid var(--accent-color)",
+                }}
+              >
+                <li>
+                  <Link
+                    to="/user/profile"
+                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      transition: "all 0.3s ease"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "var(--white-color)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
+                      e.currentTarget.style.color = "var(--text-color)";
+                    }}
+                  >
+                    <i className="bi bi-person me-2"></i> Profile
+                  </Link>
+
+                  <button
+                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start"
+                    style={{
+                      backgroundColor: "var(--secondary-color)",
+                      color: "var(--text-color)",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                      transition: "all 0.3s ease"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
+                      e.currentTarget.style.color = "var(--white-color)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
+                      e.currentTarget.style.color = "var(--text-color)";
+                    }}
+                    onClick={handleSignOut}
+                  >
+                    <i className="bi bi-box-arrow-right me-2"></i> Sign Out
+                  </button>
+                </li>
+              </ul>
+            </div>
+          ) : (
             <>
               <Link
                 to="/login"
@@ -113,97 +182,6 @@ export default function Navbar() {
                 Sign Up
               </Link>
             </>
-          ) : (
-            <div className="dropdown">
-              <img
-                src={user?.avatar || "/assets/default-avatar.png"}
-                alt="Profile"
-                className="rounded-circle"
-                width="42"
-                height="42"
-                style={{
-                  cursor: "pointer",
-                  objectFit: "cover",
-                  border: "2px solid var(--text-color)",
-                }}
-                data-bs-toggle="dropdown"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/assets/default-avatar.png";
-                }}
-              />
-              <ul
-                className="dropdown-menu dropdown-menu-end p-3 shadow-lg"
-                style={{
-                  backgroundColor: "var(--primary-color)",
-                  borderRadius: "10px",
-                  border: "2px solid var(--accent-color)",
-                }}
-              >
-                <li>
-                  <Link
-                    to="/user/profile"
-                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
-                    style={{
-                      backgroundColor: "var(--secondary-color)",
-                      color: "var(--text-color)",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      transition: "all 0.3s ease"
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                      e.currentTarget.style.color = "var(--white-color)";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
-                      e.currentTarget.style.color = "var(--text-color)";
-                    }}
-                  >
-                    <i className="bi bi-person me-2"></i> Profile
-                  </Link>
-                  <Link
-                    to="/settings"
-                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start mb-2"
-                    style={{
-                      backgroundColor: "var(--secondary-color)",
-                      color: "var(--text-color)",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      transition: "all 0.3s ease"
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                      e.currentTarget.style.color = "var(--white-color)";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
-                      e.currentTarget.style.color = "var(--text-color)";
-                    }}
-                  >
-                    <i className="bi bi-gear me-2"></i> Settings
-                  </Link>
-                  <button
-                    className="btn btn-sm w-100 d-flex align-items-center justify-content-start"
-                    style={{
-                      backgroundColor: "var(--secondary-color)",
-                      color: "var(--text-color)",
-                      border: "1px solid rgba(255, 255, 255, 0.2)",
-                      transition: "all 0.3s ease"
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--accent-color)";
-                      e.currentTarget.style.color = "var(--white-color)";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = "var(--secondary-color)";
-                      e.currentTarget.style.color = "var(--text-color)";
-                    }}
-                    onClick={handleSignOut}
-                  >
-                    <i className="bi bi-box-arrow-right me-2"></i> Sign Out
-                  </button>
-                </li>
-              </ul>
-            </div>
           )}
         </div>
       </div>

@@ -295,7 +295,7 @@ header button:hover {
 }
 
 .main-content {
-    min-height: calc(100vh - 10rem);
+    min-height: calc(100vh - 3.5rem);
     /* leave space for header/nav/footer */
     display: flex;
     flex-direction: column;
@@ -1474,15 +1474,250 @@ h3 {
   font-weight: 600;
 }
 
+/* Admin Dashboard Tables - Professional Styling */
+.admin-dashboard-table {
+  background-color: var(--secondary-color) !important;
+  border-collapse: collapse;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.admin-dashboard-table thead {
+  background-color: var(--accent-color) !important;
+}
+
+.admin-dashboard-table thead th {
+  background-color: var(--accent-color) !important;
+  color: var(--primary-color) !important;
+  padding: 15px !important;
+  white-space: nowrap;
+  text-align: left;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  border: none !important;
+}
+
+.admin-dashboard-table tbody {
+  background-color: var(--secondary-color) !important;
+}
+
+.admin-dashboard-table tbody tr {
+  background-color: var(--secondary-color) !important;
+  border-bottom: 1px solid var(--overlay-color-light) !important;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-dashboard-table tbody tr:hover {
+  background-color: rgba(255, 107, 107, 0.05) !important;
+  transform: translateY(-1px);
+}
+
+.admin-dashboard-table tbody td {
+  padding: 15px !important;
+  color: var(--text-color) !important;
+  vertical-align: middle !important;
+  border: none !important;
+  background-color: var(--secondary-color) !important;
+  font-size: 0.95rem;
+}
+
+.admin-dashboard-table tbody td small {
+  color: var(--text-color) !important;
+  font-size: 0.85rem;
+}
+
+.admin-dashboard-table tbody td strong {
+  color: var(--text-color) !important;
+  font-weight: 600;
+}
+
+.admin-dashboard-table tbody td i {
+  color: var(--accent-color) !important;
+}
+
+.admin-dashboard-table .table-cell-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  color: var(--text-color) !important;
+}
+
+.admin-dashboard-table .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.admin-dashboard-table .badge {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 600 !important;
+  border-radius: 20px !important;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+/* Ensure badge text is visible */
+.admin-dashboard-table .badge[class*="bg-"] {
+  color: inherit;
+}
+
+/* Admin Action Buttons - Consistent Design */
+.admin-action-btn {
+  background-color: var(--primary-color) !important;
+  color: var(--accent-color) !important;
+  border: 1px solid var(--accent-color) !important;
+  padding: 0.4rem 0.7rem !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+}
+
+.admin-action-btn:hover {
+  background-color: var(--secondary-color) !important;
+  border-color: var(--accent-color) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2) !important;
+}
+
+.admin-action-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 6px rgba(255, 107, 107, 0.1) !important;
+}
+
+.admin-action-btn i {
+  color: var(--accent-color) !important;
+  font-size: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.admin-action-btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+  background-color: var(--neutral-color-light) !important;
+  border-color: var(--neutral-color) !important;
+}
+
+.admin-action-btn:disabled i {
+  color: var(--neutral-color) !important;
+}
+
+/* Specific badge color handling for dark theme */
+.admin-dashboard-table .badge.bg-success {
+  background-color: var(--success-color) !important;
+  color: white !important;
+}
+
+.admin-dashboard-table .badge.bg-secondary {
+  background-color: var(--neutral-color) !important;
+  color: white !important;
+}
+
+.admin-dashboard-table .badge.bg-warning {
+  background-color: var(--warning-color) !important;
+  color: #000 !important;
+}
+
+.admin-dashboard-table .badge.bg-danger {
+  background-color: var(--error-color) !important;
+  color: white !important;
+}
+
+.admin-dashboard-table .badge.bg-info {
+  background-color: var(--info-color) !important;
+  color: white !important;
+}
+
+/* Bootstrap override for table styling */
+.table {
+  color: var(--text-color) !important;
+}
+
 .table thead th {
-  background-color: #333 !important;
-  color: #fff !important;
+  background-color: var(--accent-color) !important;
+  color: var(--primary-color) !important;
   text-transform: uppercase;
   font-size: 0.9rem;
+  border: none !important;
+}
+
+.table tbody tr {
+  background-color: var(--secondary-color) !important;
 }
 
 .table tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: rgba(255, 107, 107, 0.05) !important;
+}
+
+/* Button Styling for Tables & Admin */
+.admin-dashboard-table .btn {
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+
+/* Accent color buttons - white text */
+.admin-dashboard-table .btn[style*="accent-color"] {
+  color: white !important;
+  background-color: var(--accent-color) !important;
+}
+
+.admin-dashboard-table .btn[style*="accent-color"]:hover {
+  background-color: #ff5252 !important;
+  transform: translateY(-1px);
+}
+
+.admin-dashboard-table .btn[style*="accent-color"]:active {
+  transform: translateY(0);
+}
+
+/* Info color buttons - already white */
+.admin-dashboard-table .btn[style*="info-color"] {
+  color: white !important;
+  background-color: var(--info-color) !important;
+}
+
+.admin-dashboard-table .btn[style*="info-color"]:hover {
+  background-color: #0b5ed7 !important;
+}
+
+/* Danger/Error buttons - ensure white text */
+.admin-dashboard-table .btn-danger {
+  color: white !important;
+  background-color: var(--error-color) !important;
+}
+
+.admin-dashboard-table .btn-danger:hover {
+  background-color: #bb2d3b !important;
+}
+
+/* Secondary/Disabled buttons */
+.admin-dashboard-table .btn:disabled,
+.admin-dashboard-table .btn[disabled] {
+  background-color: transparent !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--text-color) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
 }
 
 /* ================================
@@ -1902,7 +2137,7 @@ body.night-mode .social-login-btn:hover {
   background-color: var(--primary-color);
   color: var(--text-color);
   padding: 2rem;
-  padding-top: 8rem;
+  padding-top: 3.5rem;
   overflow-y: auto;
   max-height: calc(100vh - 3.5rem);
   transition: all 0.3s ease;
@@ -2061,10 +2296,11 @@ body.night-mode .social-login-btn:hover {
   }
 
   textarea {
-    rows: 4 !important;
+    min-height: 100px !important;
   }
 
   /* Button responsiveness */
+
   .btn-lg {
     padding: 0.6rem 1.5rem !important;
     font-size: 0.95rem !important;
@@ -2808,5 +3044,40 @@ body.night-mode .social-login-btn:hover {
   .navbar {
     padding-left: max(env(safe-area-inset-left), 1rem) !important;
     padding-right: max(env(safe-area-inset-right), 1rem) !important;
+  }
+}
+
+/* =====================================================
+   NOTIFICATION ANIMATIONS
+   ===================================================== */
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

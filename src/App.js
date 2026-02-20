@@ -17,7 +17,6 @@ import FactCheckerDashboard from "./FactCheckerDashboard";
 import CreateTutorial from "./CreateTutorial";
 import ManageTutorial from "./ManageTutorial";
 import VerificationLogsPage from "./VerificationLogsPage";
-import UserFeedbackPage from "./UserFeedbackpage(Professional)";
 import ProfessionalReportsPage from "./ProfessionalReportsPage";
 import UserProfile from "./UserProfile";
 import LinkedUser from "./LinkedUser";
@@ -28,24 +27,13 @@ import AdminPanel from "./AdminPanel";
 // ✅ CMS Frontend Viewer
 import { TutorialList, TutorialView, CMSPage, AnnouncementsBanner } from "./TutorialViewer";
 
-// ✅ Marketplace & Theme
-import Marketplace from "./ColorManager/Marketplace";
-import { ColorThemeManager } from "./ColorManager/Marketplace";
-
 // ✅ General User Pages
-
 import GamePage from "./GamePage";
-import FeedbackPage from "./FeedbackPage";
 
 // Component to handle loading state on route changes
 function AppContent() {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    // Load saved theme on app startup
-    ColorThemeManager.loadSavedTheme();
-  }, []);
 
   useEffect(() => {
     // Show loading screen when route changes
@@ -106,22 +94,11 @@ function AppContent() {
         <Route path="/professional/create-tutorial" element={<CreateTutorial />} />
         <Route path="/professional/manage-tutorial" element={<ManageTutorial />} />
         <Route path="/professional/verification-logs" element={<VerificationLogsPage />} />
-        <Route path="/professional/user-feedback" element={<UserFeedbackPage />} />
         <Route path="/professional/reports" element={<ProfessionalReportsPage />} />
         <Route path="/professional/linked-users" element={<LinkedUser />} />
         
         {/* User Profile - Unified Route */}
         <Route path="/user/profile" element={<UserProfile />} />
-
-        {/* Settings - Marketplace & Theme Manager */}
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Marketplace />
-            </ProtectedRoute>
-          }
-        />
 
         {/* ✅ Unified Admin Panel */}
         <Route path="/admin" element={<AdminPanel />} />
@@ -133,7 +110,6 @@ function AppContent() {
 
         {/* ✅ General User Pages */}
         <Route path="/game" element={<GamePage />} />
-        <Route path="/general/feedback" element={<FeedbackPage />} />
       </Routes>
     </>
   );

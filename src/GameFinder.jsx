@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaSearch } from "react-icons/fa";
 import GamesList from "./GamesList";
+import { SAMPLE_TUTORIALS } from "./sampleAdminData";
 
 export default function GameFinder({ category, onSelectGame, onBack }) {
   const navigate = useNavigate();
@@ -148,7 +149,7 @@ export default function GameFinder({ category, onSelectGame, onBack }) {
     },
   ];
 
-  // Load games from localStorage and combine with samples
+  // Load games from localStorage, combine with samples and admin tutorials
   useEffect(() => {
     try {
       const publishedGames = JSON.parse(localStorage.getItem("published_games_v1") || "[]");
@@ -157,10 +158,21 @@ export default function GameFinder({ category, onSelectGame, onBack }) {
         ...g,
         createdDate: g.createdDate ? new Date(g.createdDate) : new Date(g.createdAt || new Date()),
       }));
-      setAllGames([...sampleGames, ...gamesWithDates]);
+      
+      // Convert SAMPLE_TUTORIALS to game format
+      const adminTutorials = SAMPLE_TUTORIALS.map((t) => ({
+        ...t,
+        createdDate: t.createdAt?.toDate?.() || new Date(t.createdAt) || new Date(0),
+      }));
+      
+      // Combine all games: sample professional games + admin tutorials + user-published games
+      setAllGames([...sampleGames, ...adminTutorials, ...gamesWithDates]);
     } catch (error) {
       console.error("Error loading games from localStorage:", error);
-      setAllGames(sampleGames);
+      setAllGames([...sampleGames, ...SAMPLE_TUTORIALS.map((t) => ({
+        ...t,
+        createdDate: t.createdAt?.toDate?.() || new Date(t.createdAt) || new Date(0),
+      }))]);
     }
   }, []);
 
